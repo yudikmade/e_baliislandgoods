@@ -114,6 +114,8 @@ class EmProductSku extends Eloquent
     public function scopeInsertData($query, $dataInsert)
     {
         \DB::table($this->table)->insert($dataInsert);
+        $getData = \DB::table($this->table)->orderBy($this->primaryKey, 'DESC')->first();
+        return $getData->product_id;
     }
 
     public function scopeNewOrder($query, $id)

@@ -2,7 +2,7 @@
     <div class="panel panel-default no-radius">
         <div class="panel-body">
             <div class="text-center">
-                <img height="40px" src="{{asset(env('URL_IMAGE').'logo.png')}}">
+                <img height="100px" src="{{asset(env('URL_IMAGE').'logo.png')}}">
                 <?=$data_header?>
                 <div class="panel-body">
                   	<img class="none" style="margin-top: 5px; margin-bottom: 10px;" id="loader" src="{{asset(env('URL_IMAGE').'loader.gif')}}" alt="" title="Loading..." />

@@ -53,13 +53,10 @@ class Common_helper
 		return $initial.substr($invoiceLength, 0, (strlen($invoiceLength) - strlen($countInvoice))).$countInvoice;
 	}
 
-	public static function create_product_code($product_code)
-	{
-		if($product_code != '')
-		{
+	public static function create_product_code($product_code = ""){
+		if($product_code != ''){
 			return $product_code;
-		}
-		else
+		}else
 		{
 			return 'P'.strtotime(date('Y-m-d H:i:s')).rand(0000,9999);
 		}

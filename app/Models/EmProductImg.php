@@ -39,21 +39,23 @@ class EmProductImg extends Eloquent
 	public function scopeGetWhere($query, $where, $where_raw = '', $paging = true) 
 	{
     	$getData = \DB::table($this->table)
-    			->where($where);
+    		->select(
+    			$this->table.'.img_id', $this->table.'.product_id', $this->table.'.sku_id', 
+    			$this->table.'.image', $this->table.'.order', 
+    			'em_product_sku.sku_code', 'em_product_sku.color_name', 'em_product_sku.size'
+    		)
+    		->join('em_product_sku', 'em_product_sku.sku_id', '=', $this->table.'.sku_id')
+			->where($where);
 
-		if($where_raw != '')
-		{
+		if($where_raw != ''){
 			$getData = $getData->whereRaw($where_raw);
 		}
 
-		$getData = $getData->orderBy('order', 'DESC');
+		$getData = $getData->orderBy($this->table.'.sku_id', 'DESC');
 
-		if($paging)
-		{
+		if($paging){
 			return $getData->paginate($this->limitPaging);
-		}
-		else
-		{
+		}else{
 			return $getData->get();	
 		}
     }

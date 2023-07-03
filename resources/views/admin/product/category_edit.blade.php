@@ -2,16 +2,6 @@
 
 @section('style')
 <link rel="stylesheet" href="{{asset(env('URL_ASSETS').'iCheck/all.css')}}">
-<link rel="stylesheet" href="{{asset(env('URL_ASSETS').'select2/select2.min.css')}}">
-<style type="text/css">
-    [class^='select2'] {
-        border-radius: 0px !important;
-    }
-    .select2-container .select2-selection{
-        padding-bottom: 25px;
-        padding-left: 5px;
-    }
-</style>
 @stop
 
 @section('content')
@@ -42,48 +32,9 @@
                             </div>
                             <input type="hidden" name="category_id" id="category_id" value="{{$key->category_id}}">
                             <div class="form-group">
-                                <label for="fileBuku" class="col-sm-2 control-label"><span class="text-danger">*</span>Image</label>
-                                <div class="col-sm-7">
-                                    <input class="filestyle" id="up_image" type="file" name="up_image" data-buttonName="btn-primary" data-buttonText=" Select image">
-                                    <small class="text-primary">* Format jpg|.jpeg|.png (max. size 2MB), upload all images in one size for better result (standard 1800px X 900px).</small>
-                                    <br>
-                                    <br>
-                                    <div class="show-image">
-                                    <?=\App\Helper\Common_helper::check_image($key->image, array('ori' => '/category/', 'thumb' => '/category/thumb/'), '150px')?>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group">
                                 <label for="category" class="col-sm-2 control-label"><span class="text-danger">*</span>Category</label>
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control" name="category" id="category" value="{{$key->category}}"  />
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="category" class="col-sm-2 control-label">Description</label>
-                                <div class="col-sm-10">
-                                    <textarea class="form-control" name="description" id="description">{{$key->description}}</textarea>
-                                </div>
-                            </div>
-                            <div class="form-group" style="display:none">
-                                <label for="parent" class="col-sm-2 control-label"><span class="text-danger">*</span>Choose parent</label>
-                                <div class="col-sm-10">
-                                    <select type="text" class="form-control select2" name="parent" id="parent">
-                                        <option value="">No parent</option>
-                                            @foreach ($data_categories as $value) 
-                                                @if($key->parent == $value->category_id)
-                                                    <option value="{{$value->category_id}}" selected>{{$value->category}}</option>
-                                                @else
-                                                    <option value="{{$value->category_id}}">{{$value->category}}</option>
-                                                @endif
-                                            @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="status" class="col-sm-2 control-label"><span class="text-danger">*</span>Show In Home</label>
-                                <div class="col-sm-10" style="padding-top: 8px;">
-                                    <?=\App\Helper\Common_helper::status_show_home($key->show_in_home)?>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -107,20 +58,9 @@
 @stop
 
 @section('script')
-<script src="{{asset(env('URL_ASSETS').'select2/select2.full.min.js')}}"></script>
 <script src="{{asset(env('URL_ASSETS').'iCheck/icheck.min.js')}}"></script>
-<script src="{{asset(env('URL_ASSETS').'upload/bootstrap-filestyle.min.js')}}"></script>
-<script src="{{asset(env('URL_ASSETS').'ckeditor/ckeditor.js')}}"></script>
 <script type="text/javascript">
     $(document).ready(function() {
-        $('.select2').select2();
-        $(":file").filestyle({buttonName: "btn-primary"});
-
-        var description = document.getElementById("description");
-            CKEDITOR.replace(description,{
-            language:'en-gb'
-        });
-
         $('input[type="checkbox"].minimal, input[type="radio"].minimal').iCheck({
             checkboxClass: 'icheckbox_minimal-blue',
             radioClass: 'iradio_minimal-blue'
@@ -141,7 +81,6 @@
             submitHandler: function(form) {
                 $("#loader").fadeIn();
                 $("#btn-save-data").attr('disabled', 'disabled');
-                CKEDITOR.instances['description'].updateElement();
 
                 var formData = new FormData(form);
                 $.ajax({
@@ -156,18 +95,6 @@
                         if(response.trigger == "yes")
                         {
                             toastr.success(response.notif);
-                            if(response.new_image_ori != '')
-                            {
-                                if($('#form-save-data').find('.show-image img').first().attr('src') == undefined)
-                                {
-                                    $('.show-image').html('<a target="_blank" href="'+response.new_image_ori+'"><img width="100px" src="'+response.new_image_thumb+'"></a>')                                    
-                                }
-                                else
-                                {
-                                    $('#form-save-data').find('img').first().attr('src', response.new_image_thumb);
-                                    $('#form-save-data').find('a').attr('href', response.new_image_ori);
-                                }
-                            }
                         }
                         else
                         {

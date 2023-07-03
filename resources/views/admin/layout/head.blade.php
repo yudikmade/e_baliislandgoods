@@ -4,7 +4,7 @@
 <meta name="description" content="">
 <meta name="keywords" content="">
 <meta charset="UTF-8">
-<link rel="shortcut icon" href="{{asset(env('URL_IMAGE').'meta_site/_ico.ico')}}" type="image/x-icon">
+<link rel="shortcut icon" href="{{asset(env('URL_IMAGE').'favicon.ico')}}" type="image/x-icon">
 <title>{{$title}}</title>
 
 <link href="{{asset(env('URL_ASSETS').'bootstrap/css/bootstrap.min.css')}}" rel="stylesheet" type="text/css" media="all" />

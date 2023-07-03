@@ -44,7 +44,7 @@
                                 <div class="form-group">
                                     <label for="color" class="col-sm-12">Pick Color</label>
                                     <div class="col-sm-12">
-                                        <input type="text" class="form-control colorpicker" autocomplete="off" name="color" id="color" value=""/>
+                                        <input type="text" autocomplete="off" class="form-control colorpicker" autocomplete="off" name="color" id="color" value=""/>
                                     </div>
                                 </div>
                             </div>

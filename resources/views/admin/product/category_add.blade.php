@@ -1,16 +1,6 @@
 @extends('admin.layout.template')
 
 @section('style')
-<link rel="stylesheet" href="{{asset(env('URL_ASSETS').'select2/select2.min.css')}}">
-<style type="text/css">
-    [class^='select2'] {
-        border-radius: 0px !important;
-    }
-    .select2-container .select2-selection{
-        padding-bottom: 25px;
-        padding-left: 5px;
-    }
-</style>
 @stop
 
 @section('content')
@@ -36,39 +26,12 @@
                         {{ csrf_field() }}
                         <div class="box-body">
                             <div class="bs-callout bs-callout-warning">
-                              Please input new product catgeory the form below.
-                            </div>
-                            <div class="form-group">
-                                <label for="fileBuku" class="col-sm-2 control-label"><span class="text-danger">*</span>Image</label>
-                                <div class="col-sm-7">
-                                    <input class="filestyle" id="up_image" type="file" name="up_image" data-buttonName="btn-primary" data-buttonText=" Select image">
-                                    <small class="text-primary">* Format jpg|.jpeg|.png (max. size 2MB), upload all images in one size for better result (standard 1800px X 900px).</small>
-                                </div>
+                              Please input new category of product the form below.
                             </div>
                             <div class="form-group">
                                 <label for="category" class="col-sm-2 control-label"><span class="text-danger">*</span>Category</label>
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control" name="category" id="category" value=""  />
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="category" class="col-sm-2 control-label">Description</label>
-                                <div class="col-sm-10">
-                                    <textarea class="form-control" name="description" id="description"></textarea>
-                                </div>
-                            </div>
-                            <div class="form-group" style="display:none">
-                                <label for="parent" class="col-sm-2 control-label"><span class="text-danger">*</span>Choose parent</label>
-                                <div class="col-sm-10">
-                                    <select type="text" class="form-control select2" name="parent" id="parent">
-                                        <option value="">No parent</option>
-                                        <?php
-                                            foreach ($data_categories as $value) 
-                                            {
-                                                echo '<option value="'.$value->category_id.'">'.$value->category.'</option>';
-                                            }
-                                        ?>
-                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -85,19 +48,8 @@
 @stop
 
 @section('script')
-<script src="{{asset(env('URL_ASSETS').'select2/select2.full.min.js')}}"></script>
-<script src="{{asset(env('URL_ASSETS').'upload/bootstrap-filestyle.min.js')}}"></script>
-<script src="{{asset(env('URL_ASSETS').'ckeditor/ckeditor.js')}}"></script>
 <script type="text/javascript">
     $(document).ready(function() {
-        $('.select2').select2();
-        $(":file").filestyle({buttonName: "btn-primary"});
-
-        var description = document.getElementById("description");
-            CKEDITOR.replace(description,{
-            language:'en-gb'
-        });
-
         $("#form-save-data").validate({
             rules :{
                 category :{
@@ -113,7 +65,6 @@
             submitHandler: function(form) {
                 $("#loader").fadeIn();
                 $("#btn-save-data").attr('disabled', 'disabled');
-                CKEDITOR.instances['description'].updateElement();
 
                 var formData = new FormData(form);
                 $.ajax({
@@ -125,14 +76,9 @@
                     processData: false,
                     success: function(response) {
                         $("#btn-save-data").removeAttr('disabled');
-                        if(response.trigger == "yes")
-                        {
+                        if(response.trigger == "yes"){
                             toastr.success(response.notif);
-                            $('.bootstrap-filestyle input:eq( 0 )').val("");
-                            $('#parent').append('<option value="'+response.id+'">'+$('#category').val()+'</option>');
                             $('#category').val("");
-                            $('#parent').select2('val', '');
-                            CKEDITOR.instances['description'].setData("");
                         }
                         else
                         {

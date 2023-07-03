@@ -132,7 +132,7 @@
                         </a>
                         <ul class="treeview-menu">
                             <li><a href="'.route('control_product_categories').'"><i class="fa fa-file-text-o"></i> Data category</a></li>
-                            <li><a href="'.route('control_add_product_category').'"><i class="fa fa-file-text-o"></i> Add category</a></li>
+                            <li><a href="'.route('control_add_product_category').'"><i class="fa fa-plus"></i> Add category</a></li>
                             <li><a href="'.route('control_products').'"><i class="fa fa-file-text-o"></i> Data products</a></li>
                             <li><a href="'.route('control_add_products').'"><i class="fa fa-plus"></i> Add new product</a></li>
                         </ul>  
@@ -188,7 +188,7 @@
                     </li>',
                 );
                 
-                $finish = 7;
+                $finish = 4;
                 
                 for ($i = 1; $i <= $finish ; $i++) 
                 { 

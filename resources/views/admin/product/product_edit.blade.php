@@ -64,6 +64,35 @@
                                         </div>
                                         <hr>
                                     </div>
+                                    <div class="col-sm-12">
+                                        <div class="form-group">
+                                            <label for="product_name" class="col-sm-12"><span class="text-danger">*</span>Product name</label>
+                                            <div class="col-sm-12">
+                                                <input type="text" class="form-control" name="product_name" id="product_name" value="{{$key->product_name}}"  />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="main_category" class="col-sm-12"><span class="text-danger">*</span>Category</label>
+                                            <div class="col-sm-12">
+                                                <select type="text" class="form-control select2 sub_category" target="sub_category1" name="main_category" id="main_category">
+                                                    <option value="">Choose category</option>
+                                                    <?php
+                                                        foreach ($data_categories as $value) 
+                                                        {
+                                                            if($key->category_id == $value->category_id)
+                                                            {
+                                                                echo '<option value="'.$value->category_id.'" selected>'.$value->category.'</option>';
+                                                            }else{
+                                                                echo '<option value="'.$value->category_id.'">'.$value->category.'</option>';
+                                                            }
+                                                        }
+                                                    ?>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="col-sm-6">
                                         <div class="form-group">
                                             <label for="code_product" class="col-sm-12">Product code</label>
@@ -71,23 +100,10 @@
                                                 <input type="text" class="form-control" name="code_product" id="code_product" value="{{$key->product_code}}"  />
                                             </div>
                                         </div>
+                                    </div>
+                                    <div class="col-sm-6">
                                         <div class="form-group">
-                                            <label for="product_name" class="col-sm-12"><span class="text-danger">*</span>Product name</label>
-                                            <div class="col-sm-12">
-                                                <input type="text" class="form-control" name="product_name" id="product_name" value="{{$key->product_name}}"  />
-                                            </div>
-                                        </div>
-                                        <!-- <div class="form-group">
-                                            <label for="basic_price" class="col-sm-12"><span class="text-danger">*</span>Basic Price</label>
-                                            <div class="col-sm-12">
-                                                <div class="input-group">
-                                                    <input type="text" class="form-control currency" name="basic_price" id="basic_price" value="{{$key->price_basic}}"/>
-                                                    <span class="input-group-addon display-basic_price">{{\App\Helper\Common_helper::convert_to_format_currency($key->price_basic)}}</span>
-                                                </div>
-                                            </div>
-                                        </div> -->
-                                        <div class="form-group">
-                                            <label for="price" class="col-sm-12"><span class="text-danger">*</span>Price <!-- (for item sale) --></label>
+                                            <label for="price" class="col-sm-12"><span class="text-danger">*</span>Price</label>
                                             <div class="col-sm-12">
                                                 <div class="input-group">
                                                     <input type="text" class="form-control currency" name="price" id="price" value="{{$key->price}}"/>
@@ -95,6 +111,8 @@
                                                 </div>
                                             </div>
                                         </div>
+                                    </div>
+                                    <div class="col-sm-6">
                                         <div class="form-group">
                                             <label for="discount" class="col-sm-12">Discount</label>
                                             <div class="col-sm-12">
@@ -105,6 +123,9 @@
                                                 <small class="text-info"><i>Let discount form blank if you don't want to give discount</i></small>
                                             </div>
                                         </div>
+                                    </div>
+                                    <div class="col-sm-12"></div>
+                                    <div class="col-sm-4">
                                         <div class="form-group">
                                             <label for="unit" class="col-sm-12"><span class="text-danger">*</span>Unit name</label>
                                             <div class="col-sm-12">
@@ -112,71 +133,19 @@
                                             </div>
                                         </div>
                                     </div>
-
-                                    <div class="col-sm-6">
+                                    <div class="col-sm-4">
                                         <div class="form-group">
-                                            <label for="main_category" class="col-sm-12"><span class="text-danger">*</span>Main Category</label>
+                                            <label for="weight" class="col-sm-12"><span class="text-danger">*</span>Weight</label>
                                             <div class="col-sm-12">
-                                                <select type="text" class="form-control select2 sub_category" target="sub_category1" name="main_category" id="main_category">
-                                                    <option value="">Choose category</option>
-                                                    <?php
-                                                        foreach ($data_categories as $value) 
-                                                        {
-                                                            if($data_product_category[0][0] == $value->category_id)
-                                                            {
-                                                                echo '<option value="'.$value->category_id.'" selected>'.$value->category.'</option>';
-                                                            }
-                                                            else
-                                                            {
-                                                                echo '<option value="'.$value->category_id.'">'.$value->category.'</option>';
-                                                            }
-                                                        }
-                                                    ?>
-                                                </select>
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control currency" name="weight" id="weight" value="{{$key->weight}}"/>
+                                                    <span class="input-group-addon display-weight"></span>
+                                                </div>
+                                                <small class="text-info"><i>Please input in gram</i></small>
                                             </div>
                                         </div>
-                                        <!-- <div class="form-group">
-                                            <label for="sub_category1" class="col-sm-12">Sub Category (1)</label>
-                                            <div class="col-sm-12">
-                                                <select type="text" class="form-control select2 sub_category" target="sub_category2" name="sub_category1" id="sub_category1">
-                                                    <?php
-                                                        if(count($data_product_category) > 1)
-                                                        {
-                                                            echo '<option value="'.$data_product_category[1][0].'" selected>'.$data_product_category[1][1].'</option>';
-                                                        }
-                                                    ?>
-                                                    <option value="">Choose sub category</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="sub_category2" class="col-sm-12">Sub Category (2)</label>
-                                            <div class="col-sm-12">
-                                                <select type="text" class="form-control select2 sub_category" target="sub_category3" name="sub_category2" id="sub_category2">
-                                                    <?php
-                                                        if(count($data_product_category) > 2)
-                                                        {
-                                                            echo '<option value="'.$data_product_category[2][0].'" selected>'.$data_product_category[2][1].'</option>';
-                                                        }
-                                                    ?>
-                                                    <option value="">Choose sub category</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="sub_category3" class="col-sm-12">Sub Category (3)</label>
-                                            <div class="col-sm-12">
-                                                <select type="text" class="form-control select2" name="sub_category3" id="sub_category3">
-                                                    <?php
-                                                        if(count($data_product_category) > 3)
-                                                        {
-                                                            echo '<option value="'.$data_product_category[3][0].'" selected>'.$data_product_category[3][1].'</option>';
-                                                        }
-                                                    ?>
-                                                    <option value="">Choose sub category</option>
-                                                </select>
-                                            </div>
-                                        </div> -->
+                                    </div>
+                                    <div class="col-sm-4">
                                         <div class="form-group">
                                             <label for="order" class="col-sm-12"><span class="text-danger">*</span>Order (Sorting)</label>
                                             <div class="col-sm-12">
@@ -184,44 +153,11 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-sm-12 no-padding">
+                                    <div class="col-sm-12">
                                         <hr>
+                                    </div>
+                                    <div class="col-sm-12 no-padding">
                                         <div class="col-sm-6">
-                                            <!-- <div class="form-group">
-                                                <label for="book" class="col-sm-12"><span class="text-danger">*</span>Look book</label>
-                                                <div class="col-sm-12">
-                                                    <select type="text" class="form-control select2" name="book" id="book">
-                                                        <?php
-                                                            foreach ($data_book as $value) 
-                                                            {
-                                                                if($value->book_id == $key->book_id)
-                                                                {
-                                                                    echo '<option value="'.$value->book_id.'" selected>'.$value->book_title.'</option>';
-                                                                }
-                                                                else
-                                                                {
-                                                                    echo '<option value="'.$value->book_id.'">'.$value->book_title.'</option>';
-                                                                }
-                                                            }
-                                                        ?>
-                                                    </select>
-                                                </div>
-                                            </div> -->
-                                        </div>
-                                        <div class="col-sm-12">
-                                            <div class="form-group">
-                                                <label for="weight" class="col-sm-12"><span class="text-danger">*</span>Weight</label>
-                                                <div class="col-sm-12">
-                                                    <div class="input-group">
-                                                        <input type="text" class="form-control currency" name="weight" id="weight" value="{{$key->weight}}"/>
-                                                        <span class="input-group-addon display-weight"></span>
-                                                    </div>
-                                                    <small class="text-info"><i>Please input in gram</i></small>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- <div class="col-sm-6">
                                             <div class="form-group">
                                                 <label for="up_image" class="col-sm-12">Size Chart</label>
                                                 <div class="col-sm-12">
@@ -232,7 +168,7 @@
                                         </div>
                                         @if(isset($key->size_chart) && $key->size_chart != "")
                                             <div class="col-sm-6">
-                                                <img id="show_size_chart_thumb" style="cursor: pointer;" width="100px" data-toggle="modal" data-target="#myModal" src="{{asset(env('URL_IMAGE').'product/thumb/'.$key->size_chart)}}">
+                                                <img id="show_size_chart_thumb" style="cursor: pointer;" width="40%" data-toggle="modal" data-target="#myModal" src="{{asset(env('URL_IMAGE').'product/thumb/'.$key->size_chart)}}">
 
                                                 <div id="myModal" class="modal fade" role="dialog">
                                                     <div class="modal-dialog modal-lg">
@@ -249,7 +185,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        @endif -->
+                                        @endif
                                     </div>
                                     <div class="col-sm-12">
                                         <hr>
@@ -271,38 +207,62 @@
                         </div>
                         <div class="tab-pane" id="image">
                             @foreach($data_result as $key)
-                            <form id="form-save-data-image" class="form-horizontal" action="{{route('control_edit_product_process')}}" method="post">
-                                {{ csrf_field() }}
-                                <div class="box-body">
-                                    <div class="bs-callout bs-callout-warning">
-                                        You can upload multiple image.<br>
-                                        Please select main image (with green frame), the main image will be the cover image of the product.<br>
-                                        <span class="text-primary"><b>Click on image to set main image</b></span>
-                                    </div>
-                                    <input type="hidden" name="product_id" id="product_id" value="{{$key->product_id}}">
-                                    <input type="hidden" name="form_action" id="upload-image" value="upload-image">
-                                    <div class="form-group">
-                                        <label for="up_image" class="col-sm-12"><span class="text-danger">*</span>Product's image</label>
+                                <form id="form-save-data-image" class="form-horizontal" action="{{route('control_edit_product_process')}}" method="post">
+                                    {{ csrf_field() }}
+                                    <div class="box-body">
+                                        <div class="bs-callout bs-callout-warning">
+                                            You can upload multiple image.<br>
+                                            Please select main image (with green frame), the main image will be the cover image of the product.<br>
+                                            <span class="text-primary"><b>Click on image to set main image</b></span>
+                                        </div>
+                                        <input type="hidden" name="product_id" id="product_id" value="{{$key->product_id}}">
+                                        <input type="hidden" name="form_action" id="upload-image" value="upload-image">
                                         <div class="col-sm-5">
-                                            <input class="filestyle" id="up_image" type="file" name="up_image[]" multiple="multiple" data-buttonName="btn-primary" data-buttonText=" Select image">
-                                            <small class="text-primary">* Format jpg|.jpeg|.png (max. size 2MB), upload all images in one size for better result.</small>
+                                            <div class="form-group">
+                                                <label for="main_category" class="col-sm-12"><span class="text-danger">*</span>SKU</label>
+                                                <div class="col-sm-12">
+                                                    <select type="text" class="form-control select2" name="sku_selected" id="sku_selected">
+                                                        <option value="">Choose SKU</option>
+                                                        <?php
+                                                            foreach ($data_product_sku as $key) 
+                                                            {
+                                                                echo '<option value="'.$key->sku_id.'">'.$key->color_name.' - '.$key->size.'</option>';
+                                                            }
+                                                        ?>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-7">
+                                            <div class="form-group">
+                                                <label for="up_image_only" class="col-sm-12"><span class="text-danger">*</span>Product's image</label>
+                                                <div class="col-sm-12">
+                                                    <input class="filestyle" id="up_image_only" type="file" name="up_image_only[]" multiple="multiple" data-buttonName="btn-primary" data-buttonText=" Select image">
+                                                    <small class="text-primary">* Format jpg|.jpeg|.png (max. size 2MB), upload all images in one size for better result.</small>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                    
-                                    <div class="col-sm-12 no-padding plc-image-product">
-                                        @foreach ($data_image as $value)
-                                            <div class="col-sm-2 data-image {{$value->order == '1' ? 'main' : '' }}">
-                                                <img class="img-responsive select-main-image" data-id="{{$value->img_id}}" src="{{asset(env('URL_IMAGE').'product/thumb/'.$value->image)}}">
-                                                <button type="button" class="btn btn-danger no-radius delete-image" data-id="{{$value->img_id}}">Delete <i class="fa fa-trash"></i></button>
-                                            </div>
-                                        @endforeach
+                                    <div class="box-footer">
+                                        <button type="submit" name="save" id="btn-save-data-image" class="btn btn-primary pull-right btn-lg">Save</button> 
+                                        <img class="pull-right none" style="margin-top: 18px; margin-right: 10px;" id="loader-image" src="{{asset(env('URL_IMAGE').'loader.gif')}}" alt="Loading...." title="Loading...." />
                                     </div>
-                                </div>
-                                <div class="box-footer">
-                                    <button type="submit" name="save" id="btn-save-data-image" class="btn btn-primary pull-right btn-lg">Save</button> 
-                                    <img class="pull-right none" style="margin-top: 18px; margin-right: 10px;" id="loader-image" src="{{asset(env('URL_IMAGE').'loader.gif')}}" alt="Loading...." title="Loading...." />
-                                </div>
-                            </form>
+
+                                    <div class="box-body">
+                                        <hr/>
+                                        <h3>Product's Image</h3>
+                                        <div class="col-sm-12 no-padding plc-image-product">
+                                            @foreach ($data_image as $value)
+                                                <div class="col-sm-2 text-center data-image {{$value->order == '1' ? 'main' : '' }}">
+                                                    SKU<br/>
+                                                    {{$value->color_name}} - {{$value->size}}
+                                                    <img class="img-responsive select-main-image" data-id="{{$value->img_id}}" src="{{asset(env('URL_IMAGE').'product/thumb/'.$value->image)}}">
+                                                    <button type="button" class="btn btn-danger no-radius delete-image" data-id="{{$value->img_id}}">Delete <i class="fa fa-trash"></i></button>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                </form>
                             @endforeach
                         </div>
 
@@ -415,7 +375,7 @@
                     <div class="box-body">
                         <div class="bs-callout bs-callout-warning">
                           Please input SKU (Stock Keeping Unit) the form below.<br>
-                          System will generate product code if you let product code blank.<br>
+                          System will generate SKU code if you let it blank.<br>
                         </div>
                         <input type="hidden" class="form-control" name="product_id" id="product_id" value="<?=$data_result[0]->product_id?>"/>
                         <div class="col-sm-6">
@@ -448,7 +408,7 @@
                                 <div class="form-group">
                                     <label for="color" class="col-sm-12">Pick Color</label>
                                     <div class="col-sm-12">
-                                        <input type="text" class="form-control colorpicker" name="color" id="color" value=""/>
+                                        <input type="text" class="form-control colorpicker" autocomplete="off" name="color" id="color" value=""/>
                                     </div>
                                 </div>
                             </div>
@@ -464,6 +424,18 @@
                                 <label for="status" class="col-sm-12">Size</label>
                                 <div class="col-sm-4">
                                     <input type="text" class="form-control" name="size" id="size" value=""  />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12">
+                            <hr>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label for="up_image" class="col-sm-12"><span class="text-danger">*</span>Product's image</label>
+                                <div class="col-sm-12">
+                                    <input class="filestyle" id="up_image" type="file" name="up_image[]" multiple="multiple" data-buttonName="btn-primary" data-buttonText=" Select image">
+                                    <small class="text-primary">* Format jpg|.jpeg|.png (max. size 2MB), upload all images in one size for better result.</small>
                                 </div>
                             </div>
                         </div>
@@ -788,6 +760,7 @@
                             $('#orm-save-data-add-sku').find('input[name=color_name]').val("");
                             $('#orm-save-data-add-sku').find('input[name=size]').val("");
                             $('#orm-save-data-add-sku').find('input[name=color]').val("");
+                            $('#orm-save-data-add-sku').find('.bootstrap-filestyle input:eq( 0 )').val("");
                             $('#orm-save-data-add-sku').find('input[name=new_order]').val(response.new_order);
                         }
                         else

@@ -6,7 +6,6 @@
                     <th></th>
                     <th>#</th>
                     <th>Category</th>
-                    <th>Image</th>
                     <th>Status</th>
                     <th>#</th>
                 </tr>
@@ -22,7 +21,6 @@
                                 <td width="20px"><input value="'.$key->category_id.'" type="checkbox" class="minimal" name="data'.$no.'" id="data'.$no.'"></td>
                                 <td>'.$no.'</td>
                                 <td>'.$key->category.'</td>
-                                <td>'.\App\Helper\Common_helper::check_image($key->image, array('ori' => '/category/', 'thumb' => '/category/thumb/')).'</td>
                                 <td>'.\App\Helper\Common_helper::status_default($key->status).'</td>
                                 <td>
                                     <a class="btn btn-success btn-sm" title="Edit data" href="'.route('control_edit_product_category').'/'.$key->category_id.'"><i class="fa fa-edit"></i></a>

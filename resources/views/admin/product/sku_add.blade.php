@@ -33,7 +33,7 @@
                         <div class="box-body">
                             <div class="bs-callout bs-callout-warning">
                               Please input SKU (Stock Keeping Unit) the form below.<br>
-                              System will generate product code if you let product code blank.<br>
+                              System will generate product SKU code if you let it blank.<br>
                             </div>
                             <input type="hidden" class="form-control" name="product_id" id="product_id" value="{{$product_id}}"  />
                             <div class="col-sm-6">
@@ -66,7 +66,7 @@
                                     <div class="form-group">
                                         <label for="color" class="col-sm-12">Pick Color</label>
                                         <div class="col-sm-12">
-                                            <input type="text" class="form-control colorpicker" autocomplete="off" name="color" id="color" value=""/>
+                                            <input type="text" autocomplete="off" class="form-control colorpicker" autocomplete="off" name="color" id="color" value=""/>
                                         </div>
                                     </div>
                                 </div>
@@ -87,6 +87,18 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="col-sm-12">
+                                <hr>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label for="up_image" class="col-sm-12"><span class="text-danger">*</span>Product's image</label>
+                                    <div class="col-sm-12">
+                                        <input class="filestyle" id="up_image" type="file" name="up_image[]" multiple="multiple" data-buttonName="btn-primary" data-buttonText=" Select image">
+                                        <small class="text-primary">* Format jpg|.jpeg|.png (max. size 2MB), upload all images in one size for better result.</small>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="box-footer">
                             <button type="submit" name="save" id="btn-save-data" class="btn btn-primary pull-right btn-lg">Save</button> 
@@ -102,8 +114,10 @@
 
 @section('script')
 <script src="{{asset(env('URL_ASSETS').'colorpicker/bootstrap-colorpicker.min.js')}}"></script>
+<script src="{{asset(env('URL_ASSETS').'upload/bootstrap-filestyle.min.js')}}"></script>
 <script type="text/javascript">
     $(document).ready(function() {
+        $(":file").filestyle({buttonName: "btn-primary"});
         $('.colorpicker').colorpicker();
 
         $("#form-save-data").validate({
@@ -136,9 +150,11 @@
                             toastr.success(response.notif);
                             $('#sku_code').val("");
                             $('#stock').val("");
+                            $('.display-stock').text("");
                             $('#color_name').val("");
                             $('#size').val("");
                             $('#color').val("");
+                            $('.bootstrap-filestyle input:eq( 0 )').val("");
                             $('#new_order').val(response.new_order);
                         }
                         else

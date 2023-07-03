@@ -2,7 +2,7 @@
     <div class="panel panel-default no-radius">
         <div class="panel-body">
             <div class="text-center">
-                <img height="40px" src="{{asset(env('URL_IMAGE').'logo.png')}}">
+                <img height="100px" src="{{asset(env('URL_IMAGE').'logo.png')}}">
                 <h3 class="text-center"></h3>
                 <p>Please insert new password.</p>
                 

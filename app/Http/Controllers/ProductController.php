@@ -25,18 +25,12 @@ class ProductController extends Controller
     {
         Common_helper::check_session_backend(true);
 
-        if($search != '')
-        {
+        if($search != ''){
             $search = str_replace('+', ' ', $search);
         }
 
-        $category_admin = Session::get(env('SES_BACKEND_CATEGORY'));
-
-        if(is_null($category_admin)){
-            $data_result = EmProduct::whereNotNull('category_id')->where('status', '!=', '2')->whereRaw("(product_name like '%".$search."%' OR product_code like '%".$search."%')")->orderBy('date_in', 'DESC')->paginate($this->limiPage);
-        } else {
-            $data_result = EmProduct::where('status', '!=', '2')->where('admin_id',Session::get(env('SES_BACKEND_ID')))->whereRaw("(product_name like '%".$search."%' OR product_code like '%".$search."%')")->orderBy('date_in', 'DESC')->paginate($this->limiPage);
-        }
+        $data_result = EmProduct::whereNotNull('category_id')->where('status', '!=', '2')->whereRaw("(product_name like '%".$search."%' OR product_code like '%".$search."%')")->orderBy('date_in', 'DESC')->paginate($this->limiPage);
+        
         $view_content = View::make('admin.product.product', compact('data_result'));
 
         $data = array(
@@ -65,7 +59,7 @@ class ProductController extends Controller
             $search = str_replace('+', ' ', $search);
         }
 
-        return Excel::download(new ExportProduct($search,Session::get(env('SES_BACKEND_ID'))), 'product'.date('YmdHis').'.xlsx');
+        return Excel::download(new ExportProduct($search, Session::get(env('SES_BACKEND_ID'))), 'product'.date('YmdHis').'.xlsx');
     }
 
     public function sku($search = '')
@@ -147,26 +141,11 @@ class ProductController extends Controller
         echo json_encode($result);
     }
 
-    public function editProduct($id)
-    {
+    public function editProduct($id){
         Common_helper::check_session_backend(true);
-
-        // $getProduct = EmProduct::getWhere([['product_id', '=', $id], ['status', '!=', '2'], ['admin_id', '=', Session::get(env('SES_BACKEND_ID'))]], '', false);
         $getProduct = EmProduct::getWhere([['product_id', '=', $id], ['status', '!=', '2']], '', false);
 
         if(sizeof($getProduct) > 0){
-            $getProductCategory = EmProductCategory::getOneHierarchy($getProduct[0]->category_id);
-            $categoryArray = array();
-
-            if(count($getProductCategory['parent']) > 0)
-            {
-                for ($i=0; $i < count($getProductCategory['parent']); $i++) 
-                { 
-                    array_push($categoryArray, array($getProductCategory['parent'][$i]->category_id, $getProductCategory['parent'][$i]->category));
-                }
-            }
-            array_push($categoryArray, array($getProductCategory[0]->category_id, $getProductCategory[0]->category));
-
             $data = array(
                 'title' => 'Product | Administrator',
                 'title_page' => 'Product',
@@ -175,10 +154,9 @@ class ProductController extends Controller
                                     <li class=""><a href="'.route('control_products').'"><i class="fa fa-file-text-o"></i> Product</a></li>
                                     <li class="active"><i class="fa fa-edit"></i> Edit product</li>
                                 ',
-                'data_categories' => EmProductCategory::getWhere([['status', '=', '1']], '(parent = \'\' or parent is null)', false),
-                'data_image' => EmProductImg::getWhere([['product_id', '=', $id]], '', false),
+                'data_categories' => EmProductCategory::getWhere([['status', '=', '1']], '', false),
+                'data_image' => EmProductImg::getWhere([['em_product_img.product_id', '=', $id]], '', false),
                 'data_result' => $getProduct,
-                'data_product_category' => $categoryArray,
                 'data_product_sku' => EmProductSku::getWhere([['product_id', '=', $id], ['status', '!=', '2']], '', false),
                 'data_book' => array(),
                 'menu_order' => $this->menu_order,
@@ -265,12 +243,14 @@ class ProductController extends Controller
         {
             $validator = Validator::make(request()->all(), [
                 'product_id' => 'required',
-                'up_image' => 'required',
-                'up_image.*' => 'mimes:jpeg,png,jpg|max:2048'
+                'sku_selected' => 'required',
+                'up_image_only' => 'required',
+                'up_image_only.*' => 'mimes:jpeg,png,jpg|max:2048'
             ],
             [
                 'product_id.required' => 'Sorry, server can\'t response.',
-                'up_image.required' => 'Please upload product\'s image.',
+                'sku_selected.required' => 'Please select SKU.',
+                'up_image_only.required' => 'Please upload product\'s image.',
             ]);
             
             if($validator->fails()) 
@@ -287,7 +267,7 @@ class ProductController extends Controller
                 //upload image
                 $newSize = array('crop' => false, 'width' => 600, 'height' => 0);
                 $smallSize = array('crop' => false, 'width' => 80, 'height' => 0);
-                $getImageName = Common_helper::upload_image('product/', 'product/thumb/', $newSize, $request->file('up_image'), true, 'product/thumb_sm/', $smallSize);
+                $getImageName = Common_helper::upload_image('product/', 'product/thumb/', $newSize, $request->file('up_image_only'), true, 'product/thumb_sm/', $smallSize);
                 $tmpData = '';
                 if(sizeof($getImageName) > 0)
                 {
@@ -295,13 +275,18 @@ class ProductController extends Controller
                     {
                         $dataInsert = 
                         [
+                            'sku_id' => $input['sku_selected'],
                             'product_id' => $input['product_id'],
                             'image' => $value
                         ];
                         $getLastId = EmProductImg::insertData($dataInsert);
 
+                        $check_sku = EmProductSku::where('sku_id', $input['sku_selected'])->first();
+
                         $tmpData .= '
-                            <div class="col-sm-2 data-image">
+                            <div class="col-sm-2 text-center data-image">
+                                SKU<br/>
+                                '.$check_sku->color_name.' - '.$check_sku->size.'
                                 <img class="img-responsive select-main-image" data-id="'.$getLastId.'" src="'.asset(env('URL_IMAGE').'product/thumb/'.$value).'">
                                 <button type="button" class="btn btn-danger no-radius delete-image" data-id="'.$getLastId.'">Delete <i class="fa fa-trash"></i></button>
                             </div>
@@ -321,12 +306,10 @@ class ProductController extends Controller
                 'product_id' => 'required',
                 // 'code_product' => 'required',
                 'product_name' => 'required',
-                // 'basic_price' => 'required',
                 'price' => 'required',
                 'main_category' => 'required',
                 'unit' => 'required',
                 // 'description' => 'required',
-                // 'book' => 'required',
                 'weight' => 'required',
                 'order' => 'required',
             ],
@@ -334,14 +317,12 @@ class ProductController extends Controller
                 'product_id.required' => 'Sorry, server can\'t response.',
                 // 'code_product.required' => 'Please insert product code.',
                 'product_name.required' => 'Please insert product name.',
-                // 'basic_price.required' => 'Please insert basic price.',
                 'price.required' => 'Please insert price.',
                 'main_category.required' => 'Please insert main category.',
                 'unit.required' => 'Please insert unit name.',
                 'weight.required' => 'Please insert weight of product.',
                 'order.required' => 'Please insert order of product.',
                 // 'description.required' => 'Please insert description of product.',
-                // 'book.required' => 'Please choose look book.',
             ]);
             
             if($validator->fails()) 
@@ -356,15 +337,10 @@ class ProductController extends Controller
             else
             {
                 $input = $request->all();
-                // $checkProductCode = EmProduct::getWhere([['product_code', '=', $input['code_product']], ['product_id', '!=', $input['product_id']], ['status', '!=', '2']], '', false);
-                // if(sizeof($checkProductCode) > 0)
-                // {
-                //     $result['notif'] = 'Product code already exist.';
-                // }
-                // else
-                // {
-                    
-
+                $checkProductCode = EmProduct::getWhere([['product_code', '=', $input['code_product']], ['product_id', '!=', $input['product_id']], ['status', '!=', '2']], '', false);
+                if(sizeof($checkProductCode) > 0){
+                    $result['notif'] = 'Product code already exist.';
+                }else{
                     //size cart
                     $newSize = array('crop' => false, 'width' => 600, 'height' => 0);
                     $smallSize = array('crop' => false, 'width' => 80, 'height' => 0);
@@ -399,20 +375,18 @@ class ProductController extends Controller
                         'description' => $input['description_text'],
                         'description_html' => $input['description'],
                         'price' => $input['price'],
-                        // 'price_basic' => $input['basic_price'],
                         'discount' => $input['discount'],
                         'last_update' => strtotime(Common_helper::date_time_now()),
                         'unit' => $input['unit'],
                         'status' => $input['status'],
-                        // 'book_id' => $input['book'],
                         'weight' => $input['weight'],
                         'order' => $input['order'],
-                        // 'size_chart' => $getSizeChart,
+                        'size_chart' => $getSizeChart,
                     ];
                     EmProduct::updateData($input['product_id'], $dataUpdate);
                     $result['trigger'] = 'yes';
                     $result['notif'] = 'Product has been changed.';
-                // }
+                }
             }
         }
 
@@ -431,7 +405,7 @@ class ProductController extends Controller
                                 <li class=""><a href="'.route('control_products').'"><i class="fa fa-file-text-o"></i> Product</a></li>
                                 <li class="active"><i class="fa fa-plus"></i> Add product</li>
                             ',
-            'data_categories' => EmProductCategory::getWhere([['status', '=', '1']], '(parent = \'\' or parent is null)', false),
+            'data_categories' => EmProductCategory::getWhere([['status', '=', '1']], '', false),
             'data_book' => array(),
             'menu_order' => $this->menu_order,
             'masterProduct' => 'active',
@@ -450,28 +424,21 @@ class ProductController extends Controller
 
         $validator = Validator::make(request()->all(), [
             'product_name' => 'required',
-            // 'basic_price' => 'required',
-            // 'book' => 'required',
             'price' => 'required',
             'main_category' => 'required',
             'unit' => 'required',
             'weight' => 'required',
             'order' => 'required',
             // 'description' => 'required',
-            'up_image' => 'required',
-            'up_image.*' => 'mimes:jpeg,png,jpg|max:2048'
         ],
         [
             'product_name.required' => 'Please insert product name.',
-            // 'basic_price.required' => 'Please insert basic price.',
             'price.required' => 'Please insert price.',
             'main_category.required' => 'Please insert main category.',
             'unit.required' => 'Please insert unit name.',
             'weight.required' => 'Please insert weight of product.',
-            // 'description.required' => 'Please insert description of product.',
-            'up_image.required' => 'Please upload product\'s image.',
-            // 'book.required' => 'Please choose look book.',
             'order.required' => 'Please insert order of product.',
+            // 'description.required' => 'Please insert description of product.',
         ]);
         
         if($validator->fails()) 
@@ -485,18 +452,15 @@ class ProductController extends Controller
         }
         else
         {
-            $input = $request->all();           
-            // $productCode = Common_helper::create_product_code($input['code_product']);
-            $productCode = $input['code_product'];
+            $input = $request->all();
+            $productCode = isset($input['code_product'])?$input['code_product']:"";
+            $productCode = Common_helper::create_product_code($productCode);
 
-            //check product code
-            // $checkProductCode = EmProduct::getWhere([['product_code', '=', $productCode], ['status', '!=', '2']], '', false);
-            // if(sizeof($checkProductCode) > 0)
-            // {
-            //     $result['notif'] = 'Product code already exist.';
-            // }
-            // else
-            // {
+            // check product code
+            $checkProductCode = EmProduct::getWhere([['product_code', '=', $productCode], ['status', '!=', '2']], '', false);
+            if(sizeof($checkProductCode) > 0){
+                $result['notif'] = 'Product code already exist.';
+            }else{
                 $productCategory = Common_helper::set_product_category($input, 'insert');
 
                 $newSize = array('crop' => false, 'width' => 600, 'height' => 0);
@@ -511,54 +475,31 @@ class ProductController extends Controller
                 }
                 //========
 
-                $dataInsert = 
-                [
+                $dataInsert = [
                     'category_id' => $productCategory,
-                    'admin_id' => Session::get(env('SES_BACKEND_ID')),
                     'product_name' => $input['product_name'],
                     'product_code' => $productCode,
                     'description' => $input['description_text'],
                     'description_html' => $input['description'],
                     'price' => $input['price'],
-                    // 'price_basic' => $input['basic_price'],
                     'discount' => $input['discount'],
                     'date_in' => strtotime(Common_helper::date_time_now()),
                     'last_update' => strtotime(Common_helper::date_time_now()),
                     'stock' => 0,
                     'unit' => $input['unit'],
                     'status' => '1',
-                    // 'book_id' => $input['book'],
                     'weight' => $input['weight'],
                     'order' => $input['order'],
-                    // 'size_chart' => $getSizeChart,
+                    'size_chart' => $getSizeChart,
                 ];
                 $getLastID = EmProduct::insertData($dataInsert);
-
-                //upload image
-                $getImageName = Common_helper::upload_image('product/', 'product/thumb/', $newSize, $request->file('up_image'), true, 'product/thumb_sm/', $smallSize);
-                if(sizeof($getImageName) > 0)
-                {
-                    $order = '1';
-                    foreach ($getImageName as $key => $value) 
-                    {
-                        $dataInsert = 
-                        [
-                            'product_id' => $getLastID,
-                            'image' => $value,
-                            'order' => $order
-                        ];
-                        $order = null;
-                        EmProductImg::insertData($dataInsert);
-                    }
-                }
-                //-------------------------
                 
                 $result['trigger'] = 'yes';
                 $result['notif'] = 'New product has been added.';
                 $result['product_id'] = $getLastID;
 
                 $result['order'] = EmProduct::newOrder();
-            // }
+            }
         }
         echo json_encode($result);
     }
@@ -617,16 +558,14 @@ class ProductController extends Controller
         else
         {
             $input = $request->all();
-           
+
             $skuCode = Common_helper::create_product_sku_code($input['sku_code'], $input['product_id']);
             $newOrder = $input['new_order'];
-            if($input['new_order'] == '')
-            {
+            if($input['new_order'] == ''){
                 $newOrder = EmProductSku::newOrder();
             }
 
-            $dataInsert = 
-            [
+            $dataInsert = [
                 'sku_code' => $skuCode,
                 'product_id' => $input['product_id'],
                 'color_name' => strtoupper($input['color_name']),
@@ -639,6 +578,35 @@ class ProductController extends Controller
                 'status' => '1'
             ];
             $getLastID = EmProductSku::insertData($dataInsert);
+
+
+            //upload image
+            if(isset($input['up_image'])){
+                if(!empty($input['up_image'])){
+                    $newSize = array('crop' => false, 'width' => 600, 'height' => 0);
+                    $smallSize = array('crop' => false, 'width' => 80, 'height' => 0);
+                    $getImageName = Common_helper::upload_image('product/', 'product/thumb/', $newSize, $request->file('up_image'), true, 'product/thumb_sm/', $smallSize);
+                    if(sizeof($getImageName) > 0){
+
+                        $check_main_img = EmProductImg::where('product_id', $input['product_id'])->where('order', '1')->first();
+                        $order = '1';
+                        if($check_main_img){
+                            $order = null;
+                        }
+                        foreach ($getImageName as $key => $value) {
+                            $dataInsert = [
+                                'product_id' => $input['product_id'],
+                                'sku_id' => $getLastID,
+                                'image' => $value,
+                                'order' => $order
+                            ];
+                            $order = null;
+                            EmProductImg::insertData($dataInsert);
+                        }
+                    }
+                }
+            }
+            //-------------------------
 
             //add stock
             $model = EmProduct::find($input['product_id']);
@@ -952,24 +920,9 @@ class ProductController extends Controller
         else
         {
             $input = $request->all();
-            
-            $getImage = null;
-            if(isset($input['up_image'])){
-                //upload image
-                $newSize = array(
-                    'crop' => false,
-                    'width' => 480,
-                    'height' => 0
-                );
-                $getImage = Common_helper::upload_image('category/', 'category/thumb/', $newSize, $request->file('up_image'));
-            }
 
-            $dataInsert = 
-            [
+            $dataInsert = [
                 'category' => $input['category'],
-                'parent' => $input['parent'],
-                'description' => $input['description'],
-                'image' => $getImage,
                 'status' => '1'
             ];
             $getLastID = EmProductCategory::insertData($dataInsert);
@@ -1033,49 +986,11 @@ class ProductController extends Controller
         {
             $input = $request->all();
 
-            $result['new_image_ori'] = '';
-            $result['new_image_thumb'] = '';
+            $dataUpdate = [
+                'category' => $input['category'],
+                'status' => $input['status'],
+            ];
 
-            if(isset($input['up_image'])){
-                //upload image
-                $newSize = array(
-                    'crop' => false,
-                    'width' => 480,
-                    'height' => 0
-                );
-                $getImageName = Common_helper::upload_image('category/', 'category/thumb/', $newSize, $request->file('up_image'));
-                if($getImageName != '')
-                {
-                    $dataUpdate = 
-                    [
-                        'category' => $input['category'],
-                        'parent' => $input['parent'],
-                        'description' => $input['description'],
-                        'image' => $getImageName,
-                        'status' => $input['status'],
-                        'show_in_home' => $input['show_in_home']
-                    ];
-
-                    //delete image
-                    $getData = EmProductCategory::getWhere([['category_id', '=', $input['category_id']]], false);
-                    foreach ($getData as $key) 
-                    {
-                        @unlink($_SERVER['DOCUMENT_ROOT'].'/'.env('URL_IMAGE').'/category/'.$key->image);
-                        @unlink($_SERVER['DOCUMENT_ROOT'].'/'.env('URL_IMAGE').'/category/thumb/'.$key->image);
-                    }
-                    $result['new_image_ori'] = asset(env('URL_IMAGE')).'/category/'.$getImageName;
-                    $result['new_image_thumb'] = asset(env('URL_IMAGE')).'/category/thumb/'.$getImageName;
-                }
-            } else {
-                $dataUpdate = 
-                [
-                    'category' => $input['category'],
-                    'parent' => $input['parent'],
-                    'description' => $input['description'],
-                    'status' => $input['status'],
-                    'show_in_home' => $input['show_in_home']
-                ];
-            }
             EmProductCategory::updateData($input['category_id'], $dataUpdate);
             $result['trigger'] = 'yes';
             $result['notif'] = 'Category has been changed.';
