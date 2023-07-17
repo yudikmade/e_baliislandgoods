@@ -117,3 +117,17 @@
 .slick-arrow.slick-hidden {
     display: none;
 }
+
+.regular2 .slick-prev, .regular2 .slick-next{
+  margin-top: -20px!important;
+}
+
+ @media (max-width: 768px) {
+   .regular2 .slick-prev, .regular2 .slick-next{
+     margin-top: -5px!important;
+   }
+
+  .slick-next {
+    right: 5px!important;
+  }
+ }
