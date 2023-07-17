@@ -148,76 +148,75 @@ Route::get('/order/cancel', [TransactionController::class, 'checkOrderCancel'])-
 //cronjob=======================
 
 // frontend ======================================
-// Route::get('/', [HomeController::class, 'index'])->name('home_page');
-Route::get('/', [ShopController::class, 'index'])->name('shop_page');
-Route::get('/about-us', [HomeController::class, 'aboutUs'])->name('about_us');
-Route::get('/terms-of-payment', [HomeController::class, 'termsOfPayment'])->name('terms_of_payment');
-Route::get('/privacy-policy', [HomeController::class, 'privacyPolicy'])->name('privacy_policy');
-Route::get('/return-policy', [HomeController::class, 'returnPolicy'])->name('return_policy');
-Route::get('/contact-us', [HomeController::class, 'contactUs'])->name('contact_us');
-Route::get('/contact-us/send-message', [HomeController::class, 'contactSendMessage'])->name('contact_send_message');
+Route::get('/', [HomeController::class, 'index'])->name('home_page');
+// Route::get('/about-us', [HomeController::class, 'aboutUs'])->name('about_us');
+// Route::get('/terms-of-payment', [HomeController::class, 'termsOfPayment'])->name('terms_of_payment');
+// Route::get('/privacy-policy', [HomeController::class, 'privacyPolicy'])->name('privacy_policy');
+// Route::get('/return-policy', [HomeController::class, 'returnPolicy'])->name('return_policy');
+// Route::get('/contact-us', [HomeController::class, 'contactUs'])->name('contact_us');
+// Route::get('/contact-us/send-message', [HomeController::class, 'contactSendMessage'])->name('contact_send_message');
 
-Route::get('/gift-card/{price?}', [HomeController::class, 'giftCard'])->name('gift_card');
+// Route::get('/gift-card/{price?}', [HomeController::class, 'giftCard'])->name('gift_card');
 
-Route::get('/shop/detail/{product?}', [ShopController::class, 'detail'])->name('shop_detail_page');
-Route::get('/shop/load-more/{offset?}/{category?}/{search?}', [ShopController::class, 'loadMore'])->name('shop_more_page');
-Route::get('/shop/{category?}/{search?}', [ShopController::class, 'index'])->name('shop_page');
+// Route::get('/shop/detail/{product?}', [ShopController::class, 'detail'])->name('shop_detail_page');
+// Route::get('/shop/load-more/{offset?}/{category?}/{search?}', [ShopController::class, 'loadMore'])->name('shop_more_page');
+// Route::get('/shop/{category?}/{search?}', [ShopController::class, 'index'])->name('shop_page');
 
-Route::get('/cart', [ShopController::class, 'cart'])->name('cart_page');
-Route::get('/checkout/{id?}', [ShopController::class, 'checkout'])->name('cart_checkout');
-Route::get('/invoice/{id?}', [ShopController::class, 'invoice'])->name('show_invoice');
+// Route::get('/cart', [ShopController::class, 'cart'])->name('cart_page');
+// Route::get('/checkout/{id?}', [ShopController::class, 'checkout'])->name('cart_checkout');
+// Route::get('/invoice/{id?}', [ShopController::class, 'invoice'])->name('show_invoice');
 
-Route::get('/login', [Auth_userController::class, 'login'])->name('user_login');
-Route::post('/authentication', [Auth_userController::class, 'authentication'])->name('user_process_authentication');
-Route::post('/forgot-password', [Auth_userController::class, 'authentication'])->name('user_forgot_password');
-Route::get('/reset-password/{reset_key}', [Auth_userController::class, 'resetPassword'])->name('user_reset_password');
-Route::post('/reset-password-process', [Auth_userController::class, 'resetPasswordProcess'])->name('user_reset_password_process');
-Route::post('/sign-up/process', [Auth_userController::class, 'authentication'])->name('user_register');
-Route::get('/logout', [ProcessController::class, 'logout'])->name('user_logout');
+// Route::get('/login', [Auth_userController::class, 'login'])->name('user_login');
+// Route::post('/authentication', [Auth_userController::class, 'authentication'])->name('user_process_authentication');
+// Route::post('/forgot-password', [Auth_userController::class, 'authentication'])->name('user_forgot_password');
+// Route::get('/reset-password/{reset_key}', [Auth_userController::class, 'resetPassword'])->name('user_reset_password');
+// Route::post('/reset-password-process', [Auth_userController::class, 'resetPasswordProcess'])->name('user_reset_password_process');
+// Route::post('/sign-up/process', [Auth_userController::class, 'authentication'])->name('user_register');
+// Route::get('/logout', [ProcessController::class, 'logout'])->name('user_logout');
 
-Route::any('/process-action/{action?}/{id?}', [ProcessController::class, 'process'])->name('process_action');
-Route::post('/add-to-cart', [ProcessController::class, 'cart'])->name('process_add_to_cart');
-Route::get('/delete-item-cart/{produc_id?}/{sku_id?}', [ProcessController::class, 'deleteItemCart'])->name('process_delete_item_cart');
-Route::post('/get-shipping-location', [ProcessController::class, 'shippingLocation'])->name('process_shipping_location');
-Route::post('/get-shipping-estimate', [ShopController::class, 'shippingEstimate'])->name('process_shipping_estimate');
-Route::post('/checkout-process', [ProcessController::class, 'checkoutProcess'])->name('process_checkout');
-Route::post('/edit-cart', [ProcessController::class, 'editCartProcess'])->name('process_edit_cart');
+// Route::any('/process-action/{action?}/{id?}', [ProcessController::class, 'process'])->name('process_action');
+// Route::post('/add-to-cart', [ProcessController::class, 'cart'])->name('process_add_to_cart');
+// Route::get('/delete-item-cart/{produc_id?}/{sku_id?}', [ProcessController::class, 'deleteItemCart'])->name('process_delete_item_cart');
+// Route::post('/get-shipping-location', [ProcessController::class, 'shippingLocation'])->name('process_shipping_location');
+// Route::post('/get-shipping-estimate', [ShopController::class, 'shippingEstimate'])->name('process_shipping_estimate');
+// Route::post('/checkout-process', [ProcessController::class, 'checkoutProcess'])->name('process_checkout');
+// Route::post('/edit-cart', [ProcessController::class, 'editCartProcess'])->name('process_edit_cart');
 
-Route::post('/process-checkout-guest', [ProcessController::class, 'checkoutGuestProcess'])->name('process_checkout_guest');
-Route::post('/process-checkout-shipping', [ProcessController::class, 'checkoutShippingProcess'])->name('process_checkout_shipping');
-Route::post('/coupon-verification/{action?}', [ProcessController::class, 'couponVerification'])->name('user_coupon_verification');
+// Route::post('/process-checkout-guest', [ProcessController::class, 'checkoutGuestProcess'])->name('process_checkout_guest');
+// Route::post('/process-checkout-shipping', [ProcessController::class, 'checkoutShippingProcess'])->name('process_checkout_shipping');
+// Route::post('/coupon-verification/{action?}', [ProcessController::class, 'couponVerification'])->name('user_coupon_verification');
 
-Route::post('/check-before-payment', [ProcessController::class, 'checkBeforePayment'])->name('check_before_payment');
+// Route::post('/check-before-payment', [ProcessController::class, 'checkBeforePayment'])->name('check_before_payment');
 
-// paypal - cart
-Route::get('/payment', [PaypalPaymentController::class, 'index'])->name('user_payment');
-Route::get('/cancel-payment', [PaypalPaymentController::class, 'cancel'])->name('user_cancel_payment');
-Route::get('/payment/success', [PaypalPaymentController::class, 'success'])->name('user_success_payment');
+// // paypal - cart
+// Route::get('/payment', [PaypalPaymentController::class, 'index'])->name('user_payment');
+// Route::get('/cancel-payment', [PaypalPaymentController::class, 'cancel'])->name('user_cancel_payment');
+// Route::get('/payment/success', [PaypalPaymentController::class, 'success'])->name('user_success_payment');
 
-// stripe - cart
-Route::post('/payment/stripe', [StripePaymentController::class, 'index'])->name('user_payment_stripe');
-Route::post('/payment/stripe/free', [StripePaymentController::class, 'free'])->name('user_payment_stripe_free');
-Route::get('/payment/stripe/success', [StripePaymentController::class, 'success'])->name('user_success_payment_stripe');
+// // stripe - cart
+// Route::post('/payment/stripe', [StripePaymentController::class, 'index'])->name('user_payment_stripe');
+// Route::post('/payment/stripe/free', [StripePaymentController::class, 'free'])->name('user_payment_stripe_free');
+// Route::get('/payment/stripe/success', [StripePaymentController::class, 'success'])->name('user_success_payment_stripe');
 
-// paypal - gift card
-Route::post('/gift-card/payment', [PaypalPaymentController::class, 'indexGiftCard'])->name('user_payment_gift_card');
-Route::get('/gift-card/cancel-payment', [PaypalPaymentController::class, 'cancelGiftCard'])->name('user_cancel_payment_gift_card');
-Route::get('/gift-card/payment/success', [PaypalPaymentController::class, 'successGiftCard'])->name('user_success_payment_gift_card');
+// // paypal - gift card
+// Route::post('/gift-card/payment', [PaypalPaymentController::class, 'indexGiftCard'])->name('user_payment_gift_card');
+// Route::get('/gift-card/cancel-payment', [PaypalPaymentController::class, 'cancelGiftCard'])->name('user_cancel_payment_gift_card');
+// Route::get('/gift-card/payment/success', [PaypalPaymentController::class, 'successGiftCard'])->name('user_success_payment_gift_card');
 
-// stripe - gift card
-Route::post('/gift-card/payment/stripe', [StripePaymentController::class, 'indexGiftCard'])->name('user_payment_gift_card_stripe');
-Route::get('/gift-card/payment/stripe/success', [StripePaymentController::class, 'successGiftCard'])->name('user_success_payment_gift_card_stripe');
+// // stripe - gift card
+// Route::post('/gift-card/payment/stripe', [StripePaymentController::class, 'indexGiftCard'])->name('user_payment_gift_card_stripe');
+// Route::get('/gift-card/payment/stripe/success', [StripePaymentController::class, 'successGiftCard'])->name('user_success_payment_gift_card_stripe');
 
-// Route::post('/process-payment', [ProcessController::class, 'processPayment'])->name('user_process_payment');
-// Route::get('/payment-complete', [ShopController::class, 'paymentComplete'])->name('payment_complete');
+// // Route::post('/process-payment', [ProcessController::class, 'processPayment'])->name('user_process_payment');
+// // Route::get('/payment-complete', [ShopController::class, 'paymentComplete'])->name('payment_complete');
 
-Route::group(['middleware' => ['frontend']], function() {
-	Route::get('/profile', [UserProfileController::class, 'index'])->name('user_profile');
-	Route::get('/shipping-address', [UserProfileController::class, 'shippingAddress'])->name('user_shipping_address');
-	Route::get('/transaction', [UserProfileController::class, 'transaction'])->name('user_transaction');
-	Route::get('/detail-transaction/{id?}', [UserProfileController::class, 'transactionDetail'])->name('user_detail_transaction');
-	Route::post('/process-profile', [UserProfileController::class, 'process'])->name('user_process_profile');
-});
+// Route::group(['middleware' => ['frontend']], function() {
+// 	Route::get('/profile', [UserProfileController::class, 'index'])->name('user_profile');
+// 	Route::get('/shipping-address', [UserProfileController::class, 'shippingAddress'])->name('user_shipping_address');
+// 	Route::get('/transaction', [UserProfileController::class, 'transaction'])->name('user_transaction');
+// 	Route::get('/detail-transaction/{id?}', [UserProfileController::class, 'transactionDetail'])->name('user_detail_transaction');
+// 	Route::post('/process-profile', [UserProfileController::class, 'process'])->name('user_process_profile');
+// });
 
-// other page
-Route::get('/{page?}', [HomeController::class, 'otherPage'])->name('other_page');
+// // other page
+// Route::get('/{page?}', [HomeController::class, 'otherPage'])->name('other_page');

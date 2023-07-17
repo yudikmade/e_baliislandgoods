@@ -57,10 +57,8 @@
 <link rel="stylesheet" href="{{asset(env('URL_ASSETS').'pe-icon-7-stroke/css/helper.css')}}">
 
 <!-- Custom styles for this template -->
-<link href="{{asset(env('URL_ASSETS').'frontend/dist/css/carousel.css')}}" rel="stylesheet">
 <link href="{{asset(env('URL_ASSETS').'toastr/toastr.min.css')}}" rel="stylesheet"/>
 <link href="{{asset(env('URL_ASSETS').'nprogress/nprogress.css')}}" rel="stylesheet" type="text/css" media="all">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" rel="stylesheet" type="text/css" media="all">
 <link href="{{asset(env('URL_ASSETS').'frontend/dist/css/style.css')}}" rel="stylesheet">
 
 <script src="https://kit.fontawesome.com/6ade19a7ec.js" crossorigin="anonymous"></script>
