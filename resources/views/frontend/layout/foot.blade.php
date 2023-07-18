@@ -6,37 +6,14 @@
                 <div class="col-md-3 col-6 footer-section">
                   <h4>SHOP</h4>
                     <p><a href="#">Shop All</a></p>
-                    <p><a href="#">Hoomans</a></p>
-                    <p><a href="#">Hat</a></p>
-                    <p><a href="#">Tote</a></p>
-                    <p><a href="#">T-shirt</a></p>
-                    <p><a href="#">Doggos</a></p>
-                    <p><a href="#">Snoods</a></p>
-                    <p><a href="#">Sweaters</a></p>
-                    <p><a href="#">Bandana</a></p>
-                    <p><a href="#">Scrunchie</a></p>
-                    <p><a href="#">Gift Card</a></p>
                 </div>
                 <div class="col-md-3 col-6 footer-section">
-                  <h4>INFO</h4>
+                  <h4>INFO & HELP</h4>
                     <p><a href="#">About</a></p>
-                    <p><a href="#">Blog</a></p>
-                    <p><a href="#">Reviews</a></p>
-                    <p><a href="#">Careers</a></p>
-                    <p><a href="#">Pres Inquiries</a></p>
-                    <p><a href="#">Wholesale</a></p>
-                    <p><a href="#">Become an Affiliate</a></p>
-                </div>
-                <div class="col-md-3 col-12 footer-section">
-                  <h4>HELP</h4>
                     <p><a href="#">Contact</a></p>
                     <p><a href="#">FAQ</a></p>
-                    <p><a href="#">Shipping & Returns</a></p>
-                    <p><a href="#">Account</a></p>
-                    <p><a href="#">Find a Store</a></p>
-                    <p><a href="#">Accessibility</a></p>
                 </div>
-                <div class="col-md-3 col-12 footer-section">
+                <div class="col-md-6 col-12 footer-section">
                     <h4>FOLLOW ALONG @WILDONE</h2>
                     <div class="social-media">
                       <a href="#"><i class="fab fa-facebook"></i></a>
@@ -65,7 +42,7 @@
         </div>
       </div>
     </footer>
-	<div onclick="gotoTop()" id="gotoTop" class="icon-angle-up"><i class="fas fa-chevron-up"></i></div>
+	<div id="gotoTop" class="icon-angle-up"><i class="fas fa-chevron-up"></i></div>
 	<div class="modal-shop">
 		<div id="myModal" class="modal fade">
 			<div class="modal-dialog modal-dialog-scrollable">
@@ -145,7 +122,7 @@
         });
 
         $('#gotoTop').on('click', function () {
-            window.scrollTo({top: 0, behavior: 'smooth'});
+            $('html, body').animate({scrollTop:0}, '500');
         });
     });
 </script>

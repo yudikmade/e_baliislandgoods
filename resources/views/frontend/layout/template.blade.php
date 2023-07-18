@@ -61,8 +61,7 @@
                             </div>
                             </ul>
                         </li>
-                        <li class="nav-item"><a href="#" class="nav-link link-dark">Subscribe</a></li>
-                        <li class="nav-item"><a href="#" class="nav-link link-dark">Sale</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link link-dark">Contact</a></li>
                     </ul>
                 </div></div>
                 <!-- <div class="pseudo-col col-3"></div> -->
@@ -76,8 +75,8 @@
                     <div class="navbar-right nav-pills">
                     <div class="nav-item d-flex flex-wrap justify-content-end right-icon">
                         <a class="nav-link link-dark icon-shop-right" data-target="cart.html" href="#"><i class="fa fa-search"></i></a>
-                        <a class="nav-link link-dark icon-shop-right" data-target="cart.html" href="#"><i class="fa fa-user"></i></a>
                         <a class="nav-link link-dark" data-target="cart.html" data-bs-toggle="modal" data-bs-target="#myModal"><i class="fa fa-shopping-cart"></i></a>
+                        <a class="nav-link link-dark icon-shop-right" data-target="cart.html" href="#"><i class="fa fa-user"></i></a>
                     </div>
                     </div>
                     </div>
