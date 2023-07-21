@@ -26,4 +26,20 @@ class HomeController extends Controller{
         );
         return view('frontend.home', $data);
     }
+
+    public function collections() {
+        $data = array(
+            'share_page' => array(
+                'description' => env('META_DESCRIPTION'),
+                'keyword' => env('META_KEYWORD'),
+                'title' => env('AUTHOR_SITE'),
+                'image' => asset(env('URL_IMAGE').'logo.png')
+            ),
+            'title' => "Collections | ".env('AUTHOR_SITE'),
+            'description' => env('META_DESCRIPTION'),
+            'alt_image' => 'Collections | '.env('AUTHOR_SITE'),
+            'is_page' => 'collections'
+        );
+        return view('frontend.collections', $data);
+    }
 }
