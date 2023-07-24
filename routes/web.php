@@ -149,6 +149,7 @@ Route::get('/order/cancel', [TransactionController::class, 'checkOrderCancel'])-
 
 // frontend ======================================
 Route::get('/', [HomeController::class, 'index'])->name('home_page');
+Route::get('/collections', [HomeController::class, 'collections'])->name('collections');
 // Route::get('/about-us', [HomeController::class, 'aboutUs'])->name('about_us');
 // Route::get('/terms-of-payment', [HomeController::class, 'termsOfPayment'])->name('terms_of_payment');
 // Route::get('/privacy-policy', [HomeController::class, 'privacyPolicy'])->name('privacy_policy');
