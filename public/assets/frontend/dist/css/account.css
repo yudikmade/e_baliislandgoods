@@ -1,0 +1,78 @@
+.container.account {
+    padding-top: 120px;
+    /* padding-bottom: 80px; */
+}
+.account .badge-primary,
+.account .label-primary {
+    color: #fff;
+    background-color: #007bff;
+  }
+.account  .badge-secondary,
+.account  .label-secondary {
+    color: #fff;
+    background-color: #6c757d;
+  }
+.account .badge-success,
+.account .label-success {
+    color: #fff;
+    background-color: #28a745;
+  }
+.account .badge-danger,
+.account .label-danger {
+    color: #fff;
+    background-color: #dc3545;
+  }
+.account .badge-warning,
+.account .label-warning {
+    color: #212529;
+    background-color: #ffc107;
+  }
+.account .account-right-side .form-group {
+    margin-bottom: 20px;
+}
+.account .account-right-side .error {
+    color: #dc3545;
+    font-size: 12px;
+}
+.account #displayData .label,
+.account #form-save-data-top .label {
+    display: inline-block;
+    padding: 0.35em 0.65em;
+    font-size: .75em;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.25rem;
+}
+.account .account-right-side .none {
+    display: none;
+}
+.account .account-left-side,
+.account .account-right-side {
+    background: #fff;
+    padding: 20px 0px;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+}
+.account .account-right-side {
+    padding: 20px;
+    margin-bottom: 30px;
+}
+.account .account-left-side ul li {
+    list-style: none;
+    margin-bottom: 10px;
+}
+.account .account-left-side ul li i {
+    width: 26px;
+    font-size: 24px;
+    vertical-align: sub;
+    text-align: center;
+    margin-right: 7px;
+}
+@media (min-width: 768px) {
+    .no-mrg-top-mobile {
+        margin-top: 0px;
+    }
+}

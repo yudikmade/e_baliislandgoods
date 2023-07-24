@@ -37,6 +37,10 @@ body{
     overflow-x: hidden !important;
 }
 
+.pointer {
+  cursor: pointer;
+}
+
 .featurette-divider {
   margin: 5rem 0 !important;
 }

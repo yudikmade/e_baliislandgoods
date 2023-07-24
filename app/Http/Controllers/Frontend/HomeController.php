@@ -22,6 +22,7 @@ class HomeController extends Controller{
             'title' => "Home | ".env('AUTHOR_SITE'),
             'description' => env('META_DESCRIPTION'),
             'alt_image' => 'Home | '.env('AUTHOR_SITE'),
+            'current_currency' => \App\Helper\Common_helper::get_current_currency(),
             'is_page' => 'home'
         );
         return view('frontend.home', $data);

@@ -167,13 +167,13 @@ Route::get('/collections', [HomeController::class, 'collections'])->name('collec
 // Route::get('/checkout/{id?}', [ShopController::class, 'checkout'])->name('cart_checkout');
 // Route::get('/invoice/{id?}', [ShopController::class, 'invoice'])->name('show_invoice');
 
-// Route::get('/login', [Auth_userController::class, 'login'])->name('user_login');
-// Route::post('/authentication', [Auth_userController::class, 'authentication'])->name('user_process_authentication');
-// Route::post('/forgot-password', [Auth_userController::class, 'authentication'])->name('user_forgot_password');
-// Route::get('/reset-password/{reset_key}', [Auth_userController::class, 'resetPassword'])->name('user_reset_password');
-// Route::post('/reset-password-process', [Auth_userController::class, 'resetPasswordProcess'])->name('user_reset_password_process');
-// Route::post('/sign-up/process', [Auth_userController::class, 'authentication'])->name('user_register');
-// Route::get('/logout', [ProcessController::class, 'logout'])->name('user_logout');
+Route::get('/login', [Auth_userController::class, 'login'])->name('user_login');
+Route::post('/authentication', [Auth_userController::class, 'authentication'])->name('user_process_authentication');
+Route::post('/forgot-password', [Auth_userController::class, 'authentication'])->name('user_forgot_password');
+Route::get('/reset-password/{reset_key}', [Auth_userController::class, 'resetPassword'])->name('user_reset_password');
+Route::post('/reset-password-process', [Auth_userController::class, 'resetPasswordProcess'])->name('user_reset_password_process');
+Route::post('/sign-up/process', [Auth_userController::class, 'authentication'])->name('user_register');
+Route::get('/logout', [ProcessController::class, 'logout'])->name('user_logout');
 
 // Route::any('/process-action/{action?}/{id?}', [ProcessController::class, 'process'])->name('process_action');
 // Route::post('/add-to-cart', [ProcessController::class, 'cart'])->name('process_add_to_cart');
@@ -211,13 +211,13 @@ Route::get('/collections', [HomeController::class, 'collections'])->name('collec
 // // Route::post('/process-payment', [ProcessController::class, 'processPayment'])->name('user_process_payment');
 // // Route::get('/payment-complete', [ShopController::class, 'paymentComplete'])->name('payment_complete');
 
-// Route::group(['middleware' => ['frontend']], function() {
-// 	Route::get('/profile', [UserProfileController::class, 'index'])->name('user_profile');
-// 	Route::get('/shipping-address', [UserProfileController::class, 'shippingAddress'])->name('user_shipping_address');
-// 	Route::get('/transaction', [UserProfileController::class, 'transaction'])->name('user_transaction');
-// 	Route::get('/detail-transaction/{id?}', [UserProfileController::class, 'transactionDetail'])->name('user_detail_transaction');
-// 	Route::post('/process-profile', [UserProfileController::class, 'process'])->name('user_process_profile');
-// });
+Route::group(['middleware' => ['frontend']], function() {
+	Route::get('/profile', [UserProfileController::class, 'index'])->name('user_profile');
+	Route::get('/shipping-address', [UserProfileController::class, 'shippingAddress'])->name('user_shipping_address');
+	Route::get('/transaction', [UserProfileController::class, 'transaction'])->name('user_transaction');
+	Route::get('/detail-transaction/{id?}', [UserProfileController::class, 'transactionDetail'])->name('user_detail_transaction');
+	Route::post('/process-profile', [UserProfileController::class, 'process'])->name('user_process_profile');
+});
 
 // // other page
 // Route::get('/{page?}', [HomeController::class, 'otherPage'])->name('other_page');
