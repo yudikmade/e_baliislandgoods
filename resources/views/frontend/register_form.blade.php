@@ -1,14 +1,10 @@
 <div id="myModalRegister" class="modal fade" role="dialog" tabindex="-1">
-  	<div class="modal-dialog modal-fullscreen">
+  	<div class="modal-dialog modal-lg">
     	<div class="modal-content">
     		<input type="hidden" name="actionLocation" id="actionLocation" value="{{route('process_shipping_location')}}">
     		<form id="form-create-account" action="{{route('user_register')}}" method="post">
     			{{ csrf_field() }}
     			<input class="form-control" name="from" id="from" type="hidden" value="{{$from}}">
-		      	<div class="modal-header">
-		        	<h4 class="modal-title">&nbsp;</h4>
-					<button type="button" class="close btn" data-bs-dismiss="modal">&times;</button>
-		      	</div>
 		      	<div class="modal-body">
               <div class="container">
               <br>

@@ -10,6 +10,7 @@ use Session;
 use App\Helper\Common_helper;
 use App\Models\MSlide;
 use App\Models\EmConfig;
+use App\Models\EmProduct;
 
 class HomeController extends Controller{
 
@@ -29,6 +30,8 @@ class HomeController extends Controller{
             'home_image_1' => EmConfig::getData(array('meta_key' => 'home_image_1')),
             'home_image_2' => EmConfig::getData(array('meta_key' => 'home_image_2')),
             'home_image_3' => EmConfig::getData(array('meta_key' => 'home_image_3')),
+            'best_seller' => EmProduct::getWithImage("",0,4,false),
+            'favorite_kits' => EmProduct::getWithImage("",0,4,false),
             'is_page' => 'home'
         );
         return view('frontend.home', $data);

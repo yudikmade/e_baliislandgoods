@@ -37,13 +37,27 @@ body{
     overflow-x: hidden !important;
 }
 
+.btn:active,
+.btn:focus,
+.btn:visited {
+  outline: 0 !important;
+  box-shadow: none !important;
+}
 .pointer {
   cursor: pointer;
 }
 .none {
   display: none;
 }
-
+.margin-shop-page {
+  margin-top: 80px;
+}
+.margin-other-page {
+  margin-top: 220px;
+}
+.account.margin-other-page {
+  margin-top: 80px;
+}
 .featurette-divider {
   margin: 5rem 0 !important;
 }
@@ -705,15 +719,21 @@ left: 8px;
   font-size: 14px;
 }
 
-.btn-shop-now{
+.btn-shop-now,
+.btn-primary{
   background: #000;
   border-radius: 0px;
   color: #fff;
   width: auto!important;
   padding: 10px 30px;
+  border-radius: 20px;
+  border-color: transparent !important
 }
 
-.btn-shop-now:hover{
+.btn-shop-now:hover,
+.btn-primary:hover,
+.btn-primary:active,
+.btn-primary:focus{
   color: #fff;
   background: rgb(249,218,152);
   background: linear-gradient(90deg, rgba(249,218,152,1) 0%, rgba(229,211,242,1) 50%, rgba(218,194,235,1) 100%);
@@ -1712,4 +1732,13 @@ input, select:focus{
      #review-form label{
        width: 100%;
      }
+     .margin-other-page {
+      margin-top: 90px;
+    }
+    .account.margin-other-page {
+      margin-top: 0px;
+    }
+    .margin-shop-page {
+      margin-top: 0px;
+    }
  }
