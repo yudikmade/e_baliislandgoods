@@ -5,24 +5,37 @@
             <div class="row">
                 <div class="col-md-3 col-6 footer-section">
                   <h4>SHOP</h4>
-                    <p><a href="#">Shop All</a></p>
+                    @foreach($getProductCategory as $key)
+                    <p><a href="{{route('shop_page')}}/{{str_replace(' ', '-', strtolower($key->category)).'-'.$key->category_id}}">{{$key->category}}</a></p>
+                    @endforeach
+                    <p><a href="{{route('shop_page')}}">Show All</a></p>
                 </div>
                 <div class="col-md-3 col-6 footer-section">
                   <h4>INFO & HELP</h4>
-                    <p><a href="#">About</a></p>
-                    <p><a href="#">Contact</a></p>
+                    <p><a href="{{url('/about-us')}}">About</a></p>
+                    <p><a href="{{url('/contact-us')}}">Contact</a></p>
                     <p><a href="#">FAQ</a></p>
+                    <p><a href="#">Terms of Payment</a></p>
+                    <p><a href="#">Shipping and Return</a></p>
+                    <p><a href="#">Privacy Policy</a></p>
                 </div>
                 <div class="col-md-6 col-12 footer-section">
-                    <h4>FOLLOW ALONG @WILDONE</h2>
+                    <h4>FOLLOW ALONG @BaliIslandGoods</h2>
                     <div class="social-media">
-                      <a href="#"><i class="fab fa-facebook"></i></a>
-                      <a href="#"><i class="fab fa-instagram"></i></a>
+                        @foreach($getSocialMedia as $key)
+                        @if(strtolower($key->social_name) == "facebook")
+                        <a target="_blank" href="{{$key->social_url}}"><i class="fab fa-facebook"></i></a>
+                        @endif
+                        @if(strtolower($key->social_name) == "instagram")
+                        <a target="_blank" href="{{$key->social_url}}"><i class="fab fa-instagram"></i></a>
+                        @endif
+                        @endforeach
                     </div>
                     <hr>
-                    <p>Get exclusive access to new product drops and text-only deals, plus 15% off your first order.</p>
-
-                    <a class="btn btn-shop-now" href="#">SIGN UP NOW <i class="fa fa-arrow-right"></i></a>
+                    <p>Get exclusive access to new product.</p>
+                    @if(Session::get(env('SES_FRONTEND_ID')) == null)
+                    <a class="btn btn-shop-now" href="{{url('/login')}}">SIGN UP NOW <i class="fa fa-arrow-right"></i></a>
+                    @endif
                 </div>
             </div>
         </div>
@@ -31,12 +44,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-12 copyright">
-                    <center><p>© 2022 BCWF. All rights reserved.</p>
-                      <p>
-                        <a href="#">Privacy policy</a>
-                        <a href="#">Term of use</a>
-                      </p>
-                    </center>
+                    <center><p>© @php echo date('Y'); @endphp Baledigital. All rights reserved.</p></center>
                 </div>
             </div>
         </div>

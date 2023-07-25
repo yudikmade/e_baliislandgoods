@@ -891,7 +891,7 @@ class Common_helper
 			}
 			else
 			{
-				self::check_currency_country();
+				// self::check_currency_country();
 				if(Session::get(env('SES_GLOBAL_CURRENCY')) != NULL){
 					$getCurrency = MCurrency::getWhere([['currency_id', '=', Session::get(env('SES_GLOBAL_CURRENCY'))]], '', false);
 				}else{
@@ -1205,44 +1205,40 @@ class Common_helper
 	public static function check_currency_country()
 	{
 		// echo '<span class="none">'.Session::get(env('SES_GLOBAL_CURRENCY')).'</span>';
-		// if(Session::get(env('SES_GLOBAL_CURRENCY')) == null)
-		// {
-		// 	$real_ip_adress = '';
-		// 	if (isset($_SERVER['HTTP_CLIENT_IP']))
-		// 	{
-		// 	    $real_ip_adress = $_SERVER['HTTP_CLIENT_IP'];
-		// 	}
+		if(Session::get(env('SES_GLOBAL_CURRENCY')) == null)
+		{
+			$real_ip_adress = '';
+			if (isset($_SERVER['HTTP_CLIENT_IP']))
+			{
+			    $real_ip_adress = $_SERVER['HTTP_CLIENT_IP'];
+			}
 
-		// 	if (isset($_SERVER['HTTP_X_FORWARDED_FOR']))
-		// 	{
-		// 	    $real_ip_adress = $_SERVER['HTTP_X_FORWARDED_FOR'];
-		// 	}
-		// 	// else
-		// 	// {
-		// 	    $real_ip_adress = $_SERVER['REMOTE_ADDR'];
-		// 	    // echo $real_ip_adress2;
-		// 	// }
+			if (isset($_SERVER['HTTP_X_FORWARDED_FOR']))
+			{
+			    $real_ip_adress = $_SERVER['HTTP_X_FORWARDED_FOR'];
+			}
+			// else
+			// {
+			    $real_ip_adress = $_SERVER['REMOTE_ADDR'];
+			    // echo $real_ip_adress2;
+			// }
 
-		// 	// echo $real_ip_adress;
-		// 	$helper = new \App\Helper\Common_helper;
-		// 	$getData = $helper->ip_info($real_ip_adress);
-		// 	// print_r($getData);
-		// 	$currency_id = '2';
-		// 	if(isset($getData['country']))
-		// 	{
-		// 		// echo '<span class="none">'.$getData['country'].'</span>';
-		// 		if($getData['country'] == 'Indonesia')
-		// 		{
-		// 			$currency_id = '1';
-		// 		}
-		// 	}
+			// echo $real_ip_adress;
+			$helper = new \App\Helper\Common_helper;
+			$getData = $helper->ip_info($real_ip_adress);
+			// print_r($getData);
+			$currency_id = '2';
+			if(isset($getData['country']))
+			{
+				// echo '<span class="none">'.$getData['country'].'</span>';
+				if($getData['country'] == 'Indonesia')
+				{
+					$currency_id = '1';
+				}
+			}
 
-		// 	Session::put(env('SES_GLOBAL_CURRENCY'), $currency_id);
-		// }
-		
-		// for IDR only
-		$currency_id = '1';
-		Session::put(env('SES_GLOBAL_CURRENCY'), $currency_id);
+			Session::put(env('SES_GLOBAL_CURRENCY'), $currency_id);
+		}
 	}
 
 	public static function ip_info($ip = NULL, $purpose = "location", $deep_detect = TRUE) 

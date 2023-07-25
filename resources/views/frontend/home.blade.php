@@ -9,34 +9,19 @@
 @section('content')
 <div id="myCarousel" class="carousel slide" data-bs-ride="carousel">
     <div class="carousel-inner">
-      <div class="carousel-item active" style="background-image: url('assets/images/slider/1.webp')">
+      @foreach($banner as $index => $key)
+      <div class="carousel-item {{$index == '0' ? 'active':''}}" style="background-image: url('{{asset(env('URL_IMAGE').'slide/thumb/'.$key->image)}}')">
         <div class="carousel-caption">
           <div class="row">
             <div class="col-md-6">
-                <h5>SPRING SUMMER COLLECTION</h5>
-                <h2>NEW ARRIVAL</h2>
-                <h2>FOR HER!</h2>
-                <br>
-                <a class="btn btn-shop-now" href="#">CONTACT US</a>
+                <h5>{{$key->title}}</h5>
+                <h2>{{$key->subtitle}}</h2>
             </div>
             <div class="col-md-6"></div>
           </div>
         </div>
       </div>
-      <div class="carousel-item" style="background-image: url('assets/images/slider/2.webp')">
-        <div class="carousel-caption">
-          <div class="row">
-            <div class="col-md-6"></div>
-            <div class="col-md-6">
-                <h5>SPRING SUMMER COLLECTION</h5>
-                <h2>NEW ARRIVAL</h2>
-                <h2>FOR HER!</h2>
-                <br>
-                <a class="btn btn-shop-now" href="#">CONTACT US</a>
-            </div>
-          </div>
-        </div>
-      </div>
+      @endforeach
     </div>
 	<div class="container">
       <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev">
@@ -56,25 +41,31 @@
     <div class="row">
       <div class="col-md-4 col-12 order-md-1 order-2">
         <div class="opening-desc">
-          <h1>Lorem ipsum dolor sit amet, consectetur</h1>
-          <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+          <h1>Bali Island Goods</h1>
+          {!! $home_text !!}
         </div>
       </div>
       <div class="col-md-8 order-md-2 order-1">
         <div class="row g-0">
           <div class="col-md-4 col-4 d-flex align-items-end">
             <div class="opening-img-1">
-              <img class="img-fluid" src="assets/images/product/dog3.webp">
+              @if($home_image_1 != '')
+              <img class="img-fluid" src="{{asset(env('URL_IMAGE').'home/thumb/'.$home_image_1)}}">
+              @endif
             </div>
           </div>
           <div class="col-md-5 col-6">
             <div class="opening-img-2">
-              <img class="img-fluid" src="assets/images/product/dog4.webp">
+              @if($home_image_2 != '')
+              <img class="img-fluid" src="{{asset(env('URL_IMAGE').'home/thumb/'.$home_image_2)}}">
+              @endif
             </div>
           </div>
           <div class="col-md-3 col-2 d-flex align-items-end">
             <div class="opening-img-3">
-              <img class="img-fluid" src="assets/images/product/dog5.webp">
+              @if($home_image_3 != '')
+              <img class="img-fluid" src="{{asset(env('URL_IMAGE').'home/thumb/'.$home_image_3)}}">
+              @endif
             </div>
           </div>
         </div>

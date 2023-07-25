@@ -40,6 +40,9 @@ body{
 .pointer {
   cursor: pointer;
 }
+.none {
+  display: none;
+}
 
 .featurette-divider {
   margin: 5rem 0 !important;

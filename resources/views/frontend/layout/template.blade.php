@@ -29,49 +29,65 @@
                             <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
                             <div class="row">
                                 <div class="col-md-3">
-                                    <li><a href="#" class="dropdown-item" type="button">Collections</a></li>
-                                    <li><a href="#" class="dropdown-item" type="button">Show All</a></li>
+                                    <li><a class="dropdown-item" type="button">Collections</a></li>
+                                    <li><a href="{{route('shop_page')}}" class="dropdown-item" type="button">Show All</a></li>
                                 </div>
                                 <div class="col-md-3 dropdown-border-left">
-                                    <li><a href="#" class="dropdown-item" type="button">Doggos</a></li>
-                                    <li><a href="#" class="dropdown-item" type="button">Snoods (solid color, pattern)</a></li>
-                                    <li><a href="#" class="dropdown-item" type="button">Sweaters</a></li>
-                                    <li><a href="#" class="dropdown-item" type="button">Bandana</a></li>
-                                    <li><a href="#" class="dropdown-item" type="button">Scrunchie</a></li>
-                                    <li><a href="#" class="dropdown-item" type="button">Gift Card</a></li>
+                                    @foreach($getProductCategory as $key)
+                                    <li><a href="{{route('shop_page')}}/{{str_replace(' ', '-', strtolower($key->category)).'-'.$key->category_id}}" class="dropdown-item" type="button">{{$key->category}}</a></li>
+                                    @endforeach
                                 </div>
+                                @if(isset($getRandomProduct[0]))
                                 <div class="col-md-3">
                                     <div class="container-image hide-shop-img">
                                         <div class="content">
-                                            <img class="img-fluid" src="assets/images/product/dog1.webp">
+                                            <img class="img-fluid" src="{{asset(env('URL_IMAGE').'product/thumb/'.$getRandomProduct[0]->image)}}">
                                             <div class="content-details-show">
-                                                <p>Lorem ipsum dolor sit amet
-                                                <br>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                                                @php 
+                                                $htmlDescription = '';
+                                                if(strlen(strip_tags($getRandomProduct[0]->description)) <= 100) {
+                                                    $htmlDescription = strip_tags($getRandomProduct[0]->description);
+                                                } else {
+                                                    $htmlDescription = substr(strip_tags($getRandomProduct[0]->description), 0, 100).'...';
+                                                }
+                                                @endphp
+                                                {{$htmlDescription}}
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+                                @endif
+                                @if(isset($getRandomProduct[1]))
                                 <div class="col-md-3">
                                     <div class="container-image hide-shop-img">
                                         <div class="content">
-                                            <img class="img-fluid" src="assets/images/product/dog2.webp">
+                                            <img class="img-fluid" src="{{asset(env('URL_IMAGE').'product/thumb/'.$getRandomProduct[1]->image)}}">
                                             <div class="content-details-show">
-                                                <p>Lorem ipsum dolor sit amet
-                                                <br>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                                                @php 
+                                                $htmlDescription = '';
+                                                if(strlen(strip_tags($getRandomProduct[1]->description)) <= 100) {
+                                                    $htmlDescription = strip_tags($getRandomProduct[1]->description);
+                                                } else {
+                                                    $htmlDescription = substr(strip_tags($getRandomProduct[1]->description), 0, 100).'...';
+                                                }
+                                                @endphp
+                                                {{$htmlDescription}}
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+                                @endif
                             </div>
                             </ul>
                         </li>
+                        <li class="nav-item"><a href="{{url('/about-us')}}" class="nav-link link-dark">About</a></li>
                         <li class="nav-item"><a href="{{url('/contact-us')}}" class="nav-link link-dark">Contact</a></li>
                     </ul>
                 </div></div>
                 <!-- <div class="pseudo-col col-3"></div> -->
                 <div class="col-md-2 col-8">
                     <center>
-                    <a class="navbar-brand" href="{{url('/')}}">Wild One</a>
+                    <a class="navbar-brand" href="{{url('/')}}">Bali Island Goods</a>
                     </center>
                 </div>
                 <div class="col-md-5 col-2">

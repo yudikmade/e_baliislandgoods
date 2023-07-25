@@ -66,5 +66,6 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'backend' => \App\Http\Middleware\AuthBackend::class,
         'frontend' => \App\Http\Middleware\AuthFrontend::class,
+        'currency' => \App\Http\Middleware\CurrencySwitcher::class,
     ];
 }

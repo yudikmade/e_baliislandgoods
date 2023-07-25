@@ -37,7 +37,7 @@ class EmConfig extends Eloquent
     			])->first();
 		
 		if(isset($value->config_id)){
-			return $value;
+			return $value->meta_value;
 		} else {
 			return '';
 		}
