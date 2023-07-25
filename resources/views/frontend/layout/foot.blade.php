@@ -150,3 +150,31 @@
     toastr.options.progressBar = true;
     toastr.options.showMethod = 'slideDown';
 </script>
+<script type="text/javascript">
+    $(document).ready(function() {
+      $('#header-search-btn').on('click', function(e) {
+        $('#header-search-btn').fadeOut();
+        setTimeout(function() { 
+            $('#header-search-form').fadeIn();
+        }, 500);
+      })
+
+      $('#form-search-header').submit(function() {
+        return false;
+      });
+      $('#form-search-header').on('keyup keypress', function(e) {
+        var keyCode = e.keyCode || e.which;
+        if (keyCode === 13) { 
+          e.preventDefault();
+
+          var search_keyword = $('#keyword_search_header').val();
+          var search_category = $('#category_search_header').val();
+
+          if(search_keyword != ''){
+            location.href = '{{route('shop_page')}}'+'/'+search_category+'/'+search_keyword;
+          } 
+          return false;
+        }
+      });
+    });
+</script>
