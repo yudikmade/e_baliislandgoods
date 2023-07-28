@@ -4,6 +4,7 @@ use PHPMailer\PHPMailer\PHPMailer;
 use App\Models\EmProductCategory;
 use App\Models\EmProduct;
 use App\Models\EmProductSku;
+use App\Models\EmProductImg;
 use App\Models\MCurrency;
 use App\Models\EmTransaction;
 use App\Models\EmTransactionMeta;
@@ -22,7 +23,6 @@ class Common_helper
 		$string = str_replace(' ', '-', $string); // Replaces all spaces with hyphens.
 		return preg_replace('/[^A-Za-z0-9\-]/', '', $string); // Removes special chars.
 	}
-
 
 	public static function cookie_time()
 	{
@@ -308,6 +308,62 @@ class Common_helper
 		// 	}
 		// }
 		// return $h.$belakangKoma;
+	}
+
+	public function generateProduct($key){
+		$description = $key->description;
+        if(strlen($description) > 80){
+          $description = str_split($description,0,80).'...';
+        }
+
+		$image = array();
+		$get_product = EmProductSku::where('status','1')->where('product_id', $key->product_id)->orderBy('order','ASC')->get();
+		// product image
+		foreach($get_product as $value){
+			array_push($image, array(
+				'sku' => $value->sku_id,
+				'color' => $value->color_hexa,
+				'image' => EmProductImg::where('sku_id',$value->sku_id)->limit(2)->get(),
+			));
+		}
+
+		$discount_text = 0;
+		if(!is_null($key->discount)){
+			$discount_text = $key->discount;
+		}
+
+		//price
+		$setDiscount = self::set_discount($key->price, $key->discount);
+		$priceAfterDisc = $setDiscount[0];
+		$discount = $setDiscount[1];
+
+		$current_currency = self::get_current_currency();
+
+		$priceInCurrencyFormat = self::convert_to_current_currency($priceAfterDisc);
+		$showPriceAfterDisc = $current_currency[1].$priceInCurrencyFormat[1].' '.$current_currency[2];
+
+		$priceInCurrencyFormat = self::convert_to_current_currency($key->price);
+		$showPriceNormal = $current_currency[1].$priceInCurrencyFormat[1].' '.$current_currency[2];
+
+		$showPriceHTML = '';
+		if($discount == '0'){
+			$showPriceHTML = '<span>'.$showPriceAfterDisc.'</span>';
+		}else{
+			$showPriceHTML = 'Save - <strike>'.$showPriceNormal.'</strike> <span>'.$showPriceAfterDisc.'</span>';
+		}
+		if($key->stock == 0){
+			$showPriceHTML = 'Sold Out';
+		}
+
+		return array(
+			'id' => $key->product_id,
+			'product' => $key->product_name,
+			'description' => $description,
+			'discount' => $discount_text,
+			'link' => route('shop_detail_page').'/'.str_replace(' ', '-', strtolower($key->product_name)).'-'.$key->product_id,
+			'showPriceHTML' => $showPriceHTML,
+			'image' => $image,
+		);
 	}
 
 	public static function registerd_date($dateInTimestamp)

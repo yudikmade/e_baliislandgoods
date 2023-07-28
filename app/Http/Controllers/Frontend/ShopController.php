@@ -157,94 +157,58 @@ class ShopController extends Controller
         if(sizeof($dataProduct) > 0)
         {
             $current_currency = \App\Helper\Common_helper::get_current_currency();
-            foreach ($dataProduct as $item) 
+            foreach ($dataProduct as $key) 
             {
-                $getLastImgProduct = EmProductImg::getLastOne(['product_id' => $item->product_id]);
-                $checkStockProduct = EmProductSku::whereRaw("(stock > 0)")->where('product_id', $item->product_id)->get();
+                $detail = \App\Helper\Common_helper::generateProduct($key);
 
-                $soldOut = true;
-                if(sizeof($checkStockProduct) > 0){
-                    $soldOut = false;
+                $htmlDiscount = '';
+                if($detail['discount'] != '0'){
+                    $htmlDiscount = '<div class="product-label product-label-save">Save '.$detail['discount'].'%</div>';
                 }
 
-                //price
-                $setDiscount = \App\Helper\Common_helper::set_discount($item->price, $item->discount);
-                $priceAfterDisc = $setDiscount[0];
-                $discount = $setDiscount[1];
-
-                $priceInCurrencyFormat = \App\Helper\Common_helper::convert_to_current_currency($priceAfterDisc);
-                $showPriceAfterDisc = $current_currency[1].$priceInCurrencyFormat[1].' '.$current_currency[2];
-                // $showPriceAfterDisc = $current_currency[1].$priceInCurrencyFormat[1];
-
-                $priceInCurrencyFormat = \App\Helper\Common_helper::convert_to_current_currency($item->price);
-                $showPriceNormal = $current_currency[1].$priceInCurrencyFormat[1].' '.$current_currency[2];
-                // $showPriceNormal = $current_currency[1].$priceInCurrencyFormat[1];
-
-                $showPriceHTML = '';
-                $showDiscoutHtml = '';
-                $showHotHtml = '<span class="product-sale-label hot">HOT</span>';
-                if($discount == '0'){
-                    $showPriceHTML = $showPriceAfterDisc;
-                }else{
-                    $showPriceHTML = '<span>'.$showPriceNormal.'</span> '.$showPriceAfterDisc;
-                    $showDiscoutHtml = '<span class="product-sale-label discount">-'.$item->discount.'%</span>';
+                $htmlCarousel = '';
+                foreach($detail['image'] as $index => $value){
+                    $carousel_active = '';
+                    if($index == '0'){$carousel_active = 'active';}
+                    $htmlCarousel .= '<button type="button" data-bs-target="#product'.$detail['id'].'" data-bs-slide-to="'.$index.'" aria-label="Slide '.$index.'" class="'.$carousel_active.'" style="background-color:'.$value['color'].'"></button>';
                 }
 
-                if($item->stock == 0){
-                    $showDiscoutHtml = '';
-                    if($item->category_id != '3'){
-                        $showPriceHTML = 'Sold Out';
-                    }
-                }
-
-                    
-                $backgroundProduct = '<img class="pic-1" src="'.asset(env('URL_IMAGE').'product/thumb/'.$item->image).'" alt="'.$item->product_name.' | '.env('AUTHOR_SITE').'">';
-                if(isset($getLastImgProduct->product_id))
-                {
-                    $backgroundProduct .= '<img class="pic-2" src="'.asset(env('URL_IMAGE').'product/thumb/'.$getLastImgProduct->image).'" alt="'.$item->product_name.' | '.env('AUTHOR_SITE').'">';
-                }
-
-                $productName = $item->product_name;
-                if(strlen($item->product_name) > 24){
-                    $productName = substr($productName, 0, 24).'..';
-                }
-
-                $htmlDescription = '';
-                if(strlen($item->description) <= 100) {
-                    $htmlDescription = $item->description;
-                } else {
-                    $htmlDescription = substr($item->description, 0, 100).'...';
-                }
-
-                if($item->category_id != '3'){
-                    $linkToDetailPage = route('shop_detail_page').'/'.str_replace(' ', '-', $item->product_name).'-'.$item->product_id;
-                } else {
-                    $linkToDetailPage = route('gift_card').'/'.$item->price;
-                }
-
-                $htmlBuilder .= '
-                <div class="item col-md-4 col-6 mb-5">
-                    <div class="product-grid">
-                        <div class="product-image">
-                            <a href="'.$linkToDetailPage.'" class="image">
-                                '.$backgroundProduct.'
-                            </a>
-                            '.$showDiscoutHtml;
-                // $htmlBuilder .= '
-                //             <ul class="product-links">
-                //                 <li><a href="'.$linkToDetailPage.'"><i class="pe-7s-look"></i></a></li>
-                //             </ul>
-                // ';
-                $htmlBuilder .= '
-                        </div>
-                        <div class="product-content d-flex align-items-center justify-content-center">
-                            <div class="product-content-inner">
-                            <h3 class="title"><a href="#">'.$productName.'</a></h3>
-                            <div class="price">'.$showPriceHTML.'</div>
-                            <div class="description">'.$htmlDescription.'</div>
-                            <div class="category">Category: '.$item->category.'</div>
-                            <br/>
+                $htmlCarouselImage = '';
+                foreach($detail['image'] as $index => $value){
+                    $carousel_img_active = '';
+                    if($index == '0'){$carousel_img_active = 'active';}
+                    $htmlCarouselImage .= '
+                        <div class="carousel-item '.$carousel_img_active.'">
+                            <div class="product-image">
+                                <a href="'.$detail['link'].'" class="image">';
+                                foreach($value['image'] as $idximg => $img){
+                                    $list_img_no = $idximg+1;
+                                    $htmlCarouselImage .= '<img class="pic-'.$list_img_no.'" src="'.asset(env('URL_IMAGE').'product/thumb/'.$img['image']).'">';
+                                }
+                    $htmlCarouselImage .='
+                                </a>
                             </div>
+                        </div>
+                    ';
+                }
+                
+                
+                $htmlBuilder .= '
+                <div class="col-md-3 col-6">
+                    <div class="product-grid">
+                        '.$htmlDiscount.'
+                        <div id="product'.$detail['id'].'" class="carousel slide carousel-fade carousel-product" data-bs-ride="carousel" data-bs-interval="false">
+                            <div class="carousel-indicators">'.$htmlCarousel.'</div>
+                            <div class="carousel-inner">'.$htmlCarouselImage.'</div>
+                        </div>
+                        <div class="featurette-divider"></div>
+                        <div class="product-content">
+                            <h3 class="title"><a href="'.$detail['link'].'">'.$detail['product'].'</a></h3>
+                            <div class="price">'.$detail['description'].'</div>
+                            <br>
+                            <center>
+                                <a class="btn btn-white" href="'.$detail['link'].'">'.$detail['showPriceHTML'].'</a>
+                            </center>
                         </div>
                     </div>
                 </div>

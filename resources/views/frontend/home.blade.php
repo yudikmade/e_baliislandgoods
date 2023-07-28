@@ -72,62 +72,56 @@
 </div>
 
 <div class="featurette-divider"></div>
-
+@if(count($best_seller)>0)
 <div class="container-fluid">
       <h2>Best Sellers</h2>
       <div class="row">
-
+        @foreach($best_seller as $key)
+        @php 
+        $detail = \App\Helper\Common_helper::generateProduct($key);
+        @endphp
         <div class="col-md-3 col-6">
           <div class="product-grid">
-            <div class="product-label product-label-save">Save 10%</div>
-            <div id="product1" class="carousel slide carousel-fade carousel-product" data-bs-ride="carousel" data-bs-interval="false">
+            @if($detail['discount'] != '0')
+            <div class="product-label product-label-save">Save {{$detail['discount']}}%</div>
+            @endif
+            <div id="product{{$detail['id']}}" class="carousel slide carousel-fade carousel-product" data-bs-ride="carousel" data-bs-interval="false">
               <div class="carousel-indicators">
-                <button type="button" data-bs-target="#product1" data-bs-slide-to="0" class="active color1" aria-current="true" aria-label="Slide 1"></button>
-                <button type="button" data-bs-target="#product1" data-bs-slide-to="1" aria-label="Slide 2" class="color2"></button>
-                <button type="button" data-bs-target="#product1" data-bs-slide-to="2" aria-label="Slide 3" class="color3"></button>
+                @foreach($detail['image'] as $index => $value)
+                <button type="button" data-bs-target="#product{{$detail['id']}}" data-bs-slide-to="{{$index}}" aria-label="Slide {{$index}}" class="{{$index=='0' ? 'active':''}}" style="background-color:{{$value['color']}}"></button>
+                @endforeach
               </div>
               <div class="carousel-inner">
-                <div class="carousel-item active">
+                @foreach($detail['image'] as $index => $value)
+                <div class="carousel-item {{$index=='0'?'active':''}}">
                   <div class="product-image">
-                      <a href="#" class="image">
-                        <img class="pic-1" src="assets/images/product/1.jpg">
-                        <img class="pic-2" src="assets/images/product/2.jpg">
+                      <a href="{{$detail['link']}}" class="image">
+                        @foreach($value['image'] as $idximg => $img)
+                        <img class="pic-{{$idximg+1}}" src="{{asset(env('URL_IMAGE').'product/thumb/'.$img['image'])}}">
+                        @endforeach
                       </a>
                   </div>
                 </div>
-                <div class="carousel-item">
-                  <div class="product-image">
-                      <a href="#" class="image">
-                        <img class="pic-1" src="assets/images/product/3.jpg">
-                        <img class="pic-2" src="assets/images/product/4.jpg">
-                      </a>
-                  </div>
-                </div>
-                <div class="carousel-item">
-                  <div class="product-image">
-                      <a href="#" class="image">
-                        <img class="pic-1" src="assets/images/product/5.jpg">
-                        <img class="pic-2" src="assets/images/product/6.jpg">
-                      </a>
-                  </div>
-                </div>
+                @endforeach
               </div>
             </div>
             <div class="featurette-divider"></div>
             <div class="product-content">
-                <h3 class="title"><a href="#">Toy Kit</a></h3>
-                <div class="price">3 all-natural toys - chew, toss, & tug</div>
+                <h3 class="title"><a href="{{$detail['link']}}">{{$detail['product']}}</a></h3>
+                <div class="price">{{$detail['description']}}</div>
                 <br>
-                <center><a class="btn btn-white" href="#">Save - <strike>$36</strike> <span>$33</span></a></center>
+                <center>
+                  <a class="btn btn-white" href="{{$detail['link']}}">{!! $detail['showPriceHTML'] !!}</a>
+                </center>
             </div>
           </div>
         </div>
-
+        @endforeach
       </div>
       <div class="featurette-divider"></div>
 </div>
-
 <div class="featurette-divider"></div>
+@endif
 
 <div class="row g-0">
       <div class="col-md-6">
@@ -144,61 +138,56 @@
 
 <div class="featurette-divider"></div>
 
+@if(count($favorite_kits)>0)
 <div class="container-fluid">
       <h2>Favorite Kits</h2>
       <div class="row">
-
+        @foreach($best_seller as $key)
+        @php 
+        $detail = \App\Helper\Common_helper::generateProduct($key);
+        @endphp
         <div class="col-md-3 col-6">
           <div class="product-grid">
-            <div class="product-label product-label-save">Save 10%</div>
-            <div id="product1" class="carousel slide carousel-fade carousel-product" data-bs-ride="carousel" data-bs-interval="false">
+            @if($detail['discount'] != '0')
+            <div class="product-label product-label-save">Save {{$detail['discount']}}%</div>
+            @endif
+            <div id="product{{$detail['id']}}" class="carousel slide carousel-fade carousel-product" data-bs-ride="carousel" data-bs-interval="false">
               <div class="carousel-indicators">
-                <button type="button" data-bs-target="#product1" data-bs-slide-to="0" class="active color1" aria-current="true" aria-label="Slide 1"></button>
-                <button type="button" data-bs-target="#product1" data-bs-slide-to="1" aria-label="Slide 2" class="color2"></button>
-                <button type="button" data-bs-target="#product1" data-bs-slide-to="2" aria-label="Slide 3" class="color3"></button>
+                @foreach($detail['image'] as $index => $value)
+                <button type="button" data-bs-target="#product{{$detail['id']}}" data-bs-slide-to="{{$index}}" aria-label="Slide {{$index}}" class="{{$index=='0' ? 'active':''}}" style="background-color:{{$value['color']}}"></button>
+                @endforeach
               </div>
               <div class="carousel-inner">
-                <div class="carousel-item active">
+                @foreach($detail['image'] as $index => $value)
+                <div class="carousel-item {{$index=='0'?'active':''}}">
                   <div class="product-image">
-                      <a href="#" class="image">
-                        <img class="pic-1" src="assets/images/product/1.jpg">
-                        <img class="pic-2" src="assets/images/product/2.jpg">
+                      <a href="{{$detail['link']}}" class="image">
+                        @foreach($value['image'] as $idximg => $img)
+                        <img class="pic-{{$idximg+1}}" src="{{asset(env('URL_IMAGE').'product/thumb/'.$img['image'])}}">
+                        @endforeach
                       </a>
                   </div>
                 </div>
-                <div class="carousel-item">
-                  <div class="product-image">
-                      <a href="#" class="image">
-                        <img class="pic-1" src="assets/images/product/3.jpg">
-                        <img class="pic-2" src="assets/images/product/4.jpg">
-                      </a>
-                  </div>
-                </div>
-                <div class="carousel-item">
-                  <div class="product-image">
-                      <a href="#" class="image">
-                        <img class="pic-1" src="assets/images/product/5.jpg">
-                        <img class="pic-2" src="assets/images/product/6.jpg">
-                      </a>
-                  </div>
-                </div>
+                @endforeach
               </div>
             </div>
             <div class="featurette-divider"></div>
             <div class="product-content">
-                <h3 class="title"><a href="#">Toy Kit</a></h3>
-                <div class="price">3 all-natural toys - chew, toss, & tug</div>
+                <h3 class="title"><a href="{{$detail['link']}}">{{$detail['product']}}</a></h3>
+                <div class="price">{{$detail['description']}}</div>
                 <br>
-                <center><a class="btn btn-white" href="#">Save - <strike>$36</strike> <span>$33</span></a></center>
+                <center>
+                  <a class="btn btn-white" href="{{$detail['link']}}">{!! $detail['showPriceHTML'] !!}</a>
+                </center>
             </div>
           </div>
         </div>
-
+        @endforeach
       </div>
       <div class="featurette-divider"></div>
 </div>
-
 <div class="featurette-divider"></div>
+@endif
 
 @stop
 

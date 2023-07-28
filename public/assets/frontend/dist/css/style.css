@@ -560,24 +560,10 @@ left: 8px;
   color: #fff!important;
 }
 
-.color1{
-  background-color: rgb(105, 148, 205)!important;
-}
-
-.color2{
-  background-color: rgb(75, 124, 99)!important;
-}
-
-.color3{
-  background-color: rgb(188, 62, 68)!important;
-}
-
 .shipping-desc{
   background-color: #eeeeee;
   padding: 5px 0;
 }
-
-
 
 .special-offer{
   border: 1px solid #000;
@@ -609,6 +595,14 @@ left: 8px;
   border-radius: 50%;
   padding: 20px;
   background: #fff;
+}
+
+#header-search-form {
+  display: none;
+  -webkit-transition: .5s ease-in-out;
+-moz-transition: .5s ease-in-out;
+-o-transition: .5s ease-in-out;
+transition: .5s ease-in-out;
 }
 
 .modal-shop .modal .modal-dialog {
