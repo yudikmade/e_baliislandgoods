@@ -102,6 +102,10 @@ h1, h2, h3{
   font-size: 35px!important;
   font-family: 'Futura-Book', sans-serif;
 }
+.navbar-brand img {
+  width: 130px;
+  height: auto;
+}
 
 .container-fluid{
   padding: 0 50px;
@@ -668,6 +672,7 @@ transition: .5s ease-in-out;
   padding-left: 10px;
   padding-right: 10px;
   z-index: 1;
+  width: 100%;
 }
 
 .purple-bg .dropdown-menu p{
@@ -702,6 +707,13 @@ transition: .5s ease-in-out;
 
 
 /* Top Search Animation */
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:visited {
+  background-color: transparent;
+  border-color: transparent;
+}
 
 .btn-transparent{
   background: transparent;

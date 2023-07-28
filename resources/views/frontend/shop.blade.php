@@ -18,6 +18,25 @@
       <div class="col-md-6">
         <h1>Shop</h1>
       </div>
+      <div class="col-md-6">
+        <form class="row">
+          <div class="col-md-12 row">
+            <label class="col col-form-label"></label>
+            <label for="staticEmail" class="col-sm-2 col-form-label">Filter By</label>
+            <div class="col-sm-6">
+              <div class="dropdown">
+                <a href="#" class="btn btn-shop-now-reverse2 dropdown-toggle" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false">{{$text_category}}</a>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                  <a href="{{route('shop_page')}}" class="box-size-options" type="button"><p>ALL</p></a>
+                  @foreach($data_product_category as $key)
+                  <a href="{{route('shop_page')}}/{{str_replace(' ', '-', strtolower($key->category)).'-'.$key->category_id}}" class="box-size-options" type="button"><p>{{$key->category}}</p></a>
+                  @endforeach
+                </ul>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
     <br>
   </div>

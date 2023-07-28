@@ -47,7 +47,7 @@ class ShopController extends Controller
         $getDataProduct = array();
         $tmpCategory = $category;
 
-        $text_category = 'Product';
+        $text_category = 'Collections';
         $desc_category = '';
 
         if($category == 'new')
@@ -253,7 +253,7 @@ class ShopController extends Controller
         {
             $product_id = $getDataProduct[0]->product_id;
 
-            $getDataImage = EmProductImg::getWhere([['product_id', '=', $product_id]], '', false);
+            $getDataImage = EmProductImg::getWhere([['em_product_img.product_id', '=', $product_id]], '', false);
 
             $productName = $getDataProduct[0]->product_name;
             $productDescription = $getDataProduct[0]->description;

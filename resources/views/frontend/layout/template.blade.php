@@ -87,7 +87,7 @@
                 <!-- <div class="pseudo-col col-3"></div> -->
                 <div class="col-md-2 col-8">
                     <center>
-                    <a class="navbar-brand" href="{{url('/')}}">Bali Island Goods</a>
+                    <a class="navbar-brand" href="{{url('/')}}"><img src="{{asset(env('URL_IMAGE').'logo.png')}}" alt=""/></a>
                     </center>
                 </div>
                 <div class="col-md-5 col-2">
