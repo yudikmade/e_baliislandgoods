@@ -1,11 +1,44 @@
 @extends('frontend.layout.template')
 
 @section('style')
+<link href="{{asset(env('URL_ASSETS').'frontend/dist/css/carousel.css')}}" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="{{asset(env('URL_ASSETS').'zoom/xzoom.css')}}" media="all" /> 
 <link type="text/css" rel="stylesheet" media="all" href="{{asset(env('URL_ASSETS').'zoom/fancybox/source/jquery.fancybox.css')}}" />
 <link type="text/css" rel="stylesheet" media="all" href="{{asset(env('URL_ASSETS').'zoom/magnific-popup/css/magnific-popup.css')}}" />
 <link rel="stylesheet" href="{{asset(env('URL_ASSETS').'select2/select2.min.css')}}">
 <link href="{{asset(env('URL_ASSETS').'frontend/dist/css/shop.css')}}" rel="stylesheet">
+<style>
+.product-detail-bg-white form p {
+  margin-bottom:0;
+}
+.product-detail-bg-white form hr {
+	margin-top:10px;
+}
+.plc-color {
+	display: inline-block;
+}
+.select-color-item {
+	width: 30px;
+	height: 30px;
+}
+.input-group-btn {
+	background:#FFF!important;
+	border: 1px solid #ced4da;
+}
+.input-group-btn button span {
+	color:#000 !important;
+	padding-left:10px;
+	padding-right:10px;
+	margin-top:15px;
+	font-size: 14px;
+}
+.btn-primary {
+	border-radius: 0px;
+	padding: 0px;
+	font-size:20px;
+	background:none!important;
+}
+</style>
 @stop
 
 @section('content')
@@ -92,29 +125,72 @@
 						}
 					@endphp
 					@if($countColor > 0)
-					<p>Select Your Color</p>
-					<br><br>
+					<p class="mb-2">Select Your Color</p>
+					@php 
+					echo '
+						<div class="info-price col">
+							<div class="plc-color">';
+								$active = '';
+								$tmpArray = array();
+								foreach ($data_product_sku as $key) {
+								if(!in_array($key->color_hexa, $tmpArray)){
+
+									array_push($tmpArray, $key->color_hexa);
+
+									echo '
+									<div data-hexa="'.$key->color_hexa.'" class="color '.$active.' select-color-item mb-2" style="background: '.$key->color_hexa.';" data-toggle="tooltip" title="'.$key->color_name.'"></div>';
+
+									$active = '';
+								}
+								array_push($tmpSizeByColor, array($key->color_hexa, $key->size, $key->stock));
+								}
+						echo '
+							</div>
+						</div>';
+					@endphp
 					<hr>
 					@endif
 					@if($countSize > 0)
 					<div class="row">
-						<div class="col-md-4 size-left">
-							<p>Size:</p>
-						</div>
-						<div class="col-md-8 size-right">
-							<a href="#" class="mb-2"><div class="size">XS</div></a>
-							<a href="#" class="mb-2"><div class="size unavailable">S</div></a>
-							<a href="#" class="size unavailable mb-2">M</a>
-							<a href="#" class="size mb-2">L</a>
-							<br><br>
-						</div>
+						@php 
+						echo '
+                    <div class="action col mb-4">
+                      <span>Choose Size: </span>';
+                      $tmpArray = array();
+                      echo '
+						<select class="select2" name="select-size" id="select-size">
+							<option value="">--Size--</option>';
+							foreach ($data_product_sku as $key) {
+							if($key->size != ''){
+								if(!in_array($key->size, $tmpArray)){
+								array_push($tmpArray, $key->size);
+								echo '<option value="'.$key->size.'">'.$key->size.'</option>';
+								}
+							}
+							}
+						echo '
+						</select>
+					</div>';
+						@endphp
 					</div>
 					@endif
 					<div class="row">
-						<div class="col-md-3">
-							<input type="number" class="form-control" id="exampleInputPassword1">
+						<div class="col-md-5">
+							<div class="input-group select-qty">
+								<span class="input-group-btn">
+									<button type="button" class="btn btn-primary btn-number" disabled="disabled" data-type="minus" data-field="quant[1]">
+										<span class="pe-7s-less"></span>
+									</button>
+								</span>
+								<input type="text" name="quant[1]" class="form-control input-number text-center" value="1" min="1" max="100">
+								<span class="input-group-btn">
+									<button type="button" class="btn btn-primary btn-number" data-type="plus" data-field="quant[1]">
+										<span class="pe-7s-plus"></span>
+									</button>
+								</span>
+							</div>
 						</div>
-						<div class="col-md-9"><button type="submit" class="btn btn-shop-now-full">ADD TO CART</button></div>
+						<div class="col-md-7"><button type="button" class="btn btn-shop-now-full add-to-cart">ADD TO CART</button></div>
 					</div>
               	</form>
               <br>  
@@ -296,7 +372,7 @@
         {
           if(size == '')
           {
-            toastr.warning('SilPlease choose size.');
+            toastr.warning('Please choose size.');
           }
           else
           {

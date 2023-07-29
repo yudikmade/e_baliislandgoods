@@ -117,7 +117,7 @@
                                     <span class="position-absolute translate-middle badge rounded-pill bg-danger count-fill-cart {{$checkCart[1] == '0' ? 'none':''}}">{{$checkCart[1]}}</span>
                                 </a>
                                 @if(Session::get(env('SES_FRONTEND_ID')) != null)
-                                <a class="nav-link link-dark icon-shop-right pointer" href="{{url('/profile')}}"><i class="pe-7s-users"></i> <span class="customer-name">Hi, {{Session::get(env('SES_FRONTEND_NAME'))}}</span></a>
+                                <a class="nav-link link-dark icon-shop-right pointer" href="{{url('/profile')}}"><i class="pe-7s-users"></i> <p class="customer-name">Hi, {{Session::get(env('SES_FRONTEND_NAME'))}}</p></a>
                                 @else 
                                 <a class="nav-link link-dark icon-shop-right pointer" href="{{url('/login')}}"><i class="pe-7s-users"></i></a>
                                 @endif

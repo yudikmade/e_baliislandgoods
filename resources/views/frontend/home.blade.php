@@ -85,10 +85,10 @@
             @if($detail['discount'] != '0')
             <div class="product-label product-label-save">Save {{$detail['discount']}}%</div>
             @endif
-            <div id="product{{$detail['id']}}" class="carousel slide carousel-fade carousel-product" data-bs-ride="carousel" data-bs-interval="false">
+            <div id="bestseller{{$detail['id']}}" class="carousel slide carousel-fade carousel-product" data-bs-ride="carousel" data-bs-interval="false">
               <div class="carousel-indicators">
                 @foreach($detail['image'] as $index => $value)
-                <button type="button" data-bs-target="#product{{$detail['id']}}" data-bs-slide-to="{{$index}}" aria-label="Slide {{$index}}" class="{{$index=='0' ? 'active':''}}" style="background-color:{{$value['color']}}"></button>
+                <button type="button" data-bs-target="#bestseller{{$detail['id']}}" data-bs-slide-to="{{$index}}" aria-label="Slide {{$index}}" class="{{$index=='0' ? 'active':''}}" style="background-color:{{$value['color']}}"></button>
                 @endforeach
               </div>
               <div class="carousel-inner">
@@ -151,10 +151,10 @@
             @if($detail['discount'] != '0')
             <div class="product-label product-label-save">Save {{$detail['discount']}}%</div>
             @endif
-            <div id="product{{$detail['id']}}" class="carousel slide carousel-fade carousel-product" data-bs-ride="carousel" data-bs-interval="false">
+            <div id="favkit{{$detail['id']}}" class="carousel slide carousel-fade carousel-product" data-bs-ride="carousel" data-bs-interval="false">
               <div class="carousel-indicators">
                 @foreach($detail['image'] as $index => $value)
-                <button type="button" data-bs-target="#product{{$detail['id']}}" data-bs-slide-to="{{$index}}" aria-label="Slide {{$index}}" class="{{$index=='0' ? 'active':''}}" style="background-color:{{$value['color']}}"></button>
+                <button type="button" data-bs-target="#favkit{{$detail['id']}}" data-bs-slide-to="{{$index}}" aria-label="Slide {{$index}}" class="{{$index=='0' ? 'active':''}}" style="background-color:{{$value['color']}}"></button>
                 @endforeach
               </div>
               <div class="carousel-inner">

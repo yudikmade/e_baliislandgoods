@@ -1,0 +1,1391 @@
+@extends('frontend.layout.template')
+
+@section('style')
+<link rel="stylesheet" href="{{asset(env('URL_ASSETS').'select2/select2.min.css')}}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.2.0/dist/select2-bootstrap-5-theme.min.css" />
+<link href="{{asset(env('URL_ASSETS').'frontend/dist/css/shop.css')}}" rel="stylesheet">
+<style>
+.paypal-logo {
+  font-family: Verdana, Tahoma;
+  font-weight: bold;
+  font-size: 26px;
+}
+.paypal-logo i:first-child {
+  color: #253b80;
+}
+.paypal-logo i:last-child {
+  color: #179bd7;
+}
+.paypal-button {
+    width: 100%;
+    display: block;
+  padding: 6px 30px;
+  border: 1px solid #ff9933;
+  border-radius: 5px;
+  /* background-image: linear-gradient(#fff0a8, #f9b421); */
+  background: #f9b421;
+  margin: 0 auto;
+  display: block;
+  min-width: 138px;
+  position: relative;
+}
+.paypal-button-title {
+  font-size: 14px;
+  color: #505050;
+  vertical-align: baseline;
+  text-shadow: 0px 1px 0px rgba(255, 255, 255, 0.6);
+}
+.paypal-button .paypal-logo {
+  display: inline-block;
+  text-shadow: 0px 1px 0px rgba(255, 255, 255, 0.6);
+  font-size: 20px;
+}
+body {
+		background: #f7faff;
+	}
+.checkout .alert-info.for-shipping {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    z-index: 0;
+}
+#checkOnlyCanadaResult {
+    display: none;
+}
+.select2-container{
+    width: -moz-available !important;          /* WebKit-based browsers will ignore this. */
+    width: -webkit-fill-available !important;  /* Mozilla-based browsers will ignore this. */
+    width: fill-available !important;
+}
+#showBtnStripeFree {
+    display: none;
+}
+.sign-in{
+    text-decoration: underline;
+}
+.plc-shipping-form .form-group{
+    margin-bottom: 50px !important;
+}
+</style>
+@include('frontend.login_style')
+@stop
+
+@section('content')
+<div id="container-checkout" class="container checkout">
+    @if($payment_failed != '')
+        <div class="alert alert-danger col-sm-12">
+            <?=$payment_failed?>
+        </div>
+    @endif
+    @if(sizeof($data_cart) == 0)
+        <div class="alert alert-info col-sm-12 text-center mrg-btm20">
+            @if($need_login == '1')
+                Please login to view your transaction.
+            @else
+                Your order not found.
+            @endif
+        </div>
+    @else
+    <h3>Payment Details</h3>
+    <br/>
+    <div class="row">
+        <?php
+            $country_id = '';
+            $country_name = '';
+            $province_id = '';
+            $province_name = '';
+            $city_name = '';
+            $apt_suite = '';
+            $address = '';
+            $postalcode = '';
+
+            $first_name = '';
+            $last_name = '';
+            $email_address = '';
+            $phone_prefix_input = '';
+            $phone_number = '';
+            $national = '';
+
+            if(sizeof($shipping_data) > 0){
+                foreach ($shipping_data as $key => $value) {
+                    $country_id = $value['country'];
+                    $country_name = $value['country_name'];
+                    if($value['country'] == '236'){
+                        $national = '';
+                        $province_id = $value['province'];
+                        $province_name = $value['province_name'];
+                        $city_name = $value['city_name'];
+                    }else{	
+                        $national = ' none ';
+                    }
+                    
+                    $apt_suite = $value['apt_suite'];
+                    $address = $value['address'];
+                    $postalcode = $value['postalcode'];
+                }
+            }
+
+            $showCustomer = '';
+            if(Session::get(sha1(env('AUTHOR_SITE').'_checkout_customer')) != ''){
+                $showCustomer = 'show';
+            }
+
+            $showShipping = '';
+            if(Session::get(sha1(env('AUTHOR_SITE').'_checkout_shipping')) != ''){
+                $showShipping = 'show';
+
+                $tmpData = Session::get(sha1(env('AUTHOR_SITE').'_checkout_shipping'));
+                $country_id = $tmpData['country_id'];
+                if($country_id == '236'){
+                    $national = '';
+                }else{
+                    $national = ' none ';
+                }
+                $country_name = $tmpData['country_name'];
+                $province_id = $tmpData['province_id'];
+                $province_name = $tmpData['province_name'];
+                $city_name = $tmpData['city_name'];
+                $address = $tmpData['address'];
+                $apt_suite = $tmpData['apt_suite'];
+                $postalcode = $tmpData['postalcode'];
+
+                if(Session::get(env('SES_FRONTEND_ID')) == null){
+                    $first_name = $tmpData['first_name'];
+                    $last_name = $tmpData['last_name'];
+                    $phone_prefix_input = $tmpData['phone_prefix'];
+                    $phone_number = $tmpData['phone_number'];
+                }
+            }
+
+            $getTimerTrans = array();
+            if(isset($timezone['timezone']->meta_description)){
+                $getTimerTrans = \App\Helper\Common_helper::timerCheckout($header_transaction->transaction_date, $timezone['timezone']->meta_description);
+                // echo '
+                //     <div id="countdowntimer" class="text-center mb-3">
+                //         <p>Please make payment before the time runs out!</p>
+                //         <span id="future_date" class="alert alert-info"></span>
+                //     </div>
+                // ';
+            }
+        ?>
+
+        @php $is_customer_form_complete = "0";@endphp
+        @if(Session::get(env('SES_FRONTEND_ID')) != null)
+            @php $is_customer_form_complete = "1";@endphp
+        @else
+            @if(in_array('customer', $check_info))
+                @php $is_customer_form_complete = "1";@endphp
+            @endif    
+        @endif
+
+        <div class="col-lg-7 col-md-6 checkout-information customer">
+            <div class="customer-info plc-container {{$is_customer_form_complete?'':'none'}} mb-5">
+                <h5 class="mb-4">Customer</h5>
+
+                @if(Session::get(env('SES_FRONTEND_ID')) == null)
+                    <a class="pull-right cursor edit-customer" href="javascript:void(0);">Edit</a>
+                @endif
+                <div class="after-submit">
+                    @if(Session::get(sha1(env('AUTHOR_SITE').'_checkout_customer')) != null)
+                        @foreach(Session::get(sha1(env('AUTHOR_SITE').'_checkout_customer')) as $key => $value)
+                            {{$value}}<br/>
+                        @endforeach
+                    @endif
+                </div>
+            </div>
+                
+            <div class="customer-form plc-container {{$is_customer_form_complete?'none':''}} mb-5">                
+                <h5 class="mb-4">Customer</h5>
+                <p>
+                    Checking out as a Guest? <br/>
+                    You'll be able to save your details to create an account with us later.
+                </p>
+                @php $emailGuest = '';@endphp
+                @if(Session::get(sha1(env('AUTHOR_SITE').'_checkout_customer')) != '')
+                    @foreach(Session::get(sha1(env('AUTHOR_SITE').'_checkout_customer')) as $key => $value)
+                        @php $emailGuest = $value;@endphp
+                    @endforeach
+                @endif
+                <div class="row">
+                    <form id="form-guest" action="{{route('process_checkout_guest')}}" method="post">
+                        {{ csrf_field() }}
+                        <div class="col-sm-12">
+                            <label for="email">Email address</label>
+                        </div>
+                        <input type="hidden" name="trans_id" id="trans_id" value="{{$header_transaction->transaction_id}}">
+                        <div class="col-sm-6 col-xs-8 mb-3">
+                            <input type="email" class="form-control" id="emailGuest" name="emailGuest" value="{{$emailGuest}}">
+                        </div>
+                        <div class="col-sm-4 col-xs-5">
+                            <button type="submit" class="btn btn-primary btn-main-2" id="btn-guest">CONTINUE AS GUEST</button>
+                        </div>
+                    </form> 
+                </div>
+                <br>
+                <p>Already have an account? <a class="sign-in" href="javascript:void(0);" data-toggle="modal">Sign in now</a></p>
+            </div>
+
+            <div class="shipping-fill-info plc-container mb-5">
+                <h5 class="mb-4">Shipping Information</h5>
+
+                <form id="form-shipping" class="" action="{{route('process_checkout_shipping')}}" method="post">
+                    <input type="hidden" name="trans_id" id="trans_id" value="{{$header_transaction->transaction_id}}">
+                    {{ csrf_field() }}
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-12 plc-shipping-form">
+                                <div class="row">
+                                    @if(Session::get(env('SES_FRONTEND_ID')) == null)
+                                        <div class="col-sm-6 no-pdg-lt">
+                                            <label for="first_name">First Name</label>
+                                            <input type="text" class="form-control" id="first_name" name="first_name" value="{{$first_name}}">
+                                            <small class="notif-first_name error none"><i>Please input first name!</i></small>
+                                        </div>
+                                        <div class="col-sm-6 no-pdg-rg">
+                                            <label for="last_name">Last Name</label>
+                                            <input type="text" class="form-control" id="last_name" name="last_name" value="{{$last_name}}">
+                                            <small class="notif-last_name error none"><i>Please input last name!</i></small>
+                                        </div>
+                                        <div class="col-sm-12 no-pdg-lt no-pdg-rg mt-4 mb-4">
+                                            <div class="row">
+                                                <div class="col-sm-12">
+                                                    <label for="phone_prefix">Phone Number</label>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <select style="width: 100%;" class="select2 form-control pull-left" name="phone_prefix" id="phone_prefix">
+                                                        <option value="">Prefix</option>
+                                                        @foreach($phone_prefix_data as $phone)
+                                                            @if($phone_prefix_input == $phone->phone_prefix)
+                                                            <option value="{{$phone->phone_prefix}}" selected>{{$phone->name}} ({{$phone->phone_prefix}})</option>
+                                                            @else
+                                                            <option value="{{$phone->phone_prefix}}">{{$phone->name}} ({{$phone->phone_prefix}})</option>
+                                                            @endif
+                                                        @endforeach
+                                                    </select> 
+                                                    <small class="notif-phone_prefix error none"><i>Select prefix!</i></small>
+                                                </div>
+                                                <div class="col-sm-8">
+                                                    <input type="text" class="form-control" name="phone_number" id="phone_number" value="{{$phone_number}}">
+                                                    <small class="notif-phone_number error none"><i>Please input your number!</i></small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12 no-pdg">
+                                            <hr>
+                                        </div>
+                                    @endif
+                                    <div class="col-sm-6 no-pdg-lt">
+                                        <div class="form-group">
+                                            <label for="country">Country</label>
+                                            <select class="form-control select2" id="country" style="width: 100%;" name="country">
+                                                <option value="">Choose Country</option>
+                                                    @foreach($country_data  as $countries)
+                                                        @if($country_id == $countries->country_id)
+                                                            <option value="{{$countries->country_id}}" selected>{{$countries->country_name}}</option>
+                                                        @else
+                                                            <option value="{{$countries->country_id}}">{{$countries->country_name}}</option>
+                                                        @endif
+                                                    @endforeach
+                                            </select>
+                                            <small class="notif-country error none"><i>Please choose country!</i></small>
+                                        </div>
+                                        <div class="form-group select-national">
+                                            <label for="province">Province</label>
+                                            <select class="form-control select2" style="width: 100%;" name="province" id="province">
+                                                <option value="">Choose Province</option>
+                                                <?php
+                                                    if($province_id != ''){
+                                                        echo '<option value="'.$province_id.'" selected>'.$province_name.'</option>';
+                                                    }
+                                                ?>
+                                            </select>
+                                            <small class="notif-province error none"><i>Please choose province!</i></small>
+                                        </div>
+                                        <div class="mb-2">
+                                            <label for="city">Town/City</label>
+                                            <input type="text" class="form-control" id="city" name="city" value="{{$city_name}}" />
+                                        </div>
+                                        <div class="mb-2">
+                                            <label for="apt_suite">Apt. or Suite (Opt.)</label>
+                                            <input type="text" class="form-control" id="apt_suite" name="apt_suite" value="{{$apt_suite}}" />
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 no-pdg-rg">
+                                        <div class="mb-2">
+                                            <label for="address">Address</label>
+                                            <textarea class="form-control no-radius" rows="4" name="address" id="address">{{$address}}</textarea>
+                                            <small class="notif-address error none"><i>Please input address!</i></small>
+                                        </div>
+                                        <div class="mb-2">
+                                            <label for="postalcode">Postal Code</label>
+                                            <input type="text" class="form-control" id="postalcode" name="postalcode" value="{{$postalcode}}" />
+                                            <small class="notif-postalcode error none"><i>Please input postal code!</i></small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="">
+                                <div class="shipping-info col-12">
+                                    
+                                </div>
+                            </div>
+
+                            @if($country_id == '30')
+                                <div class="" id="checkOnlyCanada" style="display: initial;">
+                            @else
+                                <div class="" id="checkOnlyCanada" style="display: none;">
+                            @endif
+                                <div class="col-sm-12 no-pdg">
+                                    <hr>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <table class="result-shipping-cost">
+                                            <?=$shipping_list?>
+                                        </table>
+                                        <p class="info-outside-canada">
+                                            <small><i class="text-danger">*Please send us an email directly after your order if you need to request expedited shipping (officeinfo@bcwf.bc.ca) or for shipping to a country outside of Canada</i></small>
+                                        </p>
+                                        <div class="notif-shipping">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12 no-pdg text-right mt-3 plc-lanjut-bayar">
+                                    <button type="button" class="btn btn-primary" id="btn-shipping">CONTINUE PAYMENT</button>
+                                </div>
+                </form>
+                                <div class="col-sm-12 no-pdg plc-bayar-sekarang mt-3 none">
+                                    @php 
+                                        $coupon_code = '';
+                                        $readonly = '';
+                                        $btnVerification = '';
+                                        $btnDelete = ' none ';
+                                        $discountCoupon = '0';
+                                        foreach ($coupon_data as $value)
+                                        {
+                                            $coupon_code = $value->coupon_code;
+                                            $readonly = ' readonly="true" ';
+                                            $discountCoupon = $value->discount;
+
+                                            $btnVerification = ' none ';
+                                            $btnDelete = '';
+                                        }
+                                    @endphp
+                                    <div class="plc-container for-coupon none mb-5">
+                                        <div class="row">
+                                            <h5 class="mb-3">Coupon</h5>
+                                            <div class="col-md-12"><i>Please enter coupon code to get discount!</i></div>
+                                            <div class="col-md-7">
+                                                <div class="plc-coupon pdg10">
+                                                    <form id="form-coupon" class="form-inline mt-3 mb-2" action="{{route('user_coupon_verification')}}">
+                                                        {{ csrf_field() }}
+                                                        <input type="hidden" name="unique_code" id="unique_code" value="{{$header_transaction->unique_code}}">
+                                                        <div class="form-group mb-3">
+                                                            <input type="text" class="form-control no-radius input-lg" {{$readonly}} name="coupon_code" id="coupon_code" placeholder="Coupon code" value="{{$coupon_code}}">
+                                                        </div>
+                                                        <button type="button" class="btn btn-primary btn-main-2 {{$btnVerification}} btn-coupon" id="btn-coupon-verification" data-action="verification-coupon">Submit</button>
+                                                        <button type="button" class="btn btn-primary btn-main-2 {{$btnDelete}} btn-coupon" id="btn-coupon-delete" data-action="delete-coupon">Delete</button>
+                                                    </form>
+                                                    <small class="notif-coupon error none"><i>Please input coupon code!</i></small>
+                                                    <small class="notif-coupon-success text-success {{$btnDelete}}"><i>Coupon verified!</i></small>
+                                                    <div class="mrg-btm20"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- <button class="btn btn-primary" id="pay-button">PAY</button> -->
+                                    <p>Please click the button below to process payment</p>
+                                    <!-- <div id="showBtnPaypal">
+                                        <p class="sbp-header">Paypal</p>
+                                        <a data-id="{{$header_transaction->transaction_id}}" id="btn-paypal-payment" href="{{route('user_payment')}}" class="btn btn-paypal sbp-container">
+                                            <img class="img-fluid" src="{{asset(env('URL_IMAGE').'paypal.svg')}}">
+                                        </a>
+                                    </div> -->
+                                    <div id="showBtnStripe">
+                                        <!-- <p class="sbs-header">Stripe</p> -->
+                                        <div class="sbs-container">
+                                            <form style="width: 100%;" id="form-pay-now" name="form-pay-now" action="{{route('user_payment_stripe')}}" method="post" novalidate="novalidate">
+                                                {{ csrf_field() }}
+                                                <input type="hidden" name="id" id="id" value="{{$header_transaction->transaction_code}}" />
+
+                                                <fieldset class="form-group p-3" id="box-price-cc">
+                                                    <div class="form-group row">
+                                                        <label for="name_on_card" class="col-md-4 col-form-label text-md-right">Name on card</label>
+                                                        <div class="col-md-8 field">
+                                                            <input autocomplete="off" type="text" id="name_on_card" class="form-control required" name="name_on_card" aria-required="true">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label for="billing_address" class="col-md-4 col-form-label text-md-right">Billing address</label>
+                                                        <div class="col-md-8 field">
+                                                            <input autocomplete="off" type="text" id="billing_address" class="form-control" name="billing_address">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label for="cc_number" class="col-md-4 col-form-label text-md-right">Card Number</label>
+                                                        <div class="col-md-8 field">
+                                                            <input autocomplete="off" class="form-control cc-number" name="cc_number" id="cc_number" type="text" required pattern="(\d{4}\s?){4}" placeholder="&#8226;&#8226;&#8226;&#8226; &#8226;&#8226;&#8226;&#8226; &#8226;&#8226;&#8226;&#8226; &#8226;&#8226;&#8226;&#8226;" maxlength="19">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label for="cc_expiry" class="col-md-4 col-form-label text-md-right">Expiration Date</label>
+                                                        <div class="col-md-8 field">
+                                                            <input autocomplete="off" class="form-control cc-expires" name="cc_expiry" id="cc_expiry" type="text" maxlength='5' placeholder="MM/YY">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label for="cc_cvc" class="col-md-4 col-form-label text-md-right">CVC Code</label>
+                                                        <div class="col-md-8 field">
+                                                            <input autocomplete="off" class="form-control cc-cvc" name="cc_cvc" id="cc_cvc" placeholder="CVC" type="text" maxlength="4">
+                                                        </div>
+                                                    </div>
+                                                </fieldset>
+                                                <div class="form-group row">
+                                                    <div class="col-md-12 text-right field">
+                                                        <button type="submit" id="form-pay-now-btn" class="btn btn btn-main-2 btn-round-full">PAY NOW</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <div id="showBtnStripeFree">
+                                        <div class="sbs-container">
+                                            <form style="width: 100%;" id="form-pay-now-free" name="form-pay-now-free" action="{{route('user_payment_stripe_free')}}" method="post" novalidate="novalidate">
+                                                {{ csrf_field() }}
+                                                <input type="hidden" name="id" id="id" value="{{$header_transaction->transaction_code}}" />
+                                                <div class="form-group row">
+                                                    <div class="col-md-12 text-right field">
+                                                        <button type="submit" id="form-pay-now-free-btn" class="btn btn btn-main-2 btn-round-full">FREE</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @if($country_id != '30')
+                                <div class="shipping-not-available" style="display: none;">
+                            @else
+                                <div class="shipping-not-available" style="display: none;">
+                            @endif
+                                <div class="col-12 no-pdg">
+                                    <hr>
+                                </div>
+                                <div class="col-12 ">
+                                    <div class="alert alert-info for-shipping text-center">
+                                        Sorry, shipping not available.<br/>
+                                        Please fill the form above.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="" id="checkOnlyCanadaResult">
+                                <div class="col-12 no-pdg">
+                                    <hr>
+                                </div>
+                                <div class="col-12">
+                                    <div class="alert alert-info for-shipping text-center">
+                                        Sorry, shipping not available.<br/>
+                                        Please fill the form above.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        </div>
+        <div class="col-lg-1 col-md-1"></div>
+        <div class="col-lg-4 col-md-5 checkout-frame">
+            <div class="checkout-bg-grey plc-container">
+                <div class="checkout-bg-grey-inner">
+                    <h5 class="mb-3">Order Summary</h5>
+                    @if($header_transaction)
+                        <a class="no-pdg cursor edit-cart col-xs-12" data-id="{{$header_transaction->unique_code}}" href="javascript:void(0);" data-href="{{route('process_edit_cart')}}">Edit</a>
+                    @endif
+                    <br>
+                    @php
+                        $countSubTotal = 0; 
+                        $countProductWeight = 0;
+                        $no = 1;
+                        $stockArray = array();
+                    @endphp
+                    <table class="table cart-total-table">
+                        <tbody>
+                            <tr>
+                                <td>PRODUCT</td>
+                                <td class="title-subtotal total-cart">SUBTOTAL</td>
+                            </tr>
+                            @foreach($data_cart as $carts)
+                            @php
+                            //discount
+                            $setDiscount = \App\Helper\Common_helper::set_discount($carts['price'], $carts['discount']);
+                            $priceAfterDisc = $setDiscount[0];
+                            $discount = $setDiscount[1];
+                            //--------
+
+                            $priceInCurrencyFormat = \App\Helper\Common_helper::convert_to_current_currency($priceAfterDisc);
+
+                            $subTotal = $priceAfterDisc * $carts['qty'];
+                            $subTotalInCurrencyFormat = \App\Helper\Common_helper::convert_to_current_currency($subTotal);
+                            $countSubTotal += $subTotalInCurrencyFormat[0];
+
+                            $productWeight = ($carts['weight'] * $carts['qty']);
+                            $countProductWeight += $productWeight;
+
+                            $showPrice = $current_currency[1].$priceInCurrencyFormat[1].' '.$current_currency[2];
+                            // $showSubTotal = $current_currency[1].$subTotalInCurrencyFormat[1];
+                            $showSubTotal = $subTotalInCurrencyFormat[1];
+                            @endphp
+                            <tr>
+                                <td>{{$carts['product_name']}} <b>× {{$carts['qty']}}</b></td>
+                                <!-- <td class="total-cart"><b>{{$current_currency[1].$showSubTotal}}</b></td> -->
+                                <td class="total-cart"><b>{{$current_currency[1].\App\Helper\Common_helper::set_two_0_after_point($showSubTotal)}}</b></td>
+                            </tr>
+                            @endforeach
+                            @if($header_transaction)
+                            <?php
+                                $subTotalInCurrencyFormat = \App\Helper\Common_helper::set_two_0_after_point(\App\Helper\Common_helper::convert_to_format_currency($header_transaction->total_price));
+                                $showSubTotal = $current_currency[1].$subTotalInCurrencyFormat;
+
+                                $shippingCostInCurrencyFormat = \App\Helper\Common_helper::set_two_0_after_point(\App\Helper\Common_helper::convert_to_format_currency($header_transaction->shipping_cost));
+                                $showShippingCost = $current_currency[1].$shippingCostInCurrencyFormat;
+
+                                $taxInCurrencyFormat = \App\Helper\Common_helper::set_two_0_after_point(\App\Helper\Common_helper::convert_to_format_currency($header_transaction->tax));
+                                $showTax = $current_currency[1].$taxInCurrencyFormat;
+
+                                $grandTotalInCurrencyFormat = \App\Helper\Common_helper::set_two_0_after_point(\App\Helper\Common_helper::convert_to_format_currency($header_transaction->total_payment));
+                                $showGrandTotal = $current_currency[1].$grandTotalInCurrencyFormat;
+
+                                $couponInCurrencyFormat = \App\Helper\Common_helper::set_two_0_after_point(\App\Helper\Common_helper::convert_to_format_currency(($header_transaction->coupon + 0)));
+                                $showCoupon = $current_currency[1].$couponInCurrencyFormat;
+                            ?>
+                            <tr class="border-subtotal">
+                                <td><b>Subtotal</b></td>
+                                <td class="total-cart"><b>{{$showSubTotal}}</b></td>
+                            </tr>
+                            <tr class="border-subtotal">
+                                <td><b>Disc. <!-- ({{$discountCoupon}}%) --></b></td>
+                                <td class="total-cart btm-plc-discount"><b><span>{{$showCoupon}}</span></b></td>
+                            </tr>
+                            <tr class="border-subtotal">
+                                <td><b>Shipping</b></td>
+                                <td class="total-cart btm-plc-shipping" data-currency="{{$current_currency[1]}}" data-shipping-total="{{$header_transaction->shipping_cost}}"><b><span>{{$showShippingCost}}</span></b></td>
+                            </tr>
+                            <tr class="border-subtotal">
+                                <td><b>Tax</b></td>
+                                <td class="total-cart"><b>{{$showTax}}</b></td>
+                            </tr>
+                            @if($header_transaction->additional_price != '0')
+                            <?php
+                            $sddPriceInCurrencyFormat = \App\Helper\Common_helper::set_two_0_after_point(\App\Helper\Common_helper::convert_to_format_currency($header_transaction->additional_price));
+                            $showAddPrice = $current_currency[1].$sddPriceInCurrencyFormat;
+                            ?>
+                            <tr class="border-subtotal">
+                                <td><b>Additional Price</b></td>
+                                <td class="total-cart"><b>{{$showAddPrice}}</b></td>
+                            </tr>
+                            @endif
+                            <tr class="last-row-chekcout">
+                                <td><b>Total ({{$current_currency[2]}})</b></td>
+                                <td class="total-cart btm-plc-grand-total" data-grand-total="{{$header_transaction->total_payment}}"><b><span>{{$showGrandTotal}}</span></b></td>
+                            </tr>
+                            @endif
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+</div>
+
+
+<input type="hidden" name="customer_form_complete" id="customer_form_complete" value="{{$is_customer_form_complete}}" />
+<input type="hidden" name="shipping_form_complete" id="shipping_form_complete" value="0">
+
+<input type="hidden" name="symbol_global" id="symbol_global" value="{{$current_currency[1]}}">
+<input type="hidden" name="code_global" id="code_global" value="{{$current_currency[2]}}">
+<input type="hidden" name="actionLocation" id="actionLocation" value="{{route('process_shipping_location')}}">
+<input type="hidden" name="actionEstimate" id="actionEstimate" value="{{route('process_shipping_estimate')}}">
+<input type="hidden" name="actionCheckBeforePayment" id="actionCheckBeforePayment" value="{{route('check_before_payment')}}">
+<div class="featurette-divider"></div>
+<div class="featurette-divider"></div>
+
+
+<div class="container" id="container-login">
+    <div class="row">
+        <div class="col-sm-12" align="right">
+            <button type="button" class="close btn container-login-close-btn">&times;</button>
+        </div>
+    </div>
+    @include('frontend.login_form')
+    @include('frontend.register_form')
+</div>
+@stop
+
+@section('script')
+<script src="{{asset(env('URL_ASSETS').'select2/select2.full.min.js')}}"></script>
+<script type="text/javascript" src="{{asset(env('URL_ASSETS').'countdown/jQuery.countdownTimer.min.js')}}"></script>
+<!-- midtrans -->
+<!-- <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}"></script>
+<script>
+    const payButton = document.querySelector('#pay-button');
+    payButton.addEventListener('click', function(e) {
+        e.preventDefault();
+
+        snap.pay($('#snapToken').val(), {
+            // Optional
+            onSuccess: function(result) {
+                /* You may add your own js here, this is just example */
+                // document.getElementById('result-json').innerHTML += JSON.stringify(result, null, 2);
+                console.log(result)
+                savePayment(result, 'success');
+                // location.href = response.finish_redirect_url;
+            },
+            // Optional
+            onPending: function(result) {
+                /* You may add your own js here, this is just example */
+                // document.getElementById('result-json').innerHTML += JSON.stringify(result, null, 2);
+                console.log(result)
+                savePayment(result, 'pending');
+                // location.href = response.finish_redirect_url;
+            },
+            // Optional
+            onError: function(result) {
+                /* You may add your own js here, this is just example */
+                // document.getElementById('result-json').innerHTML += JSON.stringify(result, null, 2);
+                console.log(result)
+                savePayment(result, 'error');
+
+                // location.href = response.finish_redirect_url;
+            }
+        });
+    });
+
+    function savePayment(dataPayment, trigger){
+        var trans_id = $('.edit-cart').attr('data-id');
+        $.ajax({
+            url: $('#savePayment').val(),
+            dataType: 'json',
+            type: 'POST',
+            data: {
+                'trans_id': trans_id,
+                'trigger': trigger,
+                'payment': dataPayment,
+                '_token': $('input[name=_token]').val()
+            },
+            success: function(response, textStatus, XMLHttpRequest){
+                if(response.trigger=="yes")
+                {
+                    location.href = response.notif;
+                } else {
+                    toastr.remove();
+                    toastr.error(response.notif);
+                }
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown){
+                toastr.remove();
+                toastr.error('There is something wrong, please refresh page and try again.');
+            }
+        });
+    }
+</script> -->
+<!-- ==== midtrans ==== -->
+
+<!-- paypall -->
+<script>
+$(document).ready(function() {
+    $('#btn-paypal-payment').click(function(e){
+        e.preventDefault();
+
+        var urlActionNext = $(this).attr('href');
+        var trans_id = $(this).attr('data-id');
+        var urlAction = $('#actionCheckBeforePayment').val();
+        $.ajax({
+            url: urlAction,
+            dataType: 'json',
+            type: 'POST',
+            data: {
+                'trans_id': trans_id, 
+                '_token': $('input[name=_token]').val()
+            },
+            success: function(response, textStatus, XMLHttpRequest)
+            {
+                if(response.trigger=="yes")
+                {
+                    location.href = response.notif;
+                }
+                else
+                {
+                        toastr.warning(response.notif)
+
+                        if(response.url != undefined)
+                        {
+                        setTimeout(function(){ location.reload(); }, 3000);
+                        }
+                }
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown)
+            {
+                toastr.remove();
+                toastr.error('There is something wrong, please refresh page and try again.');
+            }
+        });
+    });
+});
+</script>
+
+<script>
+$(document).ready(function() {
+    $('.select2').select2();
+
+    <?php
+        if(sizeof($getTimerTrans) > 0)
+        {
+    ?>
+    $(function(){
+        $("#future_date").countdowntimer({
+            startDate : "<?=$getTimerTrans['timeStart']?>",
+            dateAndTime : "<?=$getTimerTrans['timeEnd']?>",
+            size : "lg",
+            regexpMatchFormat : "([0-9]{1,2}):([0-9]{1,2}):([0-9]{1,2}):([0-9]{1,2}):([0-9]{1,2}):([0-9]{1,2})",
+            regexpReplaceWith : "$1<sup>years</sup> / $2<sup>months</sup> / $3<sup>days</sup> / $4<sup>hours</sup> / $5<sup>minutes</sup> / $6<sup>seconds</sup>"
+        });
+    });
+    <?php
+        }
+    ?>
+
+    $('.edit-cart').click(function(e){
+        e.preventDefault();
+        var urlAction = $(this).attr('data-href');
+        var trans_id = $(this).attr('data-id');
+        NProgress.start();
+        $.ajax({
+            url: urlAction,
+            dataType: 'json',
+            type: 'POST',
+            data: {
+                'trans_id': trans_id, 
+                '_token': $('input[name=_token]').val()
+            },
+            success: function(response, textStatus, XMLHttpRequest)
+            {
+                NProgress.done();
+                if(response.trigger=="yes")
+                {
+                    location.href = response.notif;
+                }
+                else
+                {
+                        toastr.warning(response.notif);
+                }
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown)
+            {
+                NProgress.done();
+                toastr.error('There is something wrong, please refresh page and try again.');
+            }
+        });
+        return false;
+    });
+
+    $("#btn-shipping").click(function(e){
+        $("#btn-shipping").attr('disabled', 'disabled');
+        NProgress.start();
+        var emelentForm = $('#form-shipping');
+        // console.log(emelentForm.serialize());
+        $.ajax({
+            url: emelentForm.attr('action'),
+            type: 'POST',
+            data: emelentForm.serialize(),
+            dataType: 'json',
+            success: function(response) {
+                $("#btn-shipping").removeAttr('disabled');
+                if(response.trigger == "yes"){
+                    $('#snapToken').val(response.snap_token);
+                    $('.notif-shipping').html('');
+                    var currency = $('.btm-plc-shipping').attr('data-currency');
+                    $('.btm-plc-shipping').find('span').text(currency+response.shipping_cost);
+                    $('.btm-plc-grand-total').find('span').text(currency+response.total_payment);
+                    
+                    // free - without payment
+                    if(response.total_payment == 0){
+                        $('#showBtnStripeFree').fadeIn();
+                        $('#showBtnStripe').fadeOut();
+                    } else {
+                        $('#showBtnStripeFree').fadeOut();
+                        $('#showBtnStripe').fadeIn();
+                    }
+
+                    $('.result-shipping-cost').fadeOut();
+                    $('.info-outside-canada').fadeOut();
+                    $('.plc-lanjut-bayar').fadeOut(function(){
+                        $('.plc-bayar-sekarang').fadeIn();
+                    })
+
+                    // coupon page
+                    $('.for-coupon').fadeIn();
+
+                    $('.plc-shipping-form').fadeOut(function(){
+
+                        var addInfo = '';
+                        if(response.profile_cus != undefined){
+                            addInfo = ''+
+                            '<div class="after-submit">'+$('#first_name').val()+'</div>'+
+                            '<div class="after-submit">'+$('#last_name').val()+'</div>'+
+                            '<div class="after-submit mrg-btm20">'+$('#phone_prefix').val()+$('#phone_number').val()+'</div>';
+                        }
+
+                        $('.shipping-info').html(''+
+                            '<a class="cursor edit-shipping pull-right" href="javascript:void(0);">Change Shipping</a>'+
+                            addInfo+
+                            '<div class="after-submit mt-3">'+response.country+'</div>'+
+                            '<div class="after-submit">'+response.province+'</div>'+
+                            '<div class="after-submit">'+$('#city').val()+'</div>'+
+                            '<div class="after-submit">'+$('#address').val()+'</div>'+
+                            '<div class="after-submit">'+$('#apt_suite').val()+'</div>'+
+                            '<div class="after-submit">'+$('#postalcode').val()+'</div>'+
+                        '');
+                        $('.shipping-info').fadeIn();
+                        $('#shipping_form_complete').val('1');
+                    });
+                }
+                else
+                {
+                    $('.notif-shipping').html('<div class="text-danger mrg-btm20">'+response.notif+'</div>');
+                }
+                NProgress.done();
+            },
+            error: function()
+            {
+                $("#btn-shipping").removeAttr('disabled');
+                NProgress.done();
+                toastr.error('There is something wrong, please refresh page and try again.');
+            }            
+        });
+    });
+
+    //shipping
+    $(document).on('click', '.edit-shipping', function(e){
+        $('#shipping_form_complete').val('0');
+        $('.shipping-info').fadeOut(function(){
+            $('.plc-shipping-form').fadeIn();
+        });
+        $('.plc-bayar-sekarang').fadeOut(function(){
+            $('.plc-lanjut-bayar').fadeIn();
+            $('.result-shipping-cost').fadeIn();
+            $('.info-outside-canada').fadeIn();
+        });
+    });
+
+    function get_shipping_cost()
+    {
+        var triggerNational = true;
+        if($('#country').val() != '')
+        {
+            if($('#province').val() == '')
+            {
+                triggerNational = false;
+            }
+
+            if($('#city').val() == '')
+            {
+                triggerNational = false;
+            }
+
+            if($('#country').val() == '236')
+            {
+                if($('#subdistrict').val() == '')
+                {
+                    triggerNational = false;
+                }
+            }
+        }
+        else
+        {
+            triggerNational = false;
+        }
+
+        if($('#address').val() == '')
+        {
+            triggerNational = false;
+        }
+
+        if($('#postalcode').val() == '')
+        {
+            triggerNational = false;
+        }
+
+        if(triggerNational == true)
+        {
+            NProgress.start();
+            var urlAction = $('#actionEstimate').val();
+            $.ajax({
+                url: urlAction,
+                dataType: 'json',
+                type: 'POST',
+                data: {
+                    'trans_id': $('#form-shipping').find('input[name=trans_id]').val(), 
+                    'country': $('#country').val(), 
+                    'province': $('#province').val(),
+                    'city': $('#city').val(),
+                    'subdistrict': $('#subdistrict').val(),
+                    'postalcode': $('#postalcode').val(),
+                    'address': $('#address').val(),
+                    '_token': $('input[name=_token]').val()
+                },
+                success: function(response, textStatus, XMLHttpRequest)
+                {
+                    NProgress.done();
+                    if(response.trigger=="yes")
+                    { 
+                        $("#btn-shipping").removeAttr('disabled');
+                        $('.result-shipping-cost').html(response.notif);
+                    }
+                    else
+                    {
+                            toastr.warning(response.notif)
+                    }
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown)
+                {
+                    NProgress.done();
+                    toastr.remove();
+                    toastr.error('There is something wrong, please refresh page and try again.');
+                }
+            });
+        }
+    }
+
+    $('#address, #postalcode').blur(function(){
+        get_shipping_cost();
+    });
+
+    $('#country').change(function(e){
+        $("#btn-shipping").attr('disabled', 'disabled');
+        var data_id = $(this).val();
+        var trigger = $(this).attr('id');
+
+        $('.result-shipping-cost').html('');
+        get_shipping_cost();
+        // $('#province').select2('val', '');
+        // $('#city').select2('val', '');
+        // $('#subdistrict').select2('val', '');
+
+        // if($('#country').val() == '236')
+        // {
+        //     $('.select-national').fadeIn();
+        // }
+        // else
+        // {
+        //     $('.select-national').fadeOut();
+        // }
+
+        if($('#country').val() == '236')
+        {
+            $('.select-subdistrict').fadeIn();
+        }
+        else
+        {
+            $('.select-subdistrict').fadeOut();
+        }
+
+        
+
+        var process_allow = true;
+        if($('#country').val() == '236'){
+            if(trigger == 'subdistrict'){
+                process_allow = false;
+            }
+        }else{
+            if(trigger == 'city'){
+                process_allow = false;
+            }
+        }
+
+        if(process_allow){
+            // if($('#country').val() == '236')
+            // {
+                if($(this).val() != '')
+                {
+                    NProgress.start();
+                    var urlAction = $('#actionLocation').val();
+                    $.ajax({
+                        url: urlAction,
+                        dataType: 'json',
+                        type: 'POST',
+                        data: {
+                            'data_id': data_id, 
+                            'trigger': trigger,
+                            '_token': $('input[name=_token]').val()
+                        },
+                        success: function(response, textStatus, XMLHttpRequest)
+                        {
+                            NProgress.done();
+                            if(response.trigger=="yes")
+                            { 
+                                if(trigger == 'country')
+                                {
+                                    $('#province').html(response.notif);
+                                }
+                                else if(trigger == 'province')
+                                {
+                                    $('#city').html(response.notif);
+                                }
+                                else
+                                {
+                                    $('#subdistrict').html(response.notif);
+                                }
+                            }
+                            else
+                            {
+                                    toastr.warning(response.notif)
+                            }
+                        },
+                        error: function(XMLHttpRequest, textStatus, errorThrown)
+                        {
+                            NProgress.done();
+                            toastr.remove();
+                            toastr.error('There is something wrong, please refresh page and try again.');
+                        }
+                    });
+                }
+            // }
+        }
+    });
+
+    // coupon
+    $('.btn-coupon').click(function(e){
+        	checkingCoupon($(this).attr('data-action'));
+    });
+    $('#coupon_code').keypress(function(e){
+        if(e.which == 13)
+        {
+            checkingCoupon('verification');
+        }
+    });
+
+    function checkingCoupon(trigger)
+    {        	
+        if(trigger == '')
+        {
+            toastr.error('Coupons cannot be processed.');
+        }
+        else
+        {
+            if($('#coupon_code').val() == '')
+            {
+                $('.notif-coupon').fadeIn();
+            }
+            else
+            {
+                $('.notif-coupon').fadeOut();
+                $("#check-coupon").attr('disabled', 'disabled');
+                var emelentForm = $('#form-coupon')
+                NProgress.start();
+                $.ajax({
+                    url: emelentForm.attr('action')+'/'+trigger,
+                    type: 'POST',
+                    data: emelentForm.serialize(),
+                    dataType: 'json',
+                    success: function(response) {
+                        NProgress.done();
+                        $("#btn-coupon").removeAttr('disabled');
+                        if(response.trigger == "yes")
+                        {
+                            var currency = $('.btm-plc-shipping').attr('data-currency');
+                            // $('.btm-plc-discount').find('label').text('DISC. ('+response.discount+'%)');
+                            // $('.btm-plc-discount').find('span').text('-'+currency+response.discount_nominal);
+                            $('.btm-plc-discount').find('span').text(currency+response.discount_nominal);
+                            $('.btm-plc-grand-total').find('span').text(currency+response.total_payment);
+
+                            // free - without payment
+                            if(response.total_payment == 0){
+                                $('#showBtnStripeFree').fadeIn();
+                                $('#showBtnStripe').fadeOut();
+                            } else {
+                                $('#showBtnStripeFree').fadeOut();
+                                $('#showBtnStripe').fadeIn();
+                            }
+
+                            if(trigger == 'verification-coupon')
+                            {
+                                $("#coupon_code").attr('readonly', 'true');
+                                $('.notif-coupon-success').fadeIn();
+
+                                $('#btn-coupon-verification').fadeOut(function(){
+                                    $('#btn-coupon-delete').fadeIn();
+                                });
+                            }
+                            else
+                            {
+                                $("#coupon_code").removeAttr('readonly');
+                                $('.notif-coupon-success').fadeOut();
+
+                                $('#btn-coupon-delete').fadeOut(function(){
+                                    $('#btn-coupon-verification').fadeIn();
+                                });
+                            }
+                        }
+                        else
+                        {
+                            toastr.warning(response.notif);
+                        }
+                    },
+                    error: function()
+                    {
+                        NProgress.done();
+                        $("#btn-coupon").removeAttr('disabled');
+                        toastr.error('There is something wrong, please refresh page and try again.');
+                    }            
+                });
+            }
+        }
+    }
+
+    // check country
+    $('#country').on('change', function() {
+        if(this.value != 30){
+            $('#checkOnlyCanada').fadeOut();
+            $('.shipping-not-available').fadeOut();
+            $('#checkOnlyCanadaResult').fadeIn();
+        } else {
+            $('#checkOnlyCanada').fadeIn();
+            $('#checkOnlyCanadaResult').fadeOut();
+        }
+    });
+
+    // paypal - stripe -animation
+    $('#showBtnPaypal .sbp-header').on('click', function() {
+        $('.sbs-header').fadeIn()
+        $('.sbs-container').slideUp();
+
+        $('.sbp-header').fadeOut()
+        $('.sbp-container').slideDown();
+    });
+    $('#showBtnStripe .sbs-header').on('click', function() {
+        $('.sbp-header').fadeIn()
+        $('.sbp-container').slideUp();
+
+        $('.sbs-header').fadeOut()
+        $('.sbs-container').slideDown();
+    });
+
+    // js credit card
+    $('#cc_number').on('keyup',function (e) {
+        if (e.keyCode !== 8) {
+            if (this.value.length === 4 || this.value.length === 9 || this.value.length === 14) {
+            this.value = this.value += ' ';
+            }
+        }
+    });
+
+    $('#cc_expiry').on('keyup',function (event) {
+        var inputChar = String.fromCharCode(event.keyCode);
+        var code = event.keyCode;
+        var allowedKeys = [8];
+        if (allowedKeys.indexOf(code) !== -1) {
+            return;
+        }
+
+        event.target.value = event.target.value.replace(
+            /^([1-9]\/|[2-9])$/g, '0$1/' // 3 > 03/
+        ).replace(
+            /^(0[1-9]|1[0-2])$/g, '$1/' // 11 > 11/
+        ).replace(
+            /^([0-1])([3-9])$/g, '0$1/$2' // 13 > 01/3
+        ).replace(
+            /^(0?[1-9]|1[0-2])([0-9]{2})$/g, '$1/$2' // 141 > 01/41
+        ).replace(
+            /^([0]+)\/|[0]+$/g, '0' // 0/ > 0 and 00 > 0
+        ).replace(
+            /[^\d\/]|^[\/]*$/g, '' // To allow only digits and `/`
+        ).replace(
+            /\/\//g, '/' // Prevent entering more than 1 `/`
+        );
+    });
+
+    // payment stripe
+    $("#form-pay-now").validate({
+        rules :{
+            name_on_card :{
+                required : true,
+            },
+            billing_address :{
+                required : true,
+            },
+            cc_number :{
+                required : true,
+            },
+            cc_expiry :{
+                required : true,
+            },
+            cc_cvc :{
+                required : true,
+            },
+        },
+        messages: {
+            name_on_card: {
+                required: 'Card Name is required!',
+            },
+            billing_address: {
+                required: 'Billing Address is required!',
+            },
+            cc_number: {
+                required: 'Card Number is required!',
+            },
+            cc_expiry: {
+                required: 'Card Expiry is required!',
+            },
+            cc_cvc: {
+                required: 'CVC is required!',
+            },
+        },
+        errorElement: 'small',
+        submitHandler: function(form) {
+
+            if($('#shipping_form_complete').val() == '1' && $('#customer_form_complete').val() == '1'){
+                $("#form-pay-now-btn").attr('disabled', 'disabled');
+                var formData = new FormData(form);
+                NProgress.start();
+                $.ajax({
+                    url: form.action,
+                    type: form.method,
+                    data: formData,
+                    dataType: 'json',
+                    contentType: false,
+                    processData: false,
+                    success: function(response) {
+                        NProgress.done();
+                        $("#form-pay-now-btn").removeAttr('disabled');
+                        if(response.trigger == "yes"){
+                            toastr.success(response.notif)
+                            setTimeout(function(){ 
+                                location.href = response.direct; 
+                            }, 2000);
+                        }else{
+                            toastr.warning(response.notif)
+                        }
+                    },
+                    error: function()
+                    {
+                        $("#form-pay-now-btn").removeAttr('disabled');
+                    }            
+                });
+            }else{
+                NProgress.done();
+                if($('#customer_form_complete').val() == '0'){
+                    toastr.warning('Please complete customer form.');
+                }
+                if($('#shipping_form_complete').val() == '0'){
+                    toastr.warning('Please complete shipping information.');   
+                }
+            }
+        }
+    });
+
+    // payment stripe free
+    $("#form-pay-now-free").validate({
+        rules :{},
+        messages: {},
+        errorElement: 'small',
+        submitHandler: function(form) {
+            $("#form-pay-now-free-btn").attr('disabled', 'disabled');
+            var formData = new FormData(form);
+            NProgress.start();
+            $.ajax({
+                url: form.action,
+                type: form.method,
+                data: formData,
+                dataType: 'json',
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                    NProgress.done();
+                    $("#form-pay-now-free-btn").removeAttr('disabled');
+                    if(response.trigger == "yes"){
+                        toastr.success(response.notif)
+                        setTimeout(function(){ 
+                            location.href = response.direct; 
+                        }, 2000);
+                    }else{
+                        toastr.warning(response.notif)
+                    }
+                },
+                error: function()
+                {
+                    NProgress.done();
+                    $("#form-pay-now-free-btn").removeAttr('disabled');
+                }            
+            });
+        }
+    });
+
+    $(document).on('click', '.edit-customer', function(e){
+        $('.customer-info').fadeOut(function(){
+            $('.customer-form').fadeIn();
+            $('#customer_form_complete').val('0');
+        });
+    });
+
+    $("#form-guest").validate({
+        rules :{
+            emailGuest :{
+                required : true,
+            }
+        },
+        messages: {
+            emailGuest: {
+                required: 'Please insert email address!',
+            }
+        },
+        errorElement: 'small',
+        submitHandler: function(form) {
+            NProgress.start();
+            $("#btn-guest").attr('disabled', 'disabled');
+            var formData = new FormData(form);
+            $.ajax({
+                url: form.action,
+                type: form.method,
+                data: formData,
+                dataType: 'json',
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                    $("#btn-guest").removeAttr('disabled');
+                    NProgress.done();
+                    if(response.trigger == "yes"){
+                        $('.customer-form').fadeOut(function(){
+                            $('.customer-info .after-submit').html(response.notif);
+                            $('.customer-info').fadeIn();
+
+                            $('#customer_form_complete').val('1');
+                        });
+                    }else{
+                        $('.result-shipping-cost').html(response.notif);
+                        toastr.warning(response.notif);
+                    }
+                },error: function(){
+                    NProgress.done();
+                    $("#btn-guest").removeAttr('disabled');
+                    toastr.error('There is something wrong, please refresh page and try again.');
+                }            
+            });
+        }
+    });
+
+    $('.sign-in').click(function(e){
+        $('#container-checkout').fadeOut(function(){
+            $('#container-login').fadeIn(); 
+        });
+    });
+
+    $('.container-login-close-btn').click(function(e){
+        $('#container-login').fadeOut(function(){
+            $('#container-checkout').fadeIn();
+        });
+    });
+});
+</script>
+@include('frontend.login_script')
+@stop

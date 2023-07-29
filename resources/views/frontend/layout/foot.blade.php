@@ -32,8 +32,8 @@
                         @endforeach
                     </div>
                     <hr>
-                    <p>Get exclusive access to new product.</p>
                     @if(Session::get(env('SES_FRONTEND_ID')) == null)
+                    <p>Get exclusive access to new product.</p>
                     <a class="btn btn-shop-now" href="{{url('/login')}}">SIGN UP NOW <i class="fa fa-arrow-right"></i></a>
                     @endif
                 </div>

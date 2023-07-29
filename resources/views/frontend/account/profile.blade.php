@@ -24,7 +24,7 @@
 @stop
 
 @section('content')
-<div class="container account margin-other-page">
+<div class="container account">
 	<div class="row no-mrg-top-mobile">
 		@include('frontend.account.profile_nav')
 		<div class="col-md-9 col-sm-12 no-mrg-top-mobile">

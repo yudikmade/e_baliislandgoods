@@ -339,7 +339,7 @@
     padding-top: 0px;
   }
   .container-login-close-btn {
-    font-size: 52px;
+    font-size: 42px;
     margin-top: 20px;
     font-weight:100;
   }
@@ -356,7 +356,7 @@
     font-size: 12px;
   }
   #container-cart {
-    padding-top: 140px;
+    padding-top: 80px;
     padding-bottom: 80px;
   }
   #container-cart .btn-primary {
@@ -501,8 +501,8 @@
   /* =========== prodact list-view ========= */
   /* login in cart page */
   #container-login {
-    padding-top: 140px;
-    padding-bottom: 140px;
+    padding-top: 0px;
+    padding-bottom: 80px;
   }
   /* login in cart page */
   /* ============================================= */
@@ -510,7 +510,7 @@
   
   /* checkout */
   .checkout {
-    padding-top: 180px;
+    padding-top: 40px;
     padding-bottom: 40px;
   }
   .checkout h5 {

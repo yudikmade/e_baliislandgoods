@@ -513,7 +513,7 @@ class ProcessController extends Controller
 
                             //set up tax
                             $tax = EmConfig::getData(array('meta_key' => 'tax'));
-                            $taxTotal = ($tax->meta_value * $totalCost) / 100;
+                            $taxTotal = ($tax * $totalCost) / 100;
 
                             $newInvoice = Common_helper::create_invoice_number();
                             $additional_price = 0;
@@ -684,7 +684,7 @@ class ProcessController extends Controller
                             EmTransactionMeta::updateMeta(array('transaction_id' => $getIDTrans, 'meta_key' => 'last_update', 'meta_description' => Common_helper::date_time_now()));
                             EmTransactionMeta::updateMeta(array('transaction_id' => $getIDTrans, 'meta_key' => 'currency_id', 'meta_description' => $getCurrentCurrency[3]));
                             EmTransactionMeta::updateMeta(array('transaction_id' => $getIDTrans, 'meta_key' => 'rate', 'meta_description' => $getCurrentCurrency[0]));
-                            EmTransactionMeta::updateMeta(array('transaction_id' => $getIDTrans, 'meta_key' => 'tax', 'meta_description' => $tax->meta_value));
+                            EmTransactionMeta::updateMeta(array('transaction_id' => $getIDTrans, 'meta_key' => 'tax', 'meta_description' => $tax));
 
                             EmTransactionMeta::updateMeta(array('transaction_id' => $getIDTrans, 'meta_key' => 'timezone_offset_minutes', 'meta_description' => $input['timezone_offset_minutes']));
                             EmTransactionMeta::updateMeta(array('transaction_id' => $getIDTrans, 'meta_key' => 'timezone', 'meta_description' => Common_helper::getTimezone($input['timezone_offset_minutes'])));

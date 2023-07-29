@@ -202,13 +202,13 @@ Route::group(['middleware'=>['currency']],function (){
 	Route::post('/check-before-payment', [ProcessController::class, 'checkBeforePayment'])->name('check_before_payment');
 
 	// // paypal - cart
-	// Route::get('/payment', [PaypalPaymentController::class, 'index'])->name('user_payment');
+	Route::get('/payment', [PaypalPaymentController::class, 'index'])->name('user_payment');
 	// Route::get('/cancel-payment', [PaypalPaymentController::class, 'cancel'])->name('user_cancel_payment');
 	// Route::get('/payment/success', [PaypalPaymentController::class, 'success'])->name('user_success_payment');
 
 	// // stripe - cart
-	// Route::post('/payment/stripe', [StripePaymentController::class, 'index'])->name('user_payment_stripe');
-	// Route::post('/payment/stripe/free', [StripePaymentController::class, 'free'])->name('user_payment_stripe_free');
+	Route::post('/payment/stripe', [StripePaymentController::class, 'index'])->name('user_payment_stripe');
+	Route::post('/payment/stripe/free', [StripePaymentController::class, 'free'])->name('user_payment_stripe_free');
 	// Route::get('/payment/stripe/success', [StripePaymentController::class, 'success'])->name('user_success_payment_stripe');
 
 	// Route::post('/process-payment', [ProcessController::class, 'processPayment'])->name('user_process_payment');

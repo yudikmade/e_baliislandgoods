@@ -1104,7 +1104,7 @@ class ShopController extends Controller
                 $qty = $cart['qty'];
                 $stock = $cart['stock'];
 
-                $getImg = EmProductImg::getWhere([['product_id', '=', $product_id], ['order', '=', '1']], '', false);
+                $getImg = EmProductImg::getWhere([['em_product_img.product_id', '=', $product_id], ['em_product_img.order', '=', '1']], '', false);
                 $getProduct = EmProduct::getWhere([['product_id', '=', $product_id]], '', false);
                 $getProductSku = EmProductSku::getWhere([['product_id', '=', $product_id], ['sku_id', '=', $sku_id]], '', false);
 

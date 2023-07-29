@@ -18,7 +18,7 @@
       <div class="col-md-6">
         <h1>Shop</h1>
       </div>
-      <div class="col-md-6">
+      <div class="col-md-6 pt-2">
         <form class="row">
           <div class="col-md-12 row">
             <label class="col col-form-label"></label>
@@ -56,7 +56,7 @@
       </div>
       @else
       <div class="col-md-12">
-        <div class="row infinite-scroll" id="products">
+        <div class="infinite-scroll" id="products">
           <?=$data_product?>
         </div>
       </div>
@@ -80,6 +80,7 @@ $(document).ready(function () {
           $('.pagination').remove();
       }
   });
+  $('.infinite-scroll').find('.jscroll-inner').addClass('row');
 });
 </script>
 @stop

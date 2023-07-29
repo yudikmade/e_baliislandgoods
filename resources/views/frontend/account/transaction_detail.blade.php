@@ -20,7 +20,7 @@ body {
 @stop
 
 @section('content')
-<div class="container account margin-other-page">
+<div class="container account">
     <div class="row mrg-tp20 no-mrg-top-mobile">
         @include('frontend.account.profile_nav')
         <div class="account-right-side col-md-9 col-sm-12 mrg-tp30 no-mrg-top-mobile">

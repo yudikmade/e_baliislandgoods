@@ -114,6 +114,12 @@ h1, h2, h3{
 .navbar-right .nav-link{
   font-size: 20px!important ;
 }
+.navbar-right .nav-link p {
+  font-size: 15px!important;
+  display: inline-block;
+  margin-bottom: 0px;
+  vertical-align: text-bottom;
+}
 
 .navbar-light .navbar-nav .nav-link{
   color: #000;
@@ -700,6 +706,10 @@ transition: .5s ease-in-out;
   border-radius: 0;
 }
 
+.product-detail-desc h5 {
+  font-size: 24px;
+}
+
 
 @media (min-width: 992px) {
 
@@ -728,6 +738,8 @@ transition: .5s ease-in-out;
 }
 
 .btn-shop-now,
+.btn-view-cart,
+.btn-check-out,
 .btn-primary{
   background: #000;
   border-radius: 0px;
@@ -737,11 +749,20 @@ transition: .5s ease-in-out;
   border-radius: 20px;
   border-color: transparent !important
 }
+.btn-view-cart {
+  width: 100%!important;
+}
 
 .btn-shop-now:hover,
 .btn-primary:hover,
 .btn-primary:active,
-.btn-primary:focus{
+.btn-primary:focus,
+.btn-view-cart:hover,
+.btn-view-cart:focus
+.btn-view-cart:active,
+.btn-check-out:hover,
+.btn-check-out:active,
+.btn-check-out:focus{
   color: #fff;
   background: rgb(249,218,152);
   background: linear-gradient(90deg, rgba(249,218,152,1) 0%, rgba(229,211,242,1) 50%, rgba(218,194,235,1) 100%);
@@ -1029,7 +1050,8 @@ footer span{
 }
 
 .breadcrumb{
-  margin-left: 6%;
+  margin-top: 20px;
+  margin-left: 20px;
 }
 
 .breadcrumb a{
@@ -1477,6 +1499,10 @@ input, select:focus{
 .page-link{
   border: transparent!important;
   color: #000!important;
+}
+
+.carousel-product .carousel-indicators .active {
+  border: none !important;
 }
 
  @media (min-width: 768px) {
