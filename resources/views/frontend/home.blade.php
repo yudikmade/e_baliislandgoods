@@ -21,7 +21,7 @@
       </div>
       @endforeach
     </div>
-	<div class="container">
+	<!-- <div class="container">
       <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev">
         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
         <span class="visually-hidden">Previous</span>
@@ -30,7 +30,7 @@
         <span class="carousel-control-next-icon" aria-hidden="true"></span>
         <span class="visually-hidden">Next</span>
       </button>
-    </div>
+    </div> -->
 </div>
 
 <div class="featurette-divider"></div>
@@ -131,7 +131,7 @@
         <div class="caption-banner">
           <h2>Contact</h2>
           <p>Have your favorite pet essentials delivered right when you need them. Plus, earn bonus perks like savings, free shipping, and surprise gifts.</p>
-          <a class="btn btn-shop-now" href="{{url('/contact')}}">Contact Us</a>
+          <a class="btn btn-shop-now" href="{{url('/contact-us')}}">Contact Us</a>
         </div>
       </div>
 </div>

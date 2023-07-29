@@ -241,7 +241,7 @@ class ShopController extends Controller
         $productImg = asset(env('URL_IMAGE').'logo.png');
         $breadcrumbs = '
         <div class="breadcrumb">
-            <a href="'.url('/').'">Home</a>
+            <a href="'.url('/shop').'">Shop</a>
         </div>';
         $categoriesHtml = '';
 
@@ -264,15 +264,15 @@ class ShopController extends Controller
             $urlCategory = preg_replace('/[^\w ]/', '', $productCategory[0]->category);
             $breadcrumbs = '
                 <div class="breadcrumb">
-                    <a href="'.url('/').'">Home</a>
-                    <i class="fa fa-chevron-right"></i>
+                    <a href="'.url('/shop').'">Shop</a>
+                    <a>></a>
                     <a href="'.url('/shop/'.str_replace(' ', '-', strtolower($productCategory[0]->category)).'-'.$productCategory[0]->category_id).'">'.$productCategory[0]->category.'</a>
-                    <i class="fa fa-chevron-right"></i>
+                    <a>></a>
                     <a class="active">'.$getDataProduct[0]->product_name.'</a>
                 </div>';
             $categoriesHtml = '<p class="attr"><a href="'.url('/shop/'.str_replace(' ', '-', strtolower($productCategory[0]->category)).'-'.$productCategory[0]->category_id).'">'.$productCategory[0]->category.'</a></p>';
             
-            $also_like = EmProduct::getWithImage("(em_product_category.category_id = '".$productCategory[0]->category_id."' AND em_product.product_id != '".$product_id."' )", 0, 7);
+            $also_like = EmProduct::getWithImage("(em_product_category.category_id = '".$productCategory[0]->category_id."' AND em_product.product_id != '".$product_id."' )", 0, 4);
         }
 
         $checkStockProduct = EmProductSku::whereRaw("(stock > 0)")->where('product_id', $product_id)->get();

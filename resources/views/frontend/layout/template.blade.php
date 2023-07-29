@@ -29,7 +29,7 @@
                             <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
                             <div class="row">
                                 <div class="col-md-3">
-                                    <li><a class="dropdown-item" type="button">Collections</a></li>
+                                    <!-- <li><a class="dropdown-item" type="button">Collections</a></li> -->
                                     <li><a href="{{route('shop_page')}}" class="dropdown-item" type="button">Show All</a></li>
                                 </div>
                                 <div class="col-md-3 dropdown-border-left">
@@ -39,42 +39,46 @@
                                 </div>
                                 @if(isset($getRandomProduct[0]))
                                 <div class="col-md-3">
-                                    <div class="container-image hide-shop-img">
-                                        <div class="content">
-                                            <img class="img-fluid" src="{{asset(env('URL_IMAGE').'product/thumb/'.$getRandomProduct[0]->image)}}">
-                                            <div class="content-details-show">
-                                                @php 
-                                                $htmlDescription = '';
-                                                if(strlen(strip_tags($getRandomProduct[0]->description)) <= 100) {
-                                                    $htmlDescription = strip_tags($getRandomProduct[0]->description);
-                                                } else {
-                                                    $htmlDescription = substr(strip_tags($getRandomProduct[0]->description), 0, 100).'...';
-                                                }
-                                                @endphp
-                                                {{$htmlDescription}}
+                                    <a href="{{route('shop_detail_page').'/'.str_replace(' ', '-', strtolower($getRandomProduct[0]->product_name)).'-'.$getRandomProduct[0]->product_id}}">
+                                        <div class="container-image hide-shop-img">
+                                            <div class="content">
+                                                <img class="img-fluid" src="{{asset(env('URL_IMAGE').'product/thumb/'.$getRandomProduct[0]->image)}}">
+                                                <div class="content-details-show">
+                                                    @php 
+                                                    $htmlDescription = '';
+                                                    if(strlen(strip_tags($getRandomProduct[0]->description)) <= 100) {
+                                                        $htmlDescription = strip_tags($getRandomProduct[0]->description);
+                                                    } else {
+                                                        $htmlDescription = substr(strip_tags($getRandomProduct[0]->description), 0, 100).'...';
+                                                    }
+                                                    @endphp
+                                                    {{$htmlDescription}}
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </a>
                                 </div>
                                 @endif
                                 @if(isset($getRandomProduct[1]))
                                 <div class="col-md-3">
-                                    <div class="container-image hide-shop-img">
-                                        <div class="content">
-                                            <img class="img-fluid" src="{{asset(env('URL_IMAGE').'product/thumb/'.$getRandomProduct[1]->image)}}">
-                                            <div class="content-details-show">
-                                                @php 
-                                                $htmlDescription = '';
-                                                if(strlen(strip_tags($getRandomProduct[1]->description)) <= 100) {
-                                                    $htmlDescription = strip_tags($getRandomProduct[1]->description);
-                                                } else {
-                                                    $htmlDescription = substr(strip_tags($getRandomProduct[1]->description), 0, 100).'...';
-                                                }
-                                                @endphp
-                                                {{$htmlDescription}}
+                                <a href="{{route('shop_detail_page').'/'.str_replace(' ', '-', strtolower($getRandomProduct[1]->product_name)).'-'.$getRandomProduct[1]->product_id}}">
+                                        <div class="container-image hide-shop-img">
+                                            <div class="content">
+                                                <img class="img-fluid" src="{{asset(env('URL_IMAGE').'product/thumb/'.$getRandomProduct[1]->image)}}">
+                                                <div class="content-details-show">
+                                                    @php 
+                                                    $htmlDescription = '';
+                                                    if(strlen(strip_tags($getRandomProduct[1]->description)) <= 100) {
+                                                        $htmlDescription = strip_tags($getRandomProduct[1]->description);
+                                                    } else {
+                                                        $htmlDescription = substr(strip_tags($getRandomProduct[1]->description), 0, 100).'...';
+                                                    }
+                                                    @endphp
+                                                    {{$htmlDescription}}
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </a>
                                 </div>
                                 @endif
                             </div>

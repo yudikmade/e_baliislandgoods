@@ -48,6 +48,7 @@ class HomeController extends Controller{
             'title' => "About Us | ".env('AUTHOR_SITE'),
             'description' => env('META_DESCRIPTION'),
             'alt_image' => 'About Us | '.env('AUTHOR_SITE'),
+            'about_us_text' => EmConfig::getData(array('meta_key' => 'about_us_text')),
         );
         return view('frontend.about_us', $data);
     }

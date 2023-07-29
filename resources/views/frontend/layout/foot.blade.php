@@ -1,4 +1,4 @@
-	<div class="featurette-divider"></div>
+
 	<footer>
       <div class="footer-bottom">
         <div class="container-fluid">
@@ -51,59 +51,78 @@
       </div>
     </footer>
 	<div id="gotoTop" class="icon-angle-up"><i class="fas fa-chevron-up"></i></div>
-	<div class="modal-shop">
-		<div id="myModal" class="modal fade">
-			<div class="modal-dialog modal-dialog-scrollable">
-				<div class="modal-content">
-					<div class="modal-header">
-					<button type="button" class="btn btn-gold" data-bs-dismiss="modal">
-						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-						<path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
-						</svg>
-					</button>
-					</div>
-					<div class="modal-body">
-					<center>
-						<h4><b>YOUR CART</h4></h4>
-						<div class="shipping-desc">Free Standard Shipping on Orders of $75 or More</div>
-						<br>
-						<hr>
-						<br>
-						<p>You are $75.00 away from free shipping! For orders with at least one subscription item, carts $35+ get free shipping!</p>
-						<hr>
-						<p>Your cart is empty!</p>
-						<p>Add your favorite items to your cart.</p>
-						<a href="#" class="btn btn-shop-now">Shop Now</a>
-						<br>
-						<hr>
-						<br>
-						<p>MORE CUSTOMER FAVORITES</p>
-						<p>Customers who bought these items also bought:</p>
-						<br>
-					</center>
-					<div class="row">
-						<div class="col-md-3 col-3"><img class="img-fluid" src="assets/images/product/8.jpg"></div>
-						<div class="col-md-9 col-9">
-						<p>Hat</p>
-						<p>#32</p>
-						</div>
-					</div>
-					<a href="#" class="btn btn-shop-now-reverse">Shop Now</a>
-					<hr>
-					<div class="row">
-						<div class="col-md-3 col-3"><img class="img-fluid" src="assets/images/product/7.jpg"></div>
-						<div class="col-md-9 col-9">
-						<p>Hat</p>
-						<p>#32</p>
-						</div>
-					</div>
-					<a href="#" class="btn btn-shop-now-reverse">Shop Now</a>
-					<hr>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+	<!-- shopping cart -->
+    <div class="modal-shop">
+        <div id="myModalShop" class="modal fade">
+            <div class="modal-dialog modal-dialog-slideout modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                    <button type="button" class="btn btn-gold" data-bs-dismiss="modal">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+                        </svg>
+                    </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="right-side-cart-empty {{$checkCart[1] == '0' ? '':'none'}}">
+                            <center>
+                                <h3>Your Shopping Cart</h3>
+                                <p>No products in the cart.</p>
+                                <br/>
+                                <p><a href="{{url('/shop')}}">Return to Shop</a></p>
+                            </center>
+                            <br>
+                        </div>
+                        <div class="right-side-cart {{$checkCart[1] == '0' ? 'none':''}}" id="right-side-cart">
+                            @if(!is_null(Session::get('cart')))
+                            @php 
+                            $price_in_right_side = 0;
+                            @endphp
+                            @foreach(Session::get('cart') as $key)
+                            @php 
+                            $price_in_right_side = $price_in_right_side + ($key['price'][0] * $key['qty']);
+                            @endphp
+                            <div class="row">
+                              <div class="col-md-3 col-4"><img class="img-fluid" src="{{asset(env('URL_IMAGE').'product/thumb/'.$key['product_img'])}}"></div>
+                              <div class="col-md-7 col-6">
+                                <p><b>{{$key['product_name']}}</b></p>
+                                <p>{{$key['qty']}} x {{$key['price_text']}}</p>
+                              </div>
+                              <div class="col-md-2 col-2">
+                                <a href="{{route('process_delete_item_cart').'/'.$key['product_id'].'/'.$key['sku_id']}}" class="btn btn-remove-product btn-remove-product-right-side d-flex align-items-center justify-content-center">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                                  <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+                                  </svg>
+                                </a>
+                              </div>
+                            </div>
+                            <hr>
+                            @endforeach
+                            <div class="row">
+                              <div class="col-md-6 col-6">
+                                <p><b>Cart Subtotal:</b></p>
+                              </div>
+                              <div class="col-md-6 col-6 sub-total"><p>
+                                @php 
+                                $current_currency_in_right_side = \App\Helper\Common_helper::get_current_currency();
+
+                                $price_in_right_side = \App\Helper\Common_helper::convert_to_current_currency($price_in_right_side);
+                                echo $current_currency_in_right_side[1].$price_in_right_side[1].' '.$current_currency_in_right_side[2];
+                                @endphp
+                              </p></div>
+                            </div>
+                            <br>
+                            <div class="row">
+                              <div class="col-md-12"><a href="{{url('/cart')}}" class="btn btn-view-cart full-width">VIEW CART</a></div>
+                            </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- === shopping cart === -->
 </main>
 
 <script>
@@ -152,6 +171,41 @@
 </script>
 <script type="text/javascript">
     $(document).ready(function() {
+
+        $('.btn-remove-product-right-side').click(function(e){
+   			e.preventDefault();
+   			var urlAction = $(this).attr('href');
+            $.ajax({
+                url: urlAction,
+                dataType: 'json',
+                type: 'GET',
+                success: function(response, textStatus, XMLHttpRequest)
+                {
+                    if(response.trigger=="yes")
+                    {
+                        toastr.success(response.notif);
+                        var countCart = parseInt($('.count-fill-cart').text());
+                        if(countCart == 1){
+                            $('.count-fill-cart').addClass('none');
+                            // right side cart
+                            $('.right-side-cart-empty').removeClass('none');
+                            $('.right-side-cart').addClass('none');
+                        }
+
+                        $('#right-side-cart').html(response.right_side_cart);
+                    }
+                    else
+                    {
+                        toastr.warning(response.notif);
+                    }
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown)
+                {
+                    toastr.error('There is something wrong, please refresh page and try again.');
+                }
+            });
+        });
+
       $('#header-search-btn').on('click', function(e) {
         $('#header-search-btn').fadeOut();
         setTimeout(function() { 
