@@ -28,10 +28,10 @@
                             <input type="hidden" name="meta_key" id="meta_key" value="{{$meta_key}}">
                             <div class="form-group">
                                 <label for="information" class="col-sm-2 control-label"><span class="text-danger">*</span>{{$title_page}}</label>
-                                <div class="col-sm-10">
+                                <div class="col-sm-4">
                                     <div class="input-group">
-                                        <input type="text" class="form-control currency" name="information" id="information" value="{{$data_result->meta_value}}"/>
-                                        <span class="input-group-addon display-information" add-symbol="%">{{$data_result->meta_value}}%</span>
+                                        <input type="text" class="form-control currency" name="information" id="information" value="{{$data_result}}"/>
+                                        <span class="input-group-addon display-information" add-symbol="%">{{$data_result}}%</span>
                                         <input type="hidden" name="information_text" id="information_text" value="0">
                                     </div>
                                 </div>

@@ -1,5 +1,9 @@
 @extends('admin.layout.template')
 
+@section('style')
+<link rel="stylesheet" href="{{asset(env('URL_ASSETS').'iCheck/all.css')}}">
+@stop
+
 @section('content')
 <div class="content-wrapper">
     <section class="content-header">
@@ -18,49 +22,42 @@
                 <div class="box box-success">
                     <div class="box-header">
                         <h3 class="box-title">{{$title_form}}</h3>
-                    </div><!-- /.box-header -->
-                    <form id="form-save-data" class="form-horizontal" action="{{route('control_process_information')}}" method="post">
+                    </div>
+                    @foreach($data_result as $key)
+                    <form id="form-save-data" class="form-horizontal" action="{{route('control_edit_faq_process')}}" method="post">
                         {{ csrf_field() }}
                         <div class="box-body">
                             <div class="bs-callout bs-callout-warning">
-                              {{$title_form}}
+                              Please edit FAQ the form below.
                             </div>
-                            <input type="hidden" name="meta_key" id="meta_key" value="{{$meta_key}}">
-                            @if($meta_key == 'contact_us')
-                                <div class="form-group">
-                                    <label for="information" class="col-sm-2 control-label">Address</label>
-                                    <div class="col-sm-10">
-                                        <input class="form-control" type="text" name="address" id="address" value="{{$data_result_address == '' ? '':$data_result_address}}">
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="information" class="col-sm-2 control-label">No. Hp/Telp</label>
-                                    <div class="col-sm-10">
-                                        <input class="form-control" type="text" name="telp" id="telp" value="{{$data_result_telp == '' ? '':$data_result_telp}}">
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="information" class="col-sm-2 control-label">Email</label>
-                                    <div class="col-sm-10">
-                                        <input class="form-control" type="text" name="email" id="email" value="{{$data_result_email == '' ? '':$data_result_email}}">
-                                    </div>
-                                </div>
-                            @endif
-                            @if($meta_key == 'terms_of_payment_page' || $meta_key == 'shipping_and_return_page' || $meta_key == 'privacy_policy_page')
+                            <input type="hidden" name="faq_id" id="faq_id" value="{{$key->faq_id}}">
                             <div class="form-group">
-                                <label for="information" class="col-sm-2 control-label"><span class="text-danger">*</span>{{$title_page}}</label>
+                                <label for="question" class="col-sm-2 control-label"><span class="text-danger">*</span>Question</label>
                                 <div class="col-sm-10">
-                                    <textarea class="form-control" name="information" id="information">{{$data_result == '' ? '':$data_result}}</textarea>
-                                    <input type="hidden" name="information_text" id="information_text" value="">
+                                    <input type="text" class="form-control" name="question" id="question" value="{{$key->question}}"  />
                                 </div>
                             </div>
-                            @endif
+                            <div class="form-group">
+                                <label for="answer" class="col-sm-2 control-label"><span class="text-danger">*</span>Answer</label>
+                                <div class="col-sm-10">
+                                    <textarea class="form-control" name="answer" id="answer"><?=$key->answer?></textarea>
+                                    <input type="hidden" name="answer_text" id="answer_text" value="">
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="form-group">
+                                <label for="order" class="col-sm-2 control-label"><span class="text-danger">*</span>Order</label>
+                                <div class="col-sm-4">
+                                    <input type="text" class="form-control currency" name="order" id="order" value="{{$key->order}}"/>
+                                </div>
+                            </div>
                         </div>
                         <div class="box-footer">
                             <button type="submit" name="save" id="btn-save-data" class="btn btn-primary pull-right btn-lg">Save</button> 
                             <img class="pull-right none" style="margin-top: 18px; margin-right: 10px;" id="loader" src="{{asset(env('URL_IMAGE').'loader.gif')}}" alt="Loading...." title="Loading...." />
                         </div>
                     </form>
+                    @endforeach
                 </div>
             </div>
         </div>
@@ -72,21 +69,27 @@
 <script src="{{asset(env('URL_ASSETS').'ckeditor/ckeditor.js')}}"></script>
 <script type="text/javascript">
     $(document).ready(function() {
-        @if($meta_key != 'contact_us')
-        var company_profile = document.getElementById("information");
-            CKEDITOR.replace(company_profile,{
-            language:'en-gb'
-        });
-        @endif
+        var company_profile = document.getElementById("answer");
+                CKEDITOR.replace(company_profile,{
+                language:'en-gb'
+            });
 
         $("#form-save-data").validate({
+            rules :{
+                question :{
+                    required : true,
+                }
+            },
+            messages: {
+                question: {
+                    required: 'Please input question!',
+                }
+            },
             errorElement: 'small',
             submitHandler: function(form) {
 
-                @if($meta_key != 'contact_us')
-                CKEDITOR.instances['information'].updateElement();
-                $('#information_text').val(CKEDITOR.instances['information'].editable().getText());
-                @endif
+                CKEDITOR.instances['answer'].updateElement();
+                $('#answer_text').val(CKEDITOR.instances['answer'].editable().getText());
 
                 $("#loader").fadeIn();
                 $("#btn-save-data").attr('disabled', 'disabled');

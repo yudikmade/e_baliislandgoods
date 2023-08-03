@@ -19,42 +19,33 @@
                     <div class="box-header">
                         <h3 class="box-title">{{$title_form}}</h3>
                     </div><!-- /.box-header -->
-                    <form id="form-save-data" class="form-horizontal" action="{{route('control_process_information')}}" method="post">
+                    <form id="form-save-data" class="form-horizontal" action="{{route('control_add_coupon_process')}}" method="post">
                         {{ csrf_field() }}
                         <div class="box-body">
                             <div class="bs-callout bs-callout-warning">
-                              {{$title_form}}
+                              Please input new coupon the form below.
                             </div>
-                            <input type="hidden" name="meta_key" id="meta_key" value="{{$meta_key}}">
-                            @if($meta_key == 'contact_us')
-                                <div class="form-group">
-                                    <label for="information" class="col-sm-2 control-label">Address</label>
-                                    <div class="col-sm-10">
-                                        <input class="form-control" type="text" name="address" id="address" value="{{$data_result_address == '' ? '':$data_result_address}}">
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="information" class="col-sm-2 control-label">No. Hp/Telp</label>
-                                    <div class="col-sm-10">
-                                        <input class="form-control" type="text" name="telp" id="telp" value="{{$data_result_telp == '' ? '':$data_result_telp}}">
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="information" class="col-sm-2 control-label">Email</label>
-                                    <div class="col-sm-10">
-                                        <input class="form-control" type="text" name="email" id="email" value="{{$data_result_email == '' ? '':$data_result_email}}">
-                                    </div>
-                                </div>
-                            @endif
-                            @if($meta_key == 'terms_of_payment_page' || $meta_key == 'shipping_and_return_page' || $meta_key == 'privacy_policy_page')
                             <div class="form-group">
-                                <label for="information" class="col-sm-2 control-label"><span class="text-danger">*</span>{{$title_page}}</label>
+                                <label for="code" class="col-sm-2 control-label"><span class="text-danger">*</span>Coupon code</label>
                                 <div class="col-sm-10">
-                                    <textarea class="form-control" name="information" id="information">{{$data_result == '' ? '':$data_result}}</textarea>
-                                    <input type="hidden" name="information_text" id="information_text" value="">
+                                    <input type="text" class="form-control" name="code" id="code" value=""  />
                                 </div>
                             </div>
-                            @endif
+                            <div class="form-group">
+                                <label for="count" class="col-sm-2 control-label"><span class="text-danger">*</span>Amount of usage</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control currency" name="count" id="count" value=""  />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="discount" class="col-sm-2 control-label"><span class="text-danger">*</span>Discount</label>
+                                <div class="col-sm-10">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control currency" name="discount" id="discount" value=""/>
+                                        <span class="input-group-addon display-discount" add-symbol="%"></span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="box-footer">
                             <button type="submit" name="save" id="btn-save-data" class="btn btn-primary pull-right btn-lg">Save</button> 
@@ -69,25 +60,33 @@
 @stop
 
 @section('script')
-<script src="{{asset(env('URL_ASSETS').'ckeditor/ckeditor.js')}}"></script>
 <script type="text/javascript">
     $(document).ready(function() {
-        @if($meta_key != 'contact_us')
-        var company_profile = document.getElementById("information");
-            CKEDITOR.replace(company_profile,{
-            language:'en-gb'
-        });
-        @endif
-
         $("#form-save-data").validate({
+            rules :{
+                code :{
+                    required : true,
+                },
+                count :{
+                    required : true,
+                },
+                discount :{
+                    required : true,
+                }
+            },
+            messages: {
+                code: {
+                    required: 'Please input coupon code!',
+                },
+                count :{
+                    required: 'Please input amount of usage!',
+                },
+                discount :{
+                    required: 'Please insert discount!',
+                }
+            },
             errorElement: 'small',
             submitHandler: function(form) {
-
-                @if($meta_key != 'contact_us')
-                CKEDITOR.instances['information'].updateElement();
-                $('#information_text').val(CKEDITOR.instances['information'].editable().getText());
-                @endif
-
                 $("#loader").fadeIn();
                 $("#btn-save-data").attr('disabled', 'disabled');
                 var formData = new FormData(form);
@@ -103,6 +102,9 @@
                         if(response.trigger == "yes")
                         {
                             toastr.success(response.notif);
+                            $('#code').val('');
+                            $('#count').val('');
+                            $('#discount').val('');
                         }
                         else
                         {

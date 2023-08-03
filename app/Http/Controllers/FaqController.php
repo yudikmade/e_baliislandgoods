@@ -7,11 +7,11 @@ use View;
 use Validator;
 
 use App\Helper\Common_helper;
-use App\Models\EmOtherPage;
+use App\Models\EmFaq;
 
-class OtherPageController extends Controller
+class FaqController extends Controller
 {
-    private $menu_order = 7;
+    private $menu_order = 5;
 
     public function index($search = '')
     {
@@ -22,21 +22,22 @@ class OtherPageController extends Controller
             $search = str_replace('+', ' ', $search);
         }
 
-        $data_result = EmOtherPage::getWhere([], "(page like '%" . $search . "%')", true);
-        $view_content = View::make('admin.master.other_page.op', compact('data_result'));
+        $data_result = EmFaq::getWhere([], "(question like '%" . $search . "%')", true);
+        $view_content = View::make('admin.master.faq.faq', compact('data_result'));
 
         $data = array(
-            'title' => 'Other page | Administrator',
-            'title_page' => 'Other page',
-            'title_form' => 'Data Other page',
-            'information' => 'The following data other page has been stored in the system',
+            'title' => 'FAQ | Administrator',
+            'title_page' => 'FAQ',
+            'title_form' => 'Data FAQ',
+            'information' => 'The following data FAQ has been stored in the system',
             'breadcrumbs' => '
-                                <li class="active"><i class="fa fa-file-text-o"></i> Other page</li>
+                                <li class="active"><i class="fa fa-file-text-o"></i> FAQ</li>
                             ',
             'menu_order' => $this->menu_order,
+            'masterFaq' => 'active',
             'search' => $search,
             'view_content' => $view_content,
-            'url_search' => route('control_other_page')
+            'url_search' => route('control_faq')
         );
         return view('admin.table_view_template', $data);
     }
@@ -45,16 +46,18 @@ class OtherPageController extends Controller
         Common_helper::check_session_backend(true);
 
         $data = array(
-            'title' => 'Other page | Administrator',
-            'title_page' => 'Other page',
-            'title_form' => 'Form add other page',
+            'title' => 'FAQ | Administrator',
+            'title_page' => 'FAQ',
+            'title_form' => 'Form add new FAQ',
             'breadcrumbs' => '
-                                <li class=""><a href="'.route('control_other_page').'"><i class="fa fa-file-text-o"></i> Other page</a></li>
-                                <li class="active"><i class="fa fa-plus"></i> Add other page</li>
+                                <li class=""><a href="'.route('control_faq').'"><i class="fa fa-file-text-o"></i> FAQ</a></li>
+                                <li class="active"><i class="fa fa-plus"></i> Add new data</li>
                             ',
             'menu_order' => $this->menu_order,
+            'new_order' => EmFaq::newOrder(),
+            'masterFaq' => 'active',
         );
-        return view('admin.master.other_page.op_add', $data);
+        return view('admin.master.faq.faq_add', $data);
     }
 
     public function addProcess(Request $request)
@@ -66,80 +69,12 @@ class OtherPageController extends Controller
 
 
         $validator = Validator::make(request()->all(), [
-            'page' => 'required',
+            'question' => 'required',
+            'answer_text' => 'required',
         ],
         [
-            'page.required' => 'Please add page.',
-        ]);
-        
-        if($validator->fails()) 
-        {
-            $notif = '';
-            foreach ($validator->errors()->all() as $messages) 
-            {
-                $notif .= $messages.'<br>';
-            }
-            $result['notif'] = $notif;
-        }
-        else
-        {
-            $input = $request->all();
-
-            if(count(EmOtherPage::getWhere([['page', '=', $input['page']]], '', false)) == 0)
-            {
-                $dataInsert = 
-                [
-                    'page' => $input['page'],
-                    'slug' => Common_helper::clean(strtolower($input['page'])),
-                    'description' => $input['description'],
-                    'status' => '1',
-                ];
-                EmOtherPage::insertData($dataInsert);
-                $result['trigger'] = 'yes';
-                $result['notif'] = 'New other page has been added.';
-            }
-            else
-            {
-                $result['notif'] = 'Other page ('.$input['page'].') already exist.';
-            }
-        }
-
-        echo json_encode($result);
-    }
-
-    public function edit($id)
-    {
-        Common_helper::check_session_backend(true);
-
-        $data = array(
-            'title' => 'Other page | Administrator',
-            'title_page' => 'Other page',
-            'title_form' => 'Form edit Other page',
-            'breadcrumbs' => '
-                                <li class=""><a href="'.route('control_other_page').'"><i class="fa fa-file-text-o"></i> Other page</a></li>
-                                <li class="active"><i class="fa fa-edit"></i> Edit Other page</li>
-                            ',
-            'data_result' => EmOtherPage::getWhere([['id', '=', $id]], '', false),
-            'menu_order' => $this->menu_order,
-        );
-        return view('admin.master.other_page.op_edit', $data);
-    }
-
-    public function editProcess(Request $request)
-    {
-        Common_helper::check_session_backend(true);
-
-        $result['trigger'] = 'no';
-        $result['notif'] = '';
-
-
-        $validator = Validator::make(request()->all(), [
-            'id' => 'required',
-            'page' => 'required',
-        ],
-        [
-            'id.required' => 'Sorry, server can\'t response.',
-            'page.required' => 'Please choose social media.',
+            'bank_name.required' => 'Please insert question.',
+            'answer_text.required' => 'Please insert answer.',
         ]);
         
         if($validator->fails()) 
@@ -155,14 +90,80 @@ class OtherPageController extends Controller
         {
             $input = $request->all();
             
+            $dataInsert = 
+            [
+                'question' => $input['question'],
+                'answer' => $input['answer'],
+                'order' => $input['order'],
+            ];
+            EmFaq::insertData($dataInsert);
+            $result['trigger'] = 'yes';
+            $result['notif'] = 'New FAQ has been added.';
+            $result['order'] = EmFaq::newOrder();
+        }
+
+        echo json_encode($result);
+    }
+
+    public function edit($id)
+    {
+        Common_helper::check_session_backend(true);
+
+        $data = array(
+            'title' => 'FAQ | Administrator',
+            'title_page' => 'FAQ',
+            'title_form' => 'Form edit FAQ',
+            'breadcrumbs' => '
+                                <li class=""><a href="'.route('control_bank').'"><i class="fa fa-file-text-o"></i> FAQ</a></li>
+                                <li class="active"><i class="fa fa-edit"></i> Edit FAQ</li>
+                            ',
+            'data_result' => EmFaq::getWhere([['faq_id', '=', $id]], '', false),
+            'menu_order' => $this->menu_order,
+            'masterFaq' => 'active',
+        );
+        return view('admin.master.faq.faq_edit', $data);
+    }
+
+    public function editProcess(Request $request)
+    {
+        Common_helper::check_session_backend(true);
+
+        $result['trigger'] = 'no';
+        $result['notif'] = '';
+
+
+        $validator = Validator::make(request()->all(), [
+            'faq_id' => 'required',
+            'question' => 'required',
+            'answer_text' => 'required',
+        ],
+        [
+            'faq_id.required' => 'Sorry, server can\'t process your data.',
+            'bank_name.required' => 'Please insert question.',
+            'answer_text.required' => 'Please insert answer.',
+        ]);
+        
+        if($validator->fails()) 
+        {
+            $notif = '';
+            foreach ($validator->errors()->all() as $messages) 
+            {
+                $notif .= $messages.'<br>';
+            }
+            $result['notif'] = $notif;
+        }
+        else
+        {
+            $input = $request->all();
+
             $dataUpdate = 
             [
-                'page' => $input['page'],
-                'slug' => Common_helper::clean(strtolower($input['page'])),
-                'description' => $input['description'],
-                'status' => $input['status'],
+                'question' => $input['question'],
+                'answer' => $input['answer'],
+                'order' => $input['order'],
             ];
-            EmOtherPage::updateData($input['id'], $dataUpdate);
+            
+            EmFaq::updateData($input['faq_id'], $dataUpdate);
             $result['trigger'] = 'yes';
             $result['notif'] = 'Data has been changed.';
         }
@@ -179,7 +180,7 @@ class OtherPageController extends Controller
 
         if($id != '')
         {
-            EmOtherPage::where('id', $id)->delete();
+            EmFaq::deleteData($id);
             $result['trigger'] = 'yes';
             $result['notif'] = 'Data has been deleted.';
         }
@@ -187,11 +188,9 @@ class OtherPageController extends Controller
         {
             $validator = Validator::make(request()->all(), [
                 'data' => 'required',
-                'status' => 'required',
             ],
             [
                 'data.required' => 'Please choose data.',
-                'status.required' => 'Server can\'t response.',
             ]);
             
             if($validator->fails()) 
@@ -206,21 +205,11 @@ class OtherPageController extends Controller
             else
             {
                 $input = $request->all();
-                $status = $input['status'];
-                if($input['status'] == 'delete')
-                {
-                    $status = '2';
-                    $result['notif'] = 'Data has been deleted.';
-                }
-                else
-                {
-                    $result['notif'] = 'Status data has been changed.';
-                }
+                $result['notif'] = 'Data has been deleted.';
 
                 foreach ($input['data'] as $key) 
                 {
-                    $dataUpdate = ['status' => $status];
-                    EmOtherPage::where('id', $key[0])->delete();
+                    EmFaq::deleteData($key[0]);
                 }
                 $result['trigger'] = 'yes';
             }

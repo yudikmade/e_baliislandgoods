@@ -22,9 +22,9 @@
                         <h3 class="profile-username text-center">{{$key->full_name}}</h3>
                         <p class="text-muted text-center">Administrator</p>
                         <ul class="list-group list-group-unbordered">
-                            <li class="list-group-item">
+                            <!-- <li class="list-group-item">
                                 <b>Registered since </b> <a class="pull-right">{{Session::get(env('SES_BACKEND_REGISTERED'))}}</a>
-                            </li>
+                            </li> -->
                             <li class="list-group-item">
                                 <b>Last update</b> <a class="pull-right last-update">{{\App\Helper\Common_helper::registerd_date($key->last_update)}}</a>
                             </li>

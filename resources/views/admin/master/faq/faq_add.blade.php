@@ -19,22 +19,31 @@
                     <div class="box-header">
                         <h3 class="box-title">{{$title_form}}</h3>
                     </div><!-- /.box-header -->
-                    <form id="form-save-data" class="form-horizontal" action="{{route('control_add_other_page_process')}}" method="post">
+                    <form id="form-save-data" class="form-horizontal" action="{{route('control_add_faq_process')}}" method="post">
                         {{ csrf_field() }}
                         <div class="box-body">
                             <div class="bs-callout bs-callout-warning">
-                              Please input new other page the form below.
+                              Please input new FAQ the form below.<br>
+                              Input question without question mark.
                             </div>
                             <div class="form-group">
-                                <label for="page" class="col-sm-2 control-label"><span class="text-danger">*</span>Page</label>
+                                <label for="question" class="col-sm-2 control-label"><span class="text-danger">*</span>Question</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control" name="page" id="page" value=""  />
+                                    <input type="text" class="form-control" name="question" id="question" value=""  />
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="description" class="col-sm-2 control-label"><span class="text-danger">*</span>Description</label>
+                                <label for="answer" class="col-sm-2 control-label"><span class="text-danger">*</span>Answer</label>
                                 <div class="col-sm-10">
-                                    <textarea class="form-control" name="description" id="description"></textarea>
+                                    <textarea class="form-control" name="answer" id="answer"></textarea>
+                                    <input type="hidden" name="answer_text" id="answer_text" value="">
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="form-group">
+                                <label for="order" class="col-sm-2 control-label"><span class="text-danger">*</span>Order</label>
+                                <div class="col-sm-4">
+                                    <input type="text" class="form-control currency" name="order" id="order" value="{{$new_order}}"/>
                                 </div>
                             </div>
                         </div>
@@ -54,26 +63,27 @@
 <script src="{{asset(env('URL_ASSETS').'ckeditor/ckeditor.js')}}"></script>
 <script type="text/javascript">
     $(document).ready(function() {
-        var description = document.getElementById("description");
-                CKEDITOR.replace(description,{
+        var company_profile = document.getElementById("answer");
+                CKEDITOR.replace(company_profile,{
                 language:'en-gb'
             });
 
         $("#form-save-data").validate({
             rules :{
-                page :{
+                question :{
                     required : true,
                 }
             },
             messages: {
-                page: {
-                    required: 'Please input page name!',
+                question: {
+                    required: 'Please input question!',
                 }
             },
             errorElement: 'small',
             submitHandler: function(form) {
 
-                CKEDITOR.instances['description'].updateElement();
+                CKEDITOR.instances['answer'].updateElement();
+                $('#answer_text').val(CKEDITOR.instances['answer'].editable().getText());
 
                 $("#loader").fadeIn();
                 $("#btn-save-data").attr('disabled', 'disabled');
@@ -90,8 +100,10 @@
                         if(response.trigger == "yes")
                         {
                             toastr.success(response.notif);
-                            $('#page').val('');
-                            CKEDITOR.instances['description'].setData("");
+                            $('#question').val('');
+                            CKEDITOR.instances['answer'].setData("");
+                            $('#answer_text').val("");
+                            $('#order').val(response.order);
                         }
                         else
                         {

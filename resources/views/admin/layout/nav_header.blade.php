@@ -122,6 +122,18 @@
                 if(isset($masterCurrency))
                     $masterCurrency_ = $masterCurrency;
 
+                $masterFaq_ = '';
+                if(isset($masterFaq))
+                    $masterFaq_ = $masterFaq;
+
+                $masterCoupon_ = '';
+                if(isset($masterCoupon))
+                    $masterCoupon_ = $masterCoupon;
+
+                $masterSlide_ = '';
+                if(isset($masterSlide))
+                    $masterSlide_ = $masterSlide;
+
                 $navFinish=array(
                     1=>'">
                         <a href="'.route('control_dashboard').'"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a>
@@ -160,11 +172,34 @@
                             <li class="'.$masterShippingCost_.'">
                                 <a href="'.route('control_shipping_cost').'"><i class="fa fa-file-text-o"></i> Shipping Cost</a>
                             </li>
+                            <li class="'.$masterFaq_.'">
+                                <a href="#"><i class="fa fa-file-text-o"></i> Data FAQ <i class="fa fa-angle-left pull-right"></i></a>
+                                <ul class="treeview-menu">
+                                    <li><a href="'.route('control_faq').'"><i class="fa fa-file-text-o"></i> FAQ</a></li>
+                                    <li><a href="'.route('control_add_faq').'"><i class="fa fa-plus"></i> Add new FAQ</a></li>
+                                </ul>
+                            </li>
+                            <li class="'.$masterCoupon_.'">
+                                <a href="#"><i class="fa fa-file-text-o"></i> Data Coupon <i class="fa fa-angle-left pull-right"></i></a>
+                                <ul class="treeview-menu">
+                                    <li><a href="'.route('control_coupon').'"><i class="fa fa-file-text-o"></i> Coupon</a></li>
+                                    <li><a href="'.route('control_add_coupon').'"><i class="fa fa-plus"></i> Add new coupon</a></li>
+                                </ul>
+                            </li>
+                            <li class="'.$masterSlide_.' none">
+                                <a href="#"><i class="fa fa-picture-o"></i> Data slide <i class="fa fa-angle-left pull-right"></i></a>
+                                <ul class="treeview-menu">
+                                    <li><a href="'.route('control_slide').'"><i class="fa fa-file-text-o"></i> Slide</a></li>
+                                    <li><a href="'.route('control_add_slide').'"><i class="fa fa-plus"></i> Add new slide</a></li>
+                                </ul>
+                            </li>
                             <li class="'.$masterInformation_.'">
                                 <a href="#"><i class="fa fa-list"></i> Information <i class="fa fa-angle-left pull-right"></i></a>
                                 <ul class="treeview-menu">
                                     <li><a href="'.route('control_info_contact').'"><i class="fa fa-file-text-o"></i> Contact Us</a></li>
-                                    <li><a href="'.route('control_info_terms').'"><i class="fa fa-file-text-o"></i> Term and Conditions</a></li>
+                                    <li><a href="'.route('control_info_terms_of_payment').'"><i class="fa fa-file-text-o"></i> Terms of Payment</a></li>
+                                    <li><a href="'.route('control_info_shipping_and_return').'"><i class="fa fa-file-text-o"></i> Shipping & Return</a></li>
+                                    <li><a href="'.route('control_info_privacy_policy').'"><i class="fa fa-file-text-o"></i> Privacy Policy</a></li>
                                 </ul>
                             </li>
                             <li class="'.$masterSocial_.'">
@@ -176,19 +211,12 @@
                             </li>
                         </ul>  
                     </li>',
-                    6=>'">
-                        <a href="'.route('control_subscribe').'"><i class="fa fa-users"></i> <span>Subscriber</span></a>
-                    </li>',
                     7=>'">
-                        <a href="#"><i class="fa fa-file-text-o"></i> Basic Page <i class="fa fa-angle-left pull-right"></i></a>
-                        <ul class="treeview-menu">
-                            <li><a href="'.route('control_other_page').'"><i class="fa fa-file-text-o"></i> Data Basic Page</a></li>
-                            <li><a href="'.route('control_add_other_page').'"><i class="fa fa-file-text-o"></i> Add Basic Page</a></li>
-                        </ul>
+                        <a href="'.route('control_subscribe').'"><i class="fa fa-users"></i> <span>Subscriber</span></a>
                     </li>',
                 );
                 
-                $finish = 4;
+                $finish = 5;
                 
                 for ($i = 1; $i <= $finish ; $i++) 
                 { 

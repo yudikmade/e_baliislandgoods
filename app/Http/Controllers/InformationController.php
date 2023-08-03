@@ -18,8 +18,6 @@ class InformationController extends Controller
         Common_helper::check_session_backend(true);
 
         $meta_key = 'contact_us';
-        $meta_key_lat = "contact_us_latitude";
-        $meta_key_long = "contact_us_longitude";
         $meta_key_address = "contact_us_address";
         $meta_key_telp = "contact_us_telp";
         $meta_key_email = "contact_us_email";
@@ -31,9 +29,6 @@ class InformationController extends Controller
             'breadcrumbs' => '
                                 <li class="active"><i class="fa fa-edit"></i> Edit Contact Us</li>
                             ',
-            'data_result' => EmConfig::getData(array('meta_key' => $meta_key)),
-            'data_result_latitude' => EmConfig::getData(array('meta_key' => $meta_key_lat)),
-            'data_result_longitude' => EmConfig::getData(array('meta_key' => $meta_key_long)),
             'data_result_address' => EmConfig::getData(array('meta_key' => $meta_key_address)),
             'data_result_telp' => EmConfig::getData(array('meta_key' => $meta_key_telp)),
             'data_result_email' => EmConfig::getData(array('meta_key' => $meta_key_email)),
@@ -44,18 +39,60 @@ class InformationController extends Controller
         return view('admin.master.config.information_edit', $data);
     }
 
-    public function terms()
+    public function control_info_terms_of_payment()
     {
         Common_helper::check_session_backend(true);
 
-        $meta_key = 'terms_condition';
+        $meta_key = 'terms_of_payment_page';
 
         $data = array(
-            'title' => 'Term and Conditions | Administrator',
-            'title_page' => 'Term and Conditions',
-            'title_form' => 'Form edit Term and Conditions of site',
+            'title' => 'Terms of Payment | Administrator',
+            'title_page' => 'Terms of Payment',
+            'title_form' => 'Form edit Terms of Payment of site',
             'breadcrumbs' => '
-                                <li class="active"><i class="fa fa-edit"></i> Edit Term and Conditions</li>
+                                <li class="active"><i class="fa fa-edit"></i> Edit Terms of Payment</li>
+                            ',
+            'data_result' => EmConfig::getData(array('meta_key' => $meta_key)),
+            'menu_order' => $this->menu_order,
+            'meta_key' => $meta_key,
+            'masterInformation' => 'active',
+        );
+        return view('admin.master.config.information_edit', $data);
+    }
+
+    public function control_info_shipping_and_return()
+    {
+        Common_helper::check_session_backend(true);
+
+        $meta_key = 'shipping_and_return_page';
+
+        $data = array(
+            'title' => 'Shipping & Return | Administrator',
+            'title_page' => 'Shipping & Return',
+            'title_form' => 'Form edit Shipping & Return of site',
+            'breadcrumbs' => '
+                                <li class="active"><i class="fa fa-edit"></i> Edit Shipping & Return</li>
+                            ',
+            'data_result' => EmConfig::getData(array('meta_key' => $meta_key)),
+            'menu_order' => $this->menu_order,
+            'meta_key' => $meta_key,
+            'masterInformation' => 'active',
+        );
+        return view('admin.master.config.information_edit', $data);
+    }
+
+    public function control_info_privacy_policy()
+    {
+        Common_helper::check_session_backend(true);
+
+        $meta_key = 'privacy_policy_page';
+
+        $data = array(
+            'title' => 'Privacy Policy | Administrator',
+            'title_page' => 'Privacy Policy',
+            'title_form' => 'Form edit Privacy Policy of site',
+            'breadcrumbs' => '
+                                <li class="active"><i class="fa fa-edit"></i> Edit Privacy Policy</li>
                             ',
             'data_result' => EmConfig::getData(array('meta_key' => $meta_key)),
             'menu_order' => $this->menu_order,
@@ -122,18 +159,6 @@ class InformationController extends Controller
             EmConfig::updateData($dataUpdate);
 
             if($input['meta_key'] == 'contact_us'){
-                $dataUpdate = array(
-                    'meta_key' => 'contact_us_latitude',
-                    'meta_value' => $input['latitude'],
-                );
-                EmConfig::updateData($dataUpdate);
-
-                $dataUpdate = array(
-                    'meta_key' => 'contact_us_longitude',
-                    'meta_value' => $input['longitude'],
-                );
-                EmConfig::updateData($dataUpdate);
-
                 $dataUpdate = array(
                     'meta_key' => 'contact_us_address',
                     'meta_value' => $input['address'],

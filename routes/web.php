@@ -16,6 +16,10 @@ use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\OtherPageController;
 use App\Http\Controllers\TestemailController;
 use App\Http\Controllers\TestController;
+use App\Http\Controllers\CouponController;
+use App\Http\Controllers\FaqController;
+use App\Http\Controllers\SlideController;
+
 use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\ShopController;
 use App\Http\Controllers\Frontend\Auth_userController;
@@ -114,8 +118,38 @@ Route::group(['middleware' => ['backend']], function() {
 		//information
 		Route::get('/'.env('URL_AFTER_LOGIN_BACKEND').'/tax', [InformationController::class, 'tax'])->name('control_info_tax');
 		Route::get('/'.env('URL_AFTER_LOGIN_BACKEND').'/contact', [InformationController::class, 'contact'])->name('control_info_contact');
-		Route::get('/'.env('URL_AFTER_LOGIN_BACKEND').'/terms', [InformationController::class, 'terms'])->name('control_info_terms');
+		Route::get('/'.env('URL_AFTER_LOGIN_BACKEND').'/terms-of-payment', [InformationController::class, 'control_info_terms_of_payment'])->name('control_info_terms_of_payment');
+		Route::get('/'.env('URL_AFTER_LOGIN_BACKEND').'/shipping-and-return', [InformationController::class, 'control_info_shipping_and_return'])->name('control_info_shipping_and_return');
+		Route::get('/'.env('URL_AFTER_LOGIN_BACKEND').'/privacy-policyn', [InformationController::class, 'control_info_privacy_policy'])->name('control_info_privacy_policy');
 		Route::post('/'.env('URL_AFTER_LOGIN_BACKEND').'/process-information', [InformationController::class, 'process'])->name('control_process_information');
+
+		//slide
+		Route::get('/'.env('URL_AFTER_LOGIN_BACKEND').'/slide/{search?}', [SlideController::class, 'index'])->name('control_slide');
+		Route::get('/'.env('URL_AFTER_LOGIN_BACKEND').'/add-slide', [SlideController::class, 'add'])->name('control_add_slide');
+		Route::post('/'.env('URL_AFTER_LOGIN_BACKEND').'/add-slide-process', [SlideController::class, 'addProcess'])->name('control_add_slide_process');
+
+		// Route::get('/'.env('URL_AFTER_LOGIN_BACKEND').'/edit-slide/{id?}', ['as'=>'control_edit_slide','uses'=>'SlideController@edit']);
+		// Route::post('/'.env('URL_AFTER_LOGIN_BACKEND').'/edit-slide-process', ['as'=>'control_edit_slide_process','uses'=>'SlideController@editProcess']);
+		// Route::any('/'.env('URL_AFTER_LOGIN_BACKEND').'/action-slide/{id?}', ['as'=>'control_action_slide','uses'=>'SlideController@actionData']);
+		// Route::get('/'.env('URL_AFTER_LOGIN_BACKEND').'/kind-slide', ['as'=>'control_kind_slide','uses'=>'SlideController@kindSlide']);
+		// Route::get('/'.env('URL_AFTER_LOGIN_BACKEND').'/video-slide', ['as'=>'control_update_video_slide','uses'=>'SlideController@videoSlide']);
+		// Route::post('/'.env('URL_AFTER_LOGIN_BACKEND').'/kind-video-process', ['as'=>'control_edit_kind_video','uses'=>'SlideController@editKindVideo']);
+
+		//faq
+		Route::get('/'.env('URL_AFTER_LOGIN_BACKEND').'/faq/{search?}', [FaqController::class, 'index'])->name('control_faq');
+		Route::get('/'.env('URL_AFTER_LOGIN_BACKEND').'/add-faq', [FaqController::class, 'add'])->name('control_add_faq');
+		Route::post('/'.env('URL_AFTER_LOGIN_BACKEND').'/add-faq-process', [FaqController::class, 'addProcess'])->name('control_add_faq_process');
+		Route::get('/'.env('URL_AFTER_LOGIN_BACKEND').'/edit-faq/{id?}', [FaqController::class, 'edit'])->name('control_edit_faq');
+		Route::post('/'.env('URL_AFTER_LOGIN_BACKEND').'/edit-faq-process', [FaqController::class, 'editProcess'])->name('control_edit_faq_process');
+		Route::any('/'.env('URL_AFTER_LOGIN_BACKEND').'/action-faq/{id?}', [FaqController::class, 'actionData'])->name('control_action_faq');
+
+		//coupon
+		Route::get('/'.env('URL_AFTER_LOGIN_BACKEND').'/coupon/{search?}', [CouponController::class, 'index'])->name('control_coupon');
+		Route::get('/'.env('URL_AFTER_LOGIN_BACKEND').'/add-coupon', [CouponController::class, 'add'])->name('control_add_coupon');
+		Route::post('/'.env('URL_AFTER_LOGIN_BACKEND').'/add-coupon-process', [CouponController::class, 'addProcess'])->name('control_add_coupon_process');
+		Route::get('/'.env('URL_AFTER_LOGIN_BACKEND').'/edit-coupon/{id?}', [CouponController::class, 'edit'])->name('control_edit_coupon');
+		Route::post('/'.env('URL_AFTER_LOGIN_BACKEND').'/edit-coupon-process', [CouponController::class, 'editProcess'])->name('control_edit_coupon_process');
+		Route::any('/'.env('URL_AFTER_LOGIN_BACKEND').'/action-coupon/{id?}', [CouponController::class, 'actionData'])->name('control_action_coupon');
 
 		//social media
 		Route::get('/'.env('URL_AFTER_LOGIN_BACKEND').'/social-media/{search?}', [SocialMediaController::class, 'index'])->name('control_social_media');
@@ -124,14 +158,6 @@ Route::group(['middleware' => ['backend']], function() {
 		Route::get('/'.env('URL_AFTER_LOGIN_BACKEND').'/edit-social-media/{id?}', [SocialMediaController::class, 'edit'])->name('control_edit_social_media');
 		Route::post('/'.env('URL_AFTER_LOGIN_BACKEND').'/edit-social-media-process', [SocialMediaController::class, 'editProcess'])->name('control_edit_social_media_process');
 		Route::any('/'.env('URL_AFTER_LOGIN_BACKEND').'/action-social-media/{id?}', [SocialMediaController::class, 'actionData'])->name('control_action_social_media');
-
-		//other page
-		Route::get('/'.env('URL_AFTER_LOGIN_BACKEND').'/other-page/{search?}', [OtherPageController::class, 'index'])->name('control_other_page');
-		Route::get('/'.env('URL_AFTER_LOGIN_BACKEND').'/add-other-page', [OtherPageController::class, 'add'])->name('control_add_other_page');
-		Route::post('/'.env('URL_AFTER_LOGIN_BACKEND').'/add-other-page-process', [OtherPageController::class, 'addProcess'])->name('control_add_other_page_process');
-		Route::get('/'.env('URL_AFTER_LOGIN_BACKEND').'/edit-other-page/{id?}', [OtherPageController::class, 'edit'])->name('control_edit_other_page');
-		Route::post('/'.env('URL_AFTER_LOGIN_BACKEND').'/edit-other-page-process', [OtherPageController::class, 'editProcess'])->name('control_edit_other_page_process');
-		Route::any('/'.env('URL_AFTER_LOGIN_BACKEND').'/action-other-page/{id?}', [OtherPageController::class, 'actionData'])->name('control_action_other_page');
 
 		//subscribe
 		Route::get('/'.env('URL_AFTER_LOGIN_BACKEND').'/subscribe/{search?}', [SubscribeController::class, 'index'])->name('control_subscribe');

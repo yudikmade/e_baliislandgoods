@@ -44,7 +44,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-12 copyright">
-                    <center><p>© @php echo date('Y'); @endphp Baledigital. All rights reserved.</p></center>
+                    <center><p>© @php echo date('Y'); @endphp {{env('AUTHOR_SITE')}}. All rights reserved.</p></center>
                 </div>
             </div>
         </div>

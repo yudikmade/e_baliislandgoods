@@ -19,42 +19,31 @@
                     <div class="box-header">
                         <h3 class="box-title">{{$title_form}}</h3>
                     </div><!-- /.box-header -->
-                    <form id="form-save-data" class="form-horizontal" action="{{route('control_process_information')}}" method="post">
+                    <form id="form-save-data" class="form-horizontal" action="{{route('control_add_slide_process')}}" method="post">
                         {{ csrf_field() }}
                         <div class="box-body">
                             <div class="bs-callout bs-callout-warning">
-                              {{$title_form}}
+                              Please input new image for slide the form below.
                             </div>
-                            <input type="hidden" name="meta_key" id="meta_key" value="{{$meta_key}}">
-                            @if($meta_key == 'contact_us')
-                                <div class="form-group">
-                                    <label for="information" class="col-sm-2 control-label">Address</label>
-                                    <div class="col-sm-10">
-                                        <input class="form-control" type="text" name="address" id="address" value="{{$data_result_address == '' ? '':$data_result_address}}">
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="information" class="col-sm-2 control-label">No. Hp/Telp</label>
-                                    <div class="col-sm-10">
-                                        <input class="form-control" type="text" name="telp" id="telp" value="{{$data_result_telp == '' ? '':$data_result_telp}}">
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="information" class="col-sm-2 control-label">Email</label>
-                                    <div class="col-sm-10">
-                                        <input class="form-control" type="text" name="email" id="email" value="{{$data_result_email == '' ? '':$data_result_email}}">
-                                    </div>
-                                </div>
-                            @endif
-                            @if($meta_key == 'terms_of_payment_page' || $meta_key == 'shipping_and_return_page' || $meta_key == 'privacy_policy_page')
                             <div class="form-group">
-                                <label for="information" class="col-sm-2 control-label"><span class="text-danger">*</span>{{$title_page}}</label>
-                                <div class="col-sm-10">
-                                    <textarea class="form-control" name="information" id="information">{{$data_result == '' ? '':$data_result}}</textarea>
-                                    <input type="hidden" name="information_text" id="information_text" value="">
+                                <label for="fileBuku" class="col-sm-2 control-label"><span class="text-danger">*</span>Image</label>
+                                <div class="col-sm-7">
+                                    <input class="filestyle" id="up_image" type="file" name="up_image" data-buttonName="btn-primary" data-buttonText=" Select image">
+                                    <small class="text-primary">* Format jpg|.jpeg|.png (max. size 2MB), upload all images in one size for better result (standard 1800px X 900px).</small>
                                 </div>
                             </div>
-                            @endif
+                            <div class="form-group">
+                                <label for="url" class="col-sm-2 control-label">Link</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" name="url" id="url" value=""/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="order" class="col-sm-2 control-label"><span class="text-danger">*</span>Order</label>
+                                <div class="col-sm-4">
+                                    <input type="text" class="form-control currency" name="order" id="order" value="{{$new_order}}"/>
+                                </div>
+                            </div>
                         </div>
                         <div class="box-footer">
                             <button type="submit" name="save" id="btn-save-data" class="btn btn-primary pull-right btn-lg">Save</button> 
@@ -69,25 +58,24 @@
 @stop
 
 @section('script')
-<script src="{{asset(env('URL_ASSETS').'ckeditor/ckeditor.js')}}"></script>
+<script src="{{asset(env('URL_ASSETS').'upload/bootstrap-filestyle.min.js')}}"></script>
 <script type="text/javascript">
     $(document).ready(function() {
-        @if($meta_key != 'contact_us')
-        var company_profile = document.getElementById("information");
-            CKEDITOR.replace(company_profile,{
-            language:'en-gb'
-        });
-        @endif
+        $(":file").filestyle({buttonName: "btn-primary"});
 
         $("#form-save-data").validate({
+            rules :{
+                order :{
+                    required : true,
+                }
+            },
+            messages: {
+                order :{
+                    required: 'Please insert order data!',
+                }
+            },
             errorElement: 'small',
             submitHandler: function(form) {
-
-                @if($meta_key != 'contact_us')
-                CKEDITOR.instances['information'].updateElement();
-                $('#information_text').val(CKEDITOR.instances['information'].editable().getText());
-                @endif
-
                 $("#loader").fadeIn();
                 $("#btn-save-data").attr('disabled', 'disabled');
                 var formData = new FormData(form);
@@ -103,6 +91,9 @@
                         if(response.trigger == "yes")
                         {
                             toastr.success(response.notif);
+                            $('.bootstrap-filestyle input:eq( 0 )').val("");
+                            $('#order').val(response.order);
+                            $('#url').val('');
                         }
                         else
                         {
@@ -110,8 +101,9 @@
                         }
                         $('#loader').fadeOut();
                     },
-                    error: function()
+                    error: function(data)
                     {
+                        console.log(data);
                         $("#btn-save-data").removeAttr('disabled');
                         $('#loader').fadeOut();
                         toastr.error('There is something wrong, please refresh page and try again.');
