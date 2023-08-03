@@ -165,9 +165,10 @@ Route::group(['middleware'=>['currency']],function (){
 	});
 
 	Route::get('/about-us', [HomeController::class, 'aboutUs'])->name('about_us');
-	// Route::get('/terms-of-payment', [HomeController::class, 'termsOfPayment'])->name('terms_of_payment');
-	// Route::get('/privacy-policy', [HomeController::class, 'privacyPolicy'])->name('privacy_policy');
-	// Route::get('/return-policy', [HomeController::class, 'returnPolicy'])->name('return_policy');
+	Route::get('/terms-of-payment', [HomeController::class, 'termsOfPayment'])->name('terms_of_payment');
+	Route::get('/privacy-policy', [HomeController::class, 'privacyPolicy'])->name('privacy_policy');
+	Route::get('/shipping-and-return', [HomeController::class, 'shippingAndReturn'])->name('shipping_and_return');
+	Route::get('/faq', [HomeController::class, 'faq'])->name('faq');
 	Route::get('/contact-us', [HomeController::class, 'contactUs'])->name('contact_us');
 	Route::get('/contact-us/send-message', [HomeController::class, 'contactSendMessage'])->name('contact_send_message');
 

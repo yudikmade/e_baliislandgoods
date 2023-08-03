@@ -310,7 +310,7 @@ class ProcessController extends Controller
                 $tmpCartData = array();
 
                 $getProduct = EmProduct::select('product_name','price','discount')->where('product_id',$key['product_id'])->first();
-                $getProductImage = EmProductImg::select('image')->where('product_id',$key['product_id'])->orderBy('img_id','DESC')->first();
+                $getProductImage = EmProductImg::select('image')->where('product_id',$key['product_id'])->where('sku_id',$key['sku_id'])->orderBy('img_id','DESC')->first();
 
                 $setDiscount = Common_helper::set_discount($getProduct->price, $getProduct->discount);
                 $priceAfterDisc = $setDiscount[0];
@@ -380,7 +380,7 @@ class ProcessController extends Controller
             if($addNewItem)
             {
                 $getProduct = EmProduct::select('product_name','price','discount')->where('product_id',$productSKU->product_id)->first();
-                $getProductImage = EmProductImg::select('image')->where('product_id',$productSKU->product_id)->orderBy('img_id','DESC')->first();
+                $getProductImage = EmProductImg::select('image')->where('product_id',$productSKU->product_id)->where('sku_id',$productSKU->sku_id)->orderBy('img_id','DESC')->first();
 
                 $setDiscount = Common_helper::set_discount($getProduct->price, $getProduct->discount);
                 $priceAfterDisc = $setDiscount[0];
@@ -858,31 +858,32 @@ class ProcessController extends Controller
         {
             $itemTmp = Session::get('cart');
             $price_in_right_side = 0;
+            $rsCurrent_currency = Common_helper::get_current_currency();
             foreach ($itemTmp as $key) 
             {
+                $rsGetProduct = EmProduct::select('product_name','price','discount')->where('product_id',$key['product_id'])->first();
+                $rsSetDiscount = Common_helper::set_discount($rsGetProduct->price, $rsGetProduct->discount);
+                $rsPriceAfterDisc = $rsSetDiscount[0];
+                $rsDiscount = $rsSetDiscount[1];
+
+                $rsPriceInCurrencyFormat = Common_helper::convert_to_current_currency($rsPriceAfterDisc);
+                $rsShowPriceAfterDisc = $rsCurrent_currency[1].$rsPriceInCurrencyFormat[1].' '.$rsCurrent_currency[2];
+                
+                $price_in_right_side = $price_in_right_side + ($rsPriceAfterDisc * $key['qty']);
+
                 $html .= '
                 <div class="row">
                     <div class="col-md-3 col-4"><img class="img-fluid" src="'.asset(env('URL_IMAGE').'product/thumb/'.$key['product_img']).'"></div>
                     <div class="col-md-7 col-6">
                     <p><b>'.$key['product_name'].'</b></p>
-                    <p>'.$key['qty'].' x '.$key['price_text'].'</p>
+                    <p>'.$key['qty'].' x '.$rsShowPriceAfterDisc.'</p>
                     </div>
-                    <div class="col-md-2 col-2">
-                    <a href="'.route('process_delete_item_cart').'/'.$key['product_id'].'/'.$key['sku_id'].'" class="btn btn-remove-product btn-remove-product-right-side d-flex align-items-center justify-content-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
-                        </svg>
-                    </a>
-                    </div>
+                    <div class="col-md-2 col-2"></div>
                 </div>
                 <hr>
                 ';
-
-                $price_in_right_side = $price_in_right_side + $key['price'][0];
-
             }
 
-            $current_currency_in_right_side = Common_helper::get_current_currency();
             $price_in_right_side = Common_helper::convert_to_current_currency($price_in_right_side);
 
             $html .= '
@@ -890,7 +891,7 @@ class ProcessController extends Controller
                     <div class="col-md-6 col-6">
                     <p><b>Cart Subtotal:</b></p>
                     </div>
-                    <div class="col-md-6 col-6 sub-total"><p>'.$current_currency_in_right_side[1].$price_in_right_side[1].' '.$current_currency_in_right_side[2].'</p></div>
+                    <div class="col-md-6 col-6 sub-total"><p>'.$rsCurrent_currency[1].$price_in_right_side[1].' '.$rsCurrent_currency[2].'</p></div>
                 </div>
                 <br>
                 <div class="row">
@@ -1583,18 +1584,22 @@ class ProcessController extends Controller
                                 $totalPrice = $getTransaction[0]->total_price;
                                 $discount = $getCoupon[0]->discount;
 
-                                $discNominal = $discount;
+                                //disc -> change currency
+                                $discount = Common_helper::convert_to_current_currency($discount);
+
+                                $discNominal = $discount[0];
                                 $totalPayment = (($getTransaction[0]->total_price + $getTransaction[0]->additional_price + $getTransaction[0]->tax) + $getTransaction[0]->shipping_cost) - $discNominal;
                                 if($totalPayment < 0){
                                     $totalPayment = 0;
                                 }
                                 $totalPayment = Common_helper::check_decimal($totalPayment);
-
-                                $totalPayment = Common_helper::convert_to_format_currency(Common_helper::set_two_nominal_after_point($totalPayment));
-
-                                $discNominal = Common_helper::convert_to_format_currency(Common_helper::set_two_nominal_after_point($discNominal));
+                                $discNominal = Common_helper::check_decimal($discNominal);
 
                                 EmTransaction::updateData($getTransaction[0]->transaction_id, ['coupon' => $discNominal, 'total_payment' => $totalPayment]);
+
+                                $totalPayment = Common_helper::convert_to_format_currency(Common_helper::set_two_nominal_after_point($totalPayment));
+                                $discNominal = Common_helper::convert_to_format_currency(Common_helper::set_two_nominal_after_point($discNominal));
+
                                 EmTransactionMeta::updateMeta(array('transaction_id' => $getTransaction[0]->transaction_id, 'meta_key' => 'coupon_id', 'meta_description' => $getCoupon[0]->coupon_id));
                                 EmTransactionMeta::updateMeta(array('transaction_id' => $getTransaction[0]->transaction_id, 'meta_key' => 'coupon_price', 'meta_description' => $getCoupon[0]->discount));
 

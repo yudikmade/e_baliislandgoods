@@ -14,6 +14,8 @@
 		$getSocialMedia = \App\Models\EmSocialMedia::get();
         $getProductCategory = \App\Models\EmProductCategory::where('status','1')->get();
         $getRandomProduct = \App\Models\EmProduct::getWithImage("",0,2,false,true);
+        $global_currency = \App\Models\MCurrency::where('status','1')->get();
+        $global_currency_selected = \App\Models\MCurrency::select('currency_id','symbol','code')->where('currency_id',Session::get(env('SES_GLOBAL_CURRENCY')))->first();
 		@endphp
 		<!-- header -->
         <header class="menu d-flex flex-wrap justify-content-centerx navbar-light bg-transparent navbar-expand-md">
@@ -86,6 +88,16 @@
                         </li>
                         <li class="nav-item"><a href="{{url('/about-us')}}" class="nav-link link-dark">About</a></li>
                         <li class="nav-item"><a href="{{url('/contact-us')}}" class="nav-link link-dark">Contact</a></li>
+                        <li class="nav-item dropdown">
+							<a class="nav-link link-dark" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">{{isset($global_currency_selected->currency_id) ? $global_currency_selected->code.' '.$global_currency_selected->symbol : ''}}</a>
+							
+							<ul class="dropdown-menu" aria-labelledby="navbarDarkDropdownMenuLink">
+								@foreach($global_currency as $key)
+								<li><a class="dropdown-item" href="{{url('/currency/'.$key->code)}}">{{$key->code}}</a></li>
+								@endforeach
+							</ul>
+							
+						</li>
                     </ul>
                 </div></div>
                 <!-- <div class="pseudo-col col-3"></div> -->

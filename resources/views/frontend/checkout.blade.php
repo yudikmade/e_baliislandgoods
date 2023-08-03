@@ -48,9 +48,6 @@ body {
     margin-bottom: 20px;
     z-index: 0;
 }
-#checkOnlyCanadaResult {
-    display: none;
-}
 .select2-container{
     width: -moz-available !important;          /* WebKit-based browsers will ignore this. */
     width: -webkit-fill-available !important;  /* Mozilla-based browsers will ignore this. */
@@ -64,6 +61,10 @@ body {
 }
 .plc-shipping-form .form-group{
     margin-bottom: 50px !important;
+}
+.form-control:focus {
+    box-shadow: none;
+    outline: none;
 }
 </style>
 @include('frontend.login_style')
@@ -93,8 +94,10 @@ body {
             $country_name = '';
             $province_id = '';
             $province_name = '';
+            $city_id = '';
             $city_name = '';
-            $apt_suite = '';
+            $subdistrict_id = '';
+            $subdistrict_name = '';
             $address = '';
             $postalcode = '';
 
@@ -107,20 +110,24 @@ body {
 
             if(sizeof($shipping_data) > 0){
                 foreach ($shipping_data as $key => $value) {
-                    $country_id = $value['country'];
-                    $country_name = $value['country_name'];
-                    if($value['country'] == '236'){
+                    $country_id = $value->country_id;
+                    $country_name = $value->country_name;
+                    if($value->country_id == '236')
+                    {
                         $national = '';
-                        $province_id = $value['province'];
-                        $province_name = $value['province_name'];
-                        $city_name = $value['city_name'];
-                    }else{	
+                        $province_id = $value->province_id;;
+                        $province_name = $value->province_name;
+                        $city_id = $value->city_id;
+                        $city_name = $value->city_name;
+                        $subdistrict_id = $value->subdistrict_id;
+                        $subdistrict_name = $value->subdistrict_name;
+                        $address = $value->detail_address;
+                        $postalcode = $value->postal_code;
+                    }
+                    else
+                    {	
                         $national = ' none ';
                     }
-                    
-                    $apt_suite = $value['apt_suite'];
-                    $address = $value['address'];
-                    $postalcode = $value['postalcode'];
                 }
             }
 
@@ -145,8 +152,6 @@ body {
                 $province_name = $tmpData['province_name'];
                 $city_name = $tmpData['city_name'];
                 $address = $tmpData['address'];
-                $apt_suite = $tmpData['apt_suite'];
-                $postalcode = $tmpData['postalcode'];
 
                 if(Session::get(env('SES_FRONTEND_ID')) == null){
                     $first_name = $tmpData['first_name'];
@@ -159,12 +164,12 @@ body {
             $getTimerTrans = array();
             if(isset($timezone['timezone']->meta_description)){
                 $getTimerTrans = \App\Helper\Common_helper::timerCheckout($header_transaction->transaction_date, $timezone['timezone']->meta_description);
-                // echo '
-                //     <div id="countdowntimer" class="text-center mb-3">
-                //         <p>Please make payment before the time runs out!</p>
-                //         <span id="future_date" class="alert alert-info"></span>
-                //     </div>
-                // ';
+                echo '
+                    <div id="countdowntimer" class="text-center mb-3">
+                        <p>Please make payment before the time runs out!</p>
+                        <span id="future_date" class="alert alert-info"></span>
+                    </div>
+                ';
             }
         ?>
 
@@ -212,10 +217,10 @@ body {
                             <label for="email">Email address</label>
                         </div>
                         <input type="hidden" name="trans_id" id="trans_id" value="{{$header_transaction->transaction_id}}">
-                        <div class="col-sm-6 col-xs-8 mb-3">
+                        <div class="col-sm-12 col-xs-12 mb-3">
                             <input type="email" class="form-control" id="emailGuest" name="emailGuest" value="{{$emailGuest}}">
                         </div>
-                        <div class="col-sm-4 col-xs-5">
+                        <div class="col-sm-12 col-xs-12">
                             <button type="submit" class="btn btn-primary btn-main-2" id="btn-guest">CONTINUE AS GUEST</button>
                         </div>
                     </form> 
@@ -288,25 +293,77 @@ body {
                                             </select>
                                             <small class="notif-country error none"><i>Please choose country!</i></small>
                                         </div>
-                                        <div class="form-group select-national">
+                                        <div class="form-group select-national {{$national}}">
                                             <label for="province">Province</label>
                                             <select class="form-control select2" style="width: 100%;" name="province" id="province">
                                                 <option value="">Choose Province</option>
                                                 <?php
-                                                    if($province_id != ''){
+                                                    if($province_id != '')
+                                                    {
                                                         echo '<option value="'.$province_id.'" selected>'.$province_name.'</option>';
                                                     }
+                                                    // foreach($province_data  as $countries)
+                                                    // {
+                                                    // 	if($province_id == $countries->province_id)
+                                                    // 	{
+                                                    // 		echo '<option value="'.$countries->province_id.'" selected>'.$countries->province_name.'</option>';
+                                                    // 	}
+                                                    // 	else
+                                                    // 	{
+                                                    // 		echo '<option value="'.$countries->province_id.'">'.$countries->province_name.'</option>';
+                                                    // 	}
+                                                    // }
                                                 ?>
                                             </select>
                                             <small class="notif-province error none"><i>Please choose province!</i></small>
                                         </div>
-                                        <div class="mb-2">
-                                            <label for="city">Town/City</label>
-                                            <input type="text" class="form-control" id="city" name="city" value="{{$city_name}}" />
+                                        <div class="form-group select-national {{$national}}">
+                                            <label for="city">City</label>
+                                            <select class="form-control select2" name="city" style="width: 100%;" id="city">
+                                                <option value="">Choose City</option>
+                                                <?php
+                                                    if($city_id != '')
+                                                    {
+                                                        echo '<option value="'.$city_id.'" selected>'.$city_name.'</option>';
+                                                    }
+                                                    // foreach($city_data  as $countries)
+                                                    // {
+                                                    // 	if($city_id == $countries->city_id)
+                                                    // 	{
+                                                    // 		echo '<option value="'.$countries->city_id.'" selected>'.$countries->city_name.'</option>';
+                                                    // 	}
+                                                    // 	else
+                                                    // 	{
+                                                    // 		echo '<option value="'.$countries->city_id.'">'.$countries->city_name.'</option>';
+                                                    // 	}
+                                                    // }
+                                                ?>
+                                            </select>
+                                            <small class="notif-city error none"><i>Please choose city!</i></small>
                                         </div>
-                                        <div class="mb-2">
-                                            <label for="apt_suite">Apt. or Suite (Opt.)</label>
-                                            <input type="text" class="form-control" id="apt_suite" name="apt_suite" value="{{$apt_suite}}" />
+                                        <div class="form-group select-national {{$national}}">
+                                            <label for="subdistrict">Subdistrict</label>
+                                            <select class="form-control select2" name="subdistrict" style="width: 100%;" id="subdistrict">
+                                                <option value="">Choose Subdistrict</option>
+                                                <?php
+                                                    if($subdistrict_id != '')
+                                                    {
+                                                        echo '<option value="'.$subdistrict_id.'" selected>'.$subdistrict_name.'</option>';
+                                                    }
+                                                    // foreach($subdistrict_data  as $countries)
+                                                    // {
+                                                    // 	if($subdistrict_id == $countries->subdistrict_id)
+                                                    // 	{
+                                                    // 		echo '<option value="'.$countries->city_id.'" selected>'.$countries->subdistrict_name.'</option>';
+                                                    // 	}
+                                                    // 	else
+                                                    // 	{
+                                                    // 		echo '<option value="'.$countries->city_id.'">'.$countries->subdistrict_name.'</option>';
+                                                    // 	}
+                                                    // }
+                                                ?>
+                                            </select>
+                                            <small class="notif-subdistrict error none"><i>Please choose subdistrict!</i></small>
                                         </div>
                                     </div>
                                     <div class="col-sm-6 no-pdg-rg">
@@ -329,11 +386,7 @@ body {
                                 </div>
                             </div>
 
-                            @if($country_id == '30')
-                                <div class="" id="checkOnlyCanada" style="display: initial;">
-                            @else
-                                <div class="" id="checkOnlyCanada" style="display: none;">
-                            @endif
+                            <div>
                                 <div class="col-sm-12 no-pdg">
                                     <hr>
                                 </div>
@@ -342,9 +395,6 @@ body {
                                         <table class="result-shipping-cost">
                                             <?=$shipping_list?>
                                         </table>
-                                        <p class="info-outside-canada">
-                                            <small><i class="text-danger">*Please send us an email directly after your order if you need to request expedited shipping (officeinfo@bcwf.bc.ca) or for shipping to a country outside of Canada</i></small>
-                                        </p>
                                         <div class="notif-shipping">
                                         </div>
                                     </div>
@@ -442,7 +492,7 @@ body {
                                                 </fieldset>
                                                 <div class="form-group row">
                                                     <div class="col-md-12 text-right field">
-                                                        <button type="submit" id="form-pay-now-btn" class="btn btn btn-main-2 btn-round-full">PAY NOW</button>
+                                                        <button type="submit" id="form-pay-now-btn" class="btn btn-primary btn-main-2 btn-round-full">PAY NOW</button>
                                                     </div>
                                                 </div>
                                             </form>
@@ -460,32 +510,6 @@ body {
                                                 </div>
                                             </form>
                                         </div>
-                                    </div>
-                                </div>
-                            </div>
-                            @if($country_id != '30')
-                                <div class="shipping-not-available" style="display: none;">
-                            @else
-                                <div class="shipping-not-available" style="display: none;">
-                            @endif
-                                <div class="col-12 no-pdg">
-                                    <hr>
-                                </div>
-                                <div class="col-12 ">
-                                    <div class="alert alert-info for-shipping text-center">
-                                        Sorry, shipping not available.<br/>
-                                        Please fill the form above.
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="" id="checkOnlyCanadaResult">
-                                <div class="col-12 no-pdg">
-                                    <hr>
-                                </div>
-                                <div class="col-12">
-                                    <div class="alert alert-info for-shipping text-center">
-                                        Sorry, shipping not available.<br/>
-                                        Please fill the form above.
                                     </div>
                                 </div>
                             </div>
@@ -818,7 +842,6 @@ $(document).ready(function() {
                     }
 
                     $('.result-shipping-cost').fadeOut();
-                    $('.info-outside-canada').fadeOut();
                     $('.plc-lanjut-bayar').fadeOut(function(){
                         $('.plc-bayar-sekarang').fadeIn();
                     })
@@ -841,9 +864,9 @@ $(document).ready(function() {
                             addInfo+
                             '<div class="after-submit mt-3">'+response.country+'</div>'+
                             '<div class="after-submit">'+response.province+'</div>'+
-                            '<div class="after-submit">'+$('#city').val()+'</div>'+
+                            '<div class="after-submit">'+response.city+'</div>'+
+                            '<div class="after-submit">'+response.subdistrict+'</div>'+
                             '<div class="after-submit">'+$('#address').val()+'</div>'+
-                            '<div class="after-submit">'+$('#apt_suite').val()+'</div>'+
                             '<div class="after-submit">'+$('#postalcode').val()+'</div>'+
                         '');
                         $('.shipping-info').fadeIn();
@@ -874,7 +897,6 @@ $(document).ready(function() {
         $('.plc-bayar-sekarang').fadeOut(function(){
             $('.plc-lanjut-bayar').fadeIn();
             $('.result-shipping-cost').fadeIn();
-            $('.info-outside-canada').fadeIn();
         });
     });
 
@@ -961,7 +983,7 @@ $(document).ready(function() {
         get_shipping_cost();
     });
 
-    $('#country').change(function(e){
+    $('#country, #province, #city, #subdistrict').change(function(e){
         $("#btn-shipping").attr('disabled', 'disabled');
         var data_id = $(this).val();
         var trigger = $(this).attr('id');
@@ -972,43 +994,21 @@ $(document).ready(function() {
         // $('#city').select2('val', '');
         // $('#subdistrict').select2('val', '');
 
-        // if($('#country').val() == '236')
-        // {
-        //     $('.select-national').fadeIn();
-        // }
-        // else
-        // {
-        //     $('.select-national').fadeOut();
-        // }
-
         if($('#country').val() == '236')
         {
-            $('.select-subdistrict').fadeIn();
+            $('.select-national').fadeIn();
         }
         else
         {
-            $('.select-subdistrict').fadeOut();
+            $('.select-national').fadeOut();
         }
 
-        
-
-        var process_allow = true;
-        if($('#country').val() == '236'){
-            if(trigger == 'subdistrict'){
-                process_allow = false;
-            }
-        }else{
-            if(trigger == 'city'){
-                process_allow = false;
-            }
-        }
-
-        if(process_allow){
-            // if($('#country').val() == '236')
-            // {
+        if(trigger != 'subdistrict')
+        {
+            if($('#country').val() == '236')
+            {
                 if($(this).val() != '')
                 {
-                    NProgress.start();
                     var urlAction = $('#actionLocation').val();
                     $.ajax({
                         url: urlAction,
@@ -1021,7 +1021,6 @@ $(document).ready(function() {
                         },
                         success: function(response, textStatus, XMLHttpRequest)
                         {
-                            NProgress.done();
                             if(response.trigger=="yes")
                             { 
                                 if(trigger == 'country')
@@ -1044,13 +1043,12 @@ $(document).ready(function() {
                         },
                         error: function(XMLHttpRequest, textStatus, errorThrown)
                         {
-                            NProgress.done();
                             toastr.remove();
                             toastr.error('There is something wrong, please refresh page and try again.');
                         }
                     });
                 }
-            // }
+            }
         }
     });
 
@@ -1142,18 +1140,6 @@ $(document).ready(function() {
             }
         }
     }
-
-    // check country
-    $('#country').on('change', function() {
-        if(this.value != 30){
-            $('#checkOnlyCanada').fadeOut();
-            $('.shipping-not-available').fadeOut();
-            $('#checkOnlyCanadaResult').fadeIn();
-        } else {
-            $('#checkOnlyCanada').fadeIn();
-            $('#checkOnlyCanadaResult').fadeOut();
-        }
-    });
 
     // paypal - stripe -animation
     $('#showBtnPaypal .sbp-header').on('click', function() {

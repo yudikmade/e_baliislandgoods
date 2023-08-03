@@ -11,6 +11,7 @@ use App\Helper\Common_helper;
 use App\Models\MSlide;
 use App\Models\EmConfig;
 use App\Models\EmProduct;
+use App\Models\EmFaq;
 
 class HomeController extends Controller{
 
@@ -48,9 +49,73 @@ class HomeController extends Controller{
             'title' => "About Us | ".env('AUTHOR_SITE'),
             'description' => env('META_DESCRIPTION'),
             'alt_image' => 'About Us | '.env('AUTHOR_SITE'),
-            'about_us_text' => EmConfig::getData(array('meta_key' => 'about_us_text')),
+            'data' => EmConfig::getData(array('meta_key' => 'about_us_text')),
         );
         return view('frontend.about_us', $data);
+    }
+
+    public function termsOfPayment(){
+        $data = array(
+            'share_page' => array(
+                'description' => env('META_DESCRIPTION'),
+                'keyword' => env('META_KEYWORD'),
+                'title' => env('AUTHOR_SITE'),
+                'image' => asset(env('URL_IMAGE').'logo.png')
+            ),
+            'title' => "Terms Of Payment | ".env('AUTHOR_SITE'),
+            'description' => env('META_DESCRIPTION'),
+            'alt_image' => 'Terms Of Payment | '.env('AUTHOR_SITE'),
+            'data' => EmConfig::getData(array('meta_key' => 'terms_of_payment_text')),
+        );
+        return view('frontend.terms_of_payment', $data);
+    }
+
+    public function privacyPolicy(){
+        $data = array(
+            'share_page' => array(
+                'description' => env('META_DESCRIPTION'),
+                'keyword' => env('META_KEYWORD'),
+                'title' => env('AUTHOR_SITE'),
+                'image' => asset(env('URL_IMAGE').'logo.png')
+            ),
+            'title' => "Privacy Policy | ".env('AUTHOR_SITE'),
+            'description' => env('META_DESCRIPTION'),
+            'alt_image' => 'Privacy Policy | '.env('AUTHOR_SITE'),
+            'data' => EmConfig::getData(array('meta_key' => 'privacy_policy_text')),
+        );
+        return view('frontend.privacy_policy', $data);
+    }
+
+    public function shippingAndReturn(){
+        $data = array(
+            'share_page' => array(
+                'description' => env('META_DESCRIPTION'),
+                'keyword' => env('META_KEYWORD'),
+                'title' => env('AUTHOR_SITE'),
+                'image' => asset(env('URL_IMAGE').'logo.png')
+            ),
+            'title' => "Shipping And Return | ".env('AUTHOR_SITE'),
+            'description' => env('META_DESCRIPTION'),
+            'alt_image' => 'Shipping And Return | '.env('AUTHOR_SITE'),
+            'data' => EmConfig::getData(array('meta_key' => 'shipping_and_return_text')),
+        );
+        return view('frontend.shipping_and_return', $data);
+    }
+
+    public function faq(){
+        $data = array(
+            'share_page' => array(
+                'description' => env('META_DESCRIPTION'),
+                'keyword' => env('META_KEYWORD'),
+                'title' => env('AUTHOR_SITE'),
+                'image' => asset(env('URL_IMAGE').'logo.png')
+            ),
+            'title' => "FAQ | ".env('AUTHOR_SITE'),
+            'description' => env('META_DESCRIPTION'),
+            'alt_image' => 'FAQ | '.env('AUTHOR_SITE'),
+            'data_faq' => EmFaq::getWhere([], "", false),
+        );
+        return view('frontend.faq', $data);
     }
 
     public function contactUs(){

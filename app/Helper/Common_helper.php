@@ -263,51 +263,51 @@ class Common_helper
 
     public static function convert_to_format_currency($data)
 	{
-		return $data;
-		// $tmpData = explode('.', $data);
+		// return $data;
+		$tmpData = explode('.', $data);
 
-		// $belakangKoma="";
-		// if(count($tmpData)>1)
-		// {
-		// 	$belakangKoma=",".$tmpData[1];
-		// 	if(strlen($tmpData[1]) == 1)
-		// 	{
-		// 		$belakangKoma=",".$tmpData[1].'0';
-		// 	}
-		// }
-		// $data=$tmpData[0];
-		// $panjangData=strlen(ceil($data));
-		// $hasilBagi=substr($panjangData/3,0,1);
-		// $sisaBagi=$panjangData%3;
-		// $h="";
-		// $aw2=0;
-		// $ambil=3;
+		$belakangKoma="";
+		if(count($tmpData)>1)
+		{
+			$belakangKoma=",".$tmpData[1];
+			if(strlen($tmpData[1]) == 1)
+			{
+				$belakangKoma=",".$tmpData[1].'0';
+			}
+		}
+		$data=$tmpData[0];
+		$panjangData=strlen(ceil($data));
+		$hasilBagi=substr($panjangData/3,0,1);
+		$sisaBagi=$panjangData%3;
+		$h="";
+		$aw2=0;
+		$ambil=3;
 		
-		// if($sisaBagi!=0)
-		// {
-		// 	$h.=substr($data,0,$sisaBagi);
-		// 	$pjgDataBaru=strlen($data)-$sisaBagi;
+		if($sisaBagi!=0)
+		{
+			$h.=substr($data,0,$sisaBagi);
+			$pjgDataBaru=strlen($data)-$sisaBagi;
 			
-		// 	for($i=1;$i<=$pjgDataBaru/3;$i++)
-		// 	{
-		// 		$h.=".";
-		// 		$h.=substr($data,$sisaBagi,$ambil);
-		// 		$sisaBagi+=3;
-		// 	}
+			for($i=1;$i<=$pjgDataBaru/3;$i++)
+			{
+				$h.=".";
+				$h.=substr($data,$sisaBagi,$ambil);
+				$sisaBagi+=3;
+			}
 			
-		// }else
-		// {
-		// 	for($a=1;$a<=$hasilBagi;$a++)
-		// 	{
-		// 		$h=$h.substr($data,$aw2,$ambil);
-		// 		if($a<$hasilBagi)
-		// 		{
-		// 			$h=$h.".";
-		// 		}
-		// 		$aw2+=3;
-		// 	}
-		// }
-		// return $h.$belakangKoma;
+		}else
+		{
+			for($a=1;$a<=$hasilBagi;$a++)
+			{
+				$h=$h.substr($data,$aw2,$ambil);
+				if($a<$hasilBagi)
+				{
+					$h=$h.".";
+				}
+				$aw2+=3;
+			}
+		}
+		return $h.$belakangKoma;
 	}
 
 	public function generateProduct($key){
@@ -978,13 +978,13 @@ class Common_helper
 		$helper = new \App\Helper\Common_helper;
 		$getCurrency = $helper->get_current_currency('');
 		$additionalCost = 0;
-		if($getCurrency[3] == '1'){
-			$getData = \App\Models\MShippingCostDefault::where('shipping_cost_id', 4)->first();
-			$additionalCost = $getData->cost;
-		}else{
-			$getData = \App\Models\MShippingCostDefault::where('shipping_cost_id', 3)->first();
-			$additionalCost = $getData->cost;
-		}
+		// if($getCurrency[3] == '1'){
+		// 	$getData = \App\Models\MShippingCostDefault::where('shipping_cost_id', 4)->first();
+		// 	$additionalCost = $getData->cost;
+		// }else{
+		// 	$getData = \App\Models\MShippingCostDefault::where('shipping_cost_id', 3)->first();
+		// 	$additionalCost = $getData->cost;
+		// }
 		return $additionalCost;
 	}
 
@@ -1002,37 +1002,54 @@ class Common_helper
         return array();
 	}
 
-	public static function manageAmoutofUsage($couponData, $price, $trigger = 'plus')
+	// public static function manageAmoutofUsage($couponData, $price, $trigger = 'plus')
+    // {
+	// 	$remaining = 0;
+	// 	$use_count = 1;
+	// 	foreach ($couponData as $key) 
+    //     {
+	// 		$remaining = $key->discount;
+	// 	}
+
+	// 	if($trigger == 'plus'){
+	// 		$remaining = $remaining + $price;
+	// 	} else {
+	// 		$remaining = $remaining - $price;
+	// 		if($remaining < 0){
+	// 			$remaining = 0;
+	// 			$use_count = 0;
+	// 		}
+	// 	}
+
+    //     foreach ($couponData as $key) 
+    //     {
+    //         $model = \App\Models\EmCoupon::find($key->coupon_id);
+    //         if($trigger == 'plus')
+    //         {
+    //             $model->use_count = $use_count;
+	// 			$model->discount = $remaining;
+    //         }
+    //         else
+    //         {
+    //             $model->use_count = $use_count;
+	// 			$model->discount = $remaining;
+    //         }
+    //         $model->save();
+    //     }
+    // }
+
+	public static function manageAmoutofUsage($couponData, $remaining_coupon, $trigger = 'plus')
     {
-		$remaining = 0;
-		$use_count = 1;
-		foreach ($couponData as $key) 
-        {
-			$remaining = $key->discount;
-		}
-
-		if($trigger == 'plus'){
-			$remaining = $remaining + $price;
-		} else {
-			$remaining = $remaining - $price;
-			if($remaining < 0){
-				$remaining = 0;
-				$use_count = 0;
-			}
-		}
-
         foreach ($couponData as $key) 
         {
             $model = \App\Models\EmCoupon::find($key->coupon_id);
             if($trigger == 'plus')
             {
-                $model->use_count = $use_count;
-				$model->discount = $remaining;
+                $model->use_count += 1;
             }
             else
             {
-                $model->use_count = $use_count;
-				$model->discount = $remaining;
+                $model->use_count -= 1;   
             }
             $model->save();
         }
@@ -1168,55 +1185,50 @@ class Common_helper
 
 	public static function check_shipping($destination = array())
 	{
-		return array();
+		$helper = new \App\Helper\Common_helper;
+
+		$cityID = 17;
+		$subdistrictID = 259;
+
+		if($destination['national'])
+		{
+			//check shipping national
+			//from
+			$origin = array(
+				'city' => $cityID,
+				'subdistrict' => $subdistrictID
+			);
+			$originType = $destination['origin_type']; //city or subdistrict
+
+			//destination
+			$originDestination = array(
+				'city' => $destination['city'],
+				'subdistrict' => $destination['subdistrict']
+			);
+			$originTypeDestination = $destination['origin_type']; //city or subdistrict
+
+			$urlAPI = 'https://pro.rajaongkir.com/api/cost';
+			$urlGet= 'origin='.$origin[$originType].'&originType='.$originType.'&destination='.$originDestination[$originTypeDestination].'&destinationType='.$originTypeDestination.'&weight='.$destination['weight'].'&courier=jne';
+			//---------
+
+			return $helper->process_check_shipping($urlAPI, $urlGet);
+		}
+		else
+		{
+			//check shipping international
+			//from
+			$origin = $cityID;
+
+			//destination
+			$originDestination = $destination['country'];
+
+			$urlAPI = 'https://pro.rajaongkir.com/api/v2/internationalCost';
+			$urlGet= 'origin='.$origin.'&destination='.$originDestination.'&weight='.$destination['weight'].'&courier=pos';
+			//---------
+
+			return $helper->process_check_shipping($urlAPI, $urlGet);
+		}
 	}
-
-	// public static function check_shipping($destination = array())
-	// {
-	// 	$helper = new \App\Helper\Common_helper;
-
-	// 	$cityID = 17;
-	// 	$subdistrictID = 259;
-
-	// 	if($destination['national'])
-	// 	{
-	// 		//check shipping national
-	// 		//from
-	// 		$origin = array(
-	// 			'city' => $cityID,
-	// 			'subdistrict' => $subdistrictID
-	// 		);
-	// 		$originType = $destination['origin_type']; //city or subdistrict
-
-	// 		//destination
-	// 		$originDestination = array(
-	// 			'city' => $destination['city'],
-	// 			'subdistrict' => $destination['subdistrict']
-	// 		);
-	// 		$originTypeDestination = $destination['origin_type']; //city or subdistrict
-
-	// 		$urlAPI = 'https://pro.rajaongkir.com/api/cost';
-	// 		$urlGet= 'origin='.$origin[$originType].'&originType='.$originType.'&destination='.$originDestination[$originTypeDestination].'&destinationType='.$originTypeDestination.'&weight='.$destination['weight'].'&courier=jne';
-	// 		//---------
-
-	// 		return $helper->process_check_shipping($urlAPI, $urlGet);
-	// 	}
-	// 	else
-	// 	{
-	// 		//check shipping international
-	// 		//from
-	// 		$origin = $cityID;
-
-	// 		//destination
-	// 		$originDestination = $destination['country'];
-
-	// 		$urlAPI = 'https://pro.rajaongkir.com/api/v2/internationalCost';
-	// 		$urlGet= 'origin='.$origin.'&destination='.$originDestination.'&weight='.$destination['weight'].'&courier=pos';
-	// 		//---------
-
-	// 		return $helper->process_check_shipping($urlAPI, $urlGet);
-	// 	}
-	// }
 
 	public static function process_check_shipping($urlAPI, $urlGet)
 	{

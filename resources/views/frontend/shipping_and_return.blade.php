@@ -11,7 +11,7 @@
       <div class="carousel-item active" style="background-image: url('{{asset(env('URL_IMAGE').'banner-other.webp')}}');opacity:0.9">
         <div class="carousel-caption carousel-caption-left">
         <center>
-          <h1>ABOUT US</h1>
+          <h1>SHIPPING AND RETURN</h1>
           <br>
         </center>
         </div>

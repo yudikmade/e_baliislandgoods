@@ -350,268 +350,218 @@ class ShopController extends Controller
 
         $input = $request->all();
 
-        $getShipping = Common_helper::check_shipping(array());
-        $result = $this->get_shipping_cost($getShipping);
+        if(isset($input['trans_id']))
+        {
+            $validator = Validator::make(request()->all(), [
+                'trans_id' => 'required',
+                'country' => 'required',
+            ],
+            [
+                'country.required' => 'Please choose country.',
+                'trans_id.required' => 'Please input transaction id.',
+            ]);
 
-        // if(isset($input['trans_id']))
-        // {
-        //     $validator = Validator::make(request()->all(), [
-        //         'trans_id' => 'required',
-        //         'country' => 'required',
-        //     ],
-        //     [
-        //         'country.required' => 'Please choose country.',
-        //         'trans_id.required' => 'Please input transaction id.',
-        //     ]);
+            $notif = '';
+            if($validator->fails()) 
+            {
+                foreach ($validator->errors()->all() as $messages) 
+                {
+                    $notif .= $messages.'<br>';
+                }
+            }
+            else
+            {
+                $triggerProcess = true;
+                if($input['country'] == '236')
+                {
+                    $validator = Validator::make(request()->all(), [
+                        'province' => 'required',
+                        'city' => 'required',
+                        'subdistrict' => 'required',
+                    ],
+                    [
+                        'province.required' => 'Please choose province.',
+                        'city.required' => 'Please choose city.',
+                        'subdistrict.required' => 'Please choose subdistrict.',
+                    ]);
 
-        //     $notif = '';
-        //     if($validator->fails()) 
-        //     {
-        //         foreach ($validator->errors()->all() as $messages) 
-        //         {
-        //             $notif .= $messages.'<br>';
-        //         }
-        //     }
-        //     else
-        //     {
-        //         $triggerProcess = true;
-        //         if($input['country'] == '236')
-        //         {
-        //             $validator = Validator::make(request()->all(), [
-        //                 'province' => 'required',
-        //                 'city' => 'required',
-        //                 'subdistrict' => 'required',
-        //             ],
-        //             [
-        //                 'province.required' => 'Please choose province.',
-        //                 'city.required' => 'Please choose city.',
-        //                 'subdistrict.required' => 'Please choose subdistrict.',
-        //             ]);
+                    if($validator->fails()) 
+                    {
+                        foreach ($validator->errors()->all() as $messages) 
+                        {
+                            $notif .= $messages.'<br>';
+                        }
 
-        //             if($validator->fails()) 
-        //             {
-        //                 foreach ($validator->errors()->all() as $messages) 
-        //                 {
-        //                     $notif .= $messages.'<br>';
-        //                 }
+                        $triggerProcess = false;
+                    }
+                }
+                $result['notif'] = $notif;
 
-        //                 $triggerProcess = false;
-        //             }
-        //         }
-        //         $result['notif'] = $notif;
+                if($triggerProcess)
+                {
+                    $getWeight = EmTransactionMeta::getMeta(array('transaction_id' => $input['trans_id'], 'meta_key' => 'weight'));
+                    $getCountry = MCountry::getWhere([['country_id', '=', $input['country']]], '', false);
+                    if($input['country'] == '236')
+                    {
+                        $getProvince = MProvince::getWhere([['province_id', '=', $input['province']]], '', false);
+                        $getCity = MCity::getWhere([['city_id', '=', $input['city']]], '', false);
+                        $getSubdistrict = MSubdistrict::getWhere([['subdistrict_id', '=', $input['subdistrict']]], '', false);
 
-        //         if($triggerProcess)
-        //         {
-        //             $getWeight = EmTransactionMeta::getMeta(array('transaction_id' => $input['trans_id'], 'meta_key' => 'weight'));
-        //             $getCountry = MCountry::getWhere([['country_id', '=', $input['country']]], '', false);
-        //             if($input['country'] == '236')
-        //             {
-        //                 $getProvince = MProvince::getWhere([['province_id', '=', $input['province']]], '', false);
-        //                 $getCity = MCity::getWhere([['city_id', '=', $input['city']]], '', false);
-        //                 $getSubdistrict = MSubdistrict::getWhere([['subdistrict_id', '=', $input['subdistrict']]], '', false);
+                        $dataShipping = array(
+                            'national' => true,
+                            'origin_type' => 'city',
+                            'weight' => $getWeight->meta_description,
+                            'postalcode' => $input['postalcode'],
 
-        //                 $dataShipping = array(
-        //                     'national' => true,
-        //                     'origin_type' => 'city',
-        //                     'weight' => $getWeight->meta_description,
-        //                     'postalcode' => $input['postalcode'],
+                            'country' => $input['country'],
+                            'country_name' => $getCountry[0]->country_name,
+                            'province' => $input['province'],
+                            'province_name' => $getProvince[0]->province_name,
+                            'city' => $input['city'],
+                            'city_name' => $getCity[0]->city_name,
+                            'subdistrict' => $input['subdistrict'],
+                            'subdistrict_name' => $getSubdistrict[0]->subdistrict_name
+                        );
 
-        //                     'country' => $input['country'],
-        //                     'country_name' => $getCountry[0]->country_name,
-        //                     'province' => $input['province'],
-        //                     'province_name' => $getProvince[0]->province_name,
-        //                     'city' => $input['city'],
-        //                     'city_name' => $getCity[0]->city_name,
-        //                     'subdistrict' => $input['subdistrict'],
-        //                     'subdistrict_name' => $getSubdistrict[0]->subdistrict_name
-        //                 );
+                        $getShipping = Common_helper::check_shipping($dataShipping);
+                        $result = $this->get_shipping_cost($getShipping, true, $getWeight->meta_description, false);
+                    }
+                    else
+                    {
+                        $getCountry = MCountry::getWhere([['country_id', '=', $input['country']]], '', false);
 
-        //                 $getShipping = Common_helper::check_shipping($dataShipping);
-        //                 $result = $this->get_shipping_cost($getShipping, true, $getWeight->meta_description, false);
-        //             }
-        //             else
-        //             {
-        //                 $getCountry = MCountry::getWhere([['country_id', '=', $input['country']]], '', false);
+                        $dataShipping = array(
+                            'national' => false,
+                            'postalcode' => $input['postalcode'],
+                            'country' => $input['country'],
+                            'country_name' => $getCountry[0]->country_name,
+                            'address' => $input['address'],
+                            'weight' => $getWeight->meta_description
+                        );
 
-        //                 $dataShipping = array(
-        //                     'national' => false,
-        //                     'postalcode' => $input['postalcode'],
-        //                     'country' => $input['country'],
-        //                     'country_name' => $getCountry[0]->country_name,
-        //                     'address' => $input['address'],
-        //                     'weight' => $getWeight->meta_description
-        //                 );
-
-        //                 $getShipping = Common_helper::check_shipping($dataShipping);
-        //                 $result = $this->get_shipping_cost($getShipping, false, $getWeight->meta_description, false);
-        //             }
-        //         }
-        //     }
-        // }
-        // else
-        // {
-        //     $validator = Validator::make(request()->all(), [
-        //         'type_shipping' => 'required',
-        //         'country' => 'required',
-        //         'postalcode' => 'required',
-        //         'weight_total' => 'required',
-        //     ],
-        //     [
-        //         'country.required' => 'Please choose country.',
-        //         'postalcode.required' => 'Please input postal code.',
-        //         'type_shipping.required' => 'Please input type shipping.',
-        //         'weight_total.required' => 'Please input weight.',
-        //     ]);
+                        $getShipping = Common_helper::check_shipping($dataShipping);
+                        $result = $this->get_shipping_cost($getShipping, false, $getWeight->meta_description, false);
+                    }
+                }
+            }
+        }
+        else
+        {
+            $validator = Validator::make(request()->all(), [
+                'type_shipping' => 'required',
+                'country' => 'required',
+                'postalcode' => 'required',
+                'weight_total' => 'required',
+            ],
+            [
+                'country.required' => 'Please choose country.',
+                'postalcode.required' => 'Please input postal code.',
+                'type_shipping.required' => 'Please input type shipping.',
+                'weight_total.required' => 'Please input weight.',
+            ]);
             
-        //     if($validator->fails()) 
-        //     {
-        //         $notif = '';
-        //         foreach ($validator->errors()->all() as $messages) 
-        //         {
-        //             $notif .= $messages.'<br>';
-        //         }
-        //         $result['notif'] = $notif;
-        //     }
-        //     else
-        //     {
-        //         $input = $request->all();
-        //         if($input['type_shipping'] == 'national')
-        //         {
-        //             $validator = Validator::make(request()->all(), [
-        //                 'province' => 'required',
-        //                 'city' => 'required'
-        //             ],
-        //             [
-        //                 'province.required' => 'Please select the province of shipping.',
-        //                 'city.required' => 'Please select the city of shipping.',
-        //             ]);
+            if($validator->fails()) 
+            {
+                $notif = '';
+                foreach ($validator->errors()->all() as $messages) 
+                {
+                    $notif .= $messages.'<br>';
+                }
+                $result['notif'] = $notif;
+            }
+            else
+            {
+                $input = $request->all();
+                if($input['type_shipping'] == 'national')
+                {
+                    $validator = Validator::make(request()->all(), [
+                        'province' => 'required',
+                        'city' => 'required'
+                    ],
+                    [
+                        'province.required' => 'Please select the province of shipping.',
+                        'city.required' => 'Please select the city of shipping.',
+                    ]);
 
-        //             if($validator->fails()) 
-        //             {
-        //                 $notif = '';
-        //                 foreach ($validator->errors()->all() as $messages) 
-        //                 {
-        //                     $notif .= $messages.'<br>';
-        //                 }
-        //                 $result['notif'] = $notif;
-        //             }
-        //             else
-        //             {
-        //                 $getCountry = MCountry::getWhere([['country_id', '=', $input['country']]], '', false);
-        //                 $getProvince = MProvince::getWhere([['province_id', '=', $input['province']]], '', false);
-        //                 $getCity = MCity::getWhere([['city_id', '=', $input['city']]], '', false);
-        //                 $getSubdistrict = MSubdistrict::getWhere([['subdistrict_id', '=', $input['subdistrict']]], '', false);
+                    if($validator->fails()) 
+                    {
+                        $notif = '';
+                        foreach ($validator->errors()->all() as $messages) 
+                        {
+                            $notif .= $messages.'<br>';
+                        }
+                        $result['notif'] = $notif;
+                    }
+                    else
+                    {
+                        $getCountry = MCountry::getWhere([['country_id', '=', $input['country']]], '', false);
+                        $getProvince = MProvince::getWhere([['province_id', '=', $input['province']]], '', false);
+                        $getCity = MCity::getWhere([['city_id', '=', $input['city']]], '', false);
+                        $getSubdistrict = MSubdistrict::getWhere([['subdistrict_id', '=', $input['subdistrict']]], '', false);
 
-        //                 $dataShipping = array(
-        //                     'national' => true,
-        //                     'origin_type' => 'city',
-        //                     'weight' => $input['weight_total'],
-        //                     'postalcode' => $input['postalcode'],
+                        $dataShipping = array(
+                            'national' => true,
+                            'origin_type' => 'city',
+                            'weight' => $input['weight_total'],
+                            'postalcode' => $input['postalcode'],
 
-        //                     'country' => $input['country'],
-        //                     'country_name' => $getCountry[0]->country_name,
-        //                     'province' => $input['province'],
-        //                     'province_name' => $getProvince[0]->province_name,
-        //                     'city' => $input['city'],
-        //                     'city_name' => $getCity[0]->city_name,
-        //                     'subdistrict' => $input['subdistrict'],
-        //                     'subdistrict_name' => $getSubdistrict[0]->subdistrict_name
-        //                 );
+                            'country' => $input['country'],
+                            'country_name' => $getCountry[0]->country_name,
+                            'province' => $input['province'],
+                            'province_name' => $getProvince[0]->province_name,
+                            'city' => $input['city'],
+                            'city_name' => $getCity[0]->city_name,
+                            'subdistrict' => $input['subdistrict'],
+                            'subdistrict_name' => $getSubdistrict[0]->subdistrict_name
+                        );
 
-        //                 Session::put('delivery', array(0 => $dataShipping));
+                        Session::put('delivery', array(0 => $dataShipping));
 
-        //                 $getShipping = Common_helper::check_shipping($dataShipping);
-        //                 $result = $this->get_shipping_cost($getShipping, true, $input['weight_total']);
-        //             }
-        //         }
-        //         else
-        //         {
-        //             $validator = Validator::make(request()->all(), [
-        //                 'address' => 'required',
-        //             ],
-        //             [
-        //                 'address.required' => 'Please input detail address of shipping.',
-        //             ]);
-        //             if($validator->fails()) 
-        //             {
-        //                 $notif = '';
-        //                 foreach ($validator->errors()->all() as $messages) 
-        //                 {
-        //                     $notif .= $messages.'<br>';
-        //                 }
-        //                 $result['notif'] = $notif;
-        //             }
-        //             else
-        //             {
-        //                 $getCountry = MCountry::getWhere([['country_id', '=', $input['country']]], '', false);
+                        $getShipping = Common_helper::check_shipping($dataShipping);
+                        $result = $this->get_shipping_cost($getShipping, true, $input['weight_total']);
+                    }
+                }
+                else
+                {
+                    $validator = Validator::make(request()->all(), [
+                        'address' => 'required',
+                    ],
+                    [
+                        'address.required' => 'Please input detail address of shipping.',
+                    ]);
+                    if($validator->fails()) 
+                    {
+                        $notif = '';
+                        foreach ($validator->errors()->all() as $messages) 
+                        {
+                            $notif .= $messages.'<br>';
+                        }
+                        $result['notif'] = $notif;
+                    }
+                    else
+                    {
+                        $getCountry = MCountry::getWhere([['country_id', '=', $input['country']]], '', false);
 
-        //                 $dataShipping = array(
-        //                     'national' => false,
-        //                     'postalcode' => $input['postalcode'],
-        //                     'country' => $input['country'],
-        //                     'country_name' => $getCountry[0]->country_name,
-        //                     'address' => $input['address'],
-        //                     'weight' => $input['weight_total']
-        //                 );
-        //                 Session::put('delivery', array(0 => $dataShipping));
+                        $dataShipping = array(
+                            'national' => false,
+                            'postalcode' => $input['postalcode'],
+                            'country' => $input['country'],
+                            'country_name' => $getCountry[0]->country_name,
+                            'address' => $input['address'],
+                            'weight' => $input['weight_total']
+                        );
+                        Session::put('delivery', array(0 => $dataShipping));
 
-        //                 $getShipping = Common_helper::check_shipping($dataShipping);
-        //                 $result = $this->get_shipping_cost($getShipping, false, $input['weight_total']);
-        //             }
-        //         }
-        //     }
-        // }
+                        $getShipping = Common_helper::check_shipping($dataShipping);
+                        $result = $this->get_shipping_cost($getShipping, false, $input['weight_total']);
+                    }
+                }
+            }
+        }
         echo json_encode($result);
     }
 
-    private function get_shipping_cost($getShipping)
-    {
-        $current_currency = \App\Helper\Common_helper::get_current_currency();
-
-        $result['trigger'] = 'no';
-        $result['notif'] = '
-        <tr>
-            <td colspan="2">
-                Sorry, estimated shipping costs are not available.
-                <br>Please contact us for more information.
-            </td>
-        </tr>';
-
-        $getShippingCost = MShippingCostDefault::where('shipping_cost_id','1')->get();
-        if(count($getShippingCost)>0){
-            $htmlBuilder = '';
-
-            $shippingCostInCurrencyFormat = Common_helper::convert_to_current_currency($getShippingCost[0]->cost);
-            $showShippingCost = $current_currency[1].$shippingCostInCurrencyFormat[1].' '.$current_currency[2];
-
-            $counter = 1;
-            $shippingCost = $getShippingCost[0]->cost;
-            $etd = 0;
-            $valueData = 'Default shipping cost_'.$shippingCostInCurrencyFormat[0].'_'.$shippingCost.'_'.$etd;
-            $htmlBuilder .= '
-            <tr>
-                <td style="width:30px">
-                    <div class="pretty p-default p-round p-thick p-bigger">
-                        <input type="radio" name="shipping_choose" id="shipping_choose" value="'.$valueData.'" checked="true"/>
-                        <div class="state p-primary-o">
-                            <label></label>
-                        </div>
-                    </div>
-                </td>
-                <td for="shipping_choose">
-                    <div><b>Standard Shipping</b></div>
-                    <div>'.$showShippingCost.'</div>
-                </td>
-            </tr>';
-
-            $result['trigger'] = 'yes';
-            $result['notif'] = $htmlBuilder;
-        }
-
-        return $result;
-    }
-
-    // private function get_shipping_cost($getShipping, $national, $weight, $showButtonUpdate = true)
+    // private function get_shipping_cost($getShipping)
     // {
     //     $current_currency = \App\Helper\Common_helper::get_current_currency();
 
@@ -624,165 +574,212 @@ class ShopController extends Controller
     //         </td>
     //     </tr>';
 
-    //     $dataShipping = json_decode($getShipping[1], true);
-    //     $btnUpdateShippingCost = '';
-    //     if($showButtonUpdate)
-    //     {
-    //         $btnUpdateShippingCost = '
-    //             <tr>
-    //                 <td colspan="2" align="right">
-    //                     <button class="btn-default btn btn-sm btn-white" id="update-shipping-cost">CHANGE SHIPPING COSTS</button>
-    //                 </td>
-    //             </tr>
-    //         ';
-    //     }
+    //     $getShippingCost = MShippingCostDefault::where('shipping_cost_id','1')->get();
+    //     if(count($getShippingCost)>0){
+    //         $htmlBuilder = '';
 
-    //     $getAdditinalShiipingCost = Common_helper::getAdditionalShippingCost();
-
-    //     $getShippingCost = false;
-    //     if(isset($dataShipping['rajaongkir']['status']['code']))
-    //     {
-    //         if($dataShipping['rajaongkir']['status']['code'] == 200)
-    //         {
-    //             // print_r($dataShipping['rajaongkir']);
-    //             $code = $dataShipping['rajaongkir']['results'][0]['code'];
-    //             $name = $dataShipping['rajaongkir']['results'][0]['name'];
-
-    //             $tmpEtd = 0;
-    //             $htmlBuilder = '';
-    //             $counter = 1;
-    //             foreach ($dataShipping['rajaongkir']['results'][0]['costs'] as $key => $value) 
-    //             {
-    //                 $getShippingCost = true;
-    //                 // print_r($value);
-    //                 if($national)
-    //                 {
-    //                     //free ongkir
-    //                     // $value['cost'][0]['value'] = 0;
-    //                     // $getAdditinalShiipingCost = 0;
-
-    //                     $shippingCostInCurrencyFormat = Common_helper::convert_to_current_currency(($value['cost'][0]['value'] + $getAdditinalShiipingCost));
-    //                     $showShippingCost = $current_currency[1].$shippingCostInCurrencyFormat[1].' '.$current_currency[2];
-
-    //                     //one shipping
-    //                     if(substr($value['cost'][0]['etd'], -1) > $tmpEtd){
-    //                         $tmpEtd = substr($value['cost'][0]['etd'], -1);
-    //                         $htmlBuilder .= '
-    //                             <tr>
-    //                                 <td>
-    //                                     <div class="pretty p-default p-round p-thick p-bigger">
-    //                                         <input type="radio" name="shipping_choose" id="shipping_choose'.$counter.'" value="'.$value['service'].':'.$value['description'].'_'.$shippingCostInCurrencyFormat[0].'_'.($value['cost'][0]['value']+ $getAdditinalShiipingCost).'_'.$value['cost'][0]['etd'].'"/>
-    //                                         <div class="state p-primary-o">
-                                                
-    //                                             <label></label>
-    //                                         </div>
-    //                                     </div>
-    //                                 </td>
-    //                                 <td for="shipping_choose'.$counter.'">
-    //                                     <div><b>'.$value['service'].'</b></div>
-    //                                     <div>Estimated delivery time : <b>'.$value['cost'][0]['etd'].' day(s)</b></div>
-    //                                     <div>'.$showShippingCost.'</div>
-    //                                 </td>
-    //                             </tr>';
-    //                     }
-                            
-
-    //                     //more than one shipping
-    //                     // $htmlBuilder .= '
-    //                     //     <tr>
-    //                     //         <td>
-    //                     //             <div class="pretty p-default p-round p-thick p-bigger">
-    //                     //                 <input type="radio" name="shipping_choose" id="shipping_choose" value="'.$value['service'].':'.$value['description'].'_'.$shippingCostInCurrencyFormat[0].'_'.($value['cost'][0]['value']+ $getAdditinalShiipingCost).'_'.$value['cost'][0]['etd'].'"/>
-    //                     //                 <div class="state p-primary-o">
-                                            
-    //                     //                     <label></label>
-    //                     //                 </div>
-    //                     //             </div>
-    //                     //         </td>
-    //                     //         <td>
-    //                     //             <div><b>'.$value['service'].'</b></div>
-    //                     //             <div>Estimated delivery time : <b>'.$value['cost'][0]['etd'].' day(s)</b></div>
-    //                     //             <div>'.$showShippingCost.'</div>
-    //                     //         </td>
-    //                     //     </tr>';
-    //                 }
-    //                 else
-    //                 {
-    //                     $shippingCostInCurrencyFormat = Common_helper::convert_to_current_currency(($value['cost'] + $getAdditinalShiipingCost));
-    //                     $showShippingCost = $current_currency[1].$shippingCostInCurrencyFormat[1].' '.$current_currency[2];
-
-    //                     $htmlBuilder .= '
-    //                         <tr>
-    //                             <td>
-    //                                 <div class="pretty p-default p-round p-thick p-bigger">
-    //                                     <input type="radio" name="shipping_choose" id="shipping_choose'.$counter.'" value="'.$value['service'].'_'.$shippingCostInCurrencyFormat[0].'_'.($value['cost']+ $getAdditinalShiipingCost).'_'.$value['etd'].'"/>
-    //                                     <div class="state p-primary-o">
-                                            
-    //                                         <label></label>
-    //                                     </div>
-    //                                 </div>
-    //                             </td>
-    //                             <td for="shipping_choose'.$counter.'">
-    //                                 <div><b>'.$value['service'].'</b></div>
-    //                                 <div>Estimated delivery time : <b>'.$value['etd'].' day(s)</b></div>
-    //                                 <div>'.$showShippingCost.'</div>
-    //                             </td>
-    //                         </tr>';
-    //                 }
-    //                 $counter++;
-    //             }
-
-    //             $htmlBuilder .= $btnUpdateShippingCost;
-
-    //             $result['trigger'] = 'yes';
-    //             $result['notif'] = $htmlBuilder;
-    //         }
-    //     }
-    //     if(!$getShippingCost)
-    //     {
-    //         $etd = '30';
-    //         $getShippingCost = MShippingCostDefault::getWhere([['shipping_cost_id', '=', '1']], '', false);
-    //         if($national)
-    //         {
-    //             $getShippingCost = MShippingCostDefault::getWhere([['shipping_cost_id', '=', '2']], '', false);
-    //             $etd = '7';
-
-    //             //free shipping
-    //             // $getShippingCost[0]->cost = 0;
-    //             // $getAdditinalShiipingCost = 0;
-    //         }
-
-    //         $weightinKG = ceil($weight / 1000);
-            
-    //         $shippingCost = ($getShippingCost[0]->cost + $getAdditinalShiipingCost) * $weightinKG;
-    //         $shippingCostInCurrencyFormat = Common_helper::convert_to_current_currency($shippingCost + $getAdditinalShiipingCost);
+    //         $shippingCostInCurrencyFormat = Common_helper::convert_to_current_currency($getShippingCost[0]->cost);
     //         $showShippingCost = $current_currency[1].$shippingCostInCurrencyFormat[1].' '.$current_currency[2];
 
+    //         $counter = 1;
+    //         $shippingCost = $getShippingCost[0]->cost;
+    //         $etd = 0;
     //         $valueData = 'Default shipping cost_'.$shippingCostInCurrencyFormat[0].'_'.$shippingCost.'_'.$etd;
-    //         $htmlBuilder = '
-    //             <tr>
-    //                 <td>
-    //                     <div class="pretty p-default p-round p-thick p-bigger">
-    //                         <input type="radio" name="shipping_choose" id="shipping_choose" value="'.$valueData.'"/>
-    //                         <div class="state p-primary-o">
-                                
-    //                             <label></label>
-    //                         </div>
+    //         $htmlBuilder .= '
+    //         <tr>
+    //             <td style="width:30px">
+    //                 <div class="pretty p-default p-round p-thick p-bigger">
+    //                     <input type="radio" name="shipping_choose" id="shipping_choose" value="'.$valueData.'" checked="true"/>
+    //                     <div class="state p-primary-o">
+    //                         <label></label>
     //                     </div>
-    //                 </td>
-    //                 <td>
-    //                     <div><b>Pengiriman Standar</b></div>
-    //                     <div>Estimated delivery time : <b>'.$etd.' day(s)</b></div>
-    //                     <div>'.$showShippingCost.'</div>
-    //                 </td>
-    //             </tr>'.$btnUpdateShippingCost;
+    //                 </div>
+    //             </td>
+    //             <td for="shipping_choose">
+    //                 <div><b>Standard Shipping</b></div>
+    //                 <div>'.$showShippingCost.'</div>
+    //             </td>
+    //         </tr>';
 
     //         $result['trigger'] = 'yes';
     //         $result['notif'] = $htmlBuilder;
-
     //     }
+
     //     return $result;
     // }
+
+    private function get_shipping_cost($getShipping, $national, $weight, $showButtonUpdate = true)
+    {
+        $current_currency = \App\Helper\Common_helper::get_current_currency();
+
+        $result['trigger'] = 'no';
+        $result['notif'] = '
+        <tr>
+            <td colspan="2">
+                Sorry, estimated shipping costs are not available.
+                <br>Please contact us for more information.
+            </td>
+        </tr>';
+
+        $dataShipping = json_decode($getShipping[1], true);
+        $btnUpdateShippingCost = '';
+        if($showButtonUpdate)
+        {
+            $btnUpdateShippingCost = '
+                <tr>
+                    <td colspan="2" align="right">
+                        <button class="btn-default btn btn-sm btn-white" id="update-shipping-cost">CHANGE SHIPPING COSTS</button>
+                    </td>
+                </tr>
+            ';
+        }
+
+        $getAdditinalShiipingCost = Common_helper::getAdditionalShippingCost();
+
+        $getShippingCost = false;
+        if(isset($dataShipping['rajaongkir']['status']['code']))
+        {
+            if($dataShipping['rajaongkir']['status']['code'] == 200)
+            {
+                // print_r($dataShipping['rajaongkir']);
+                $code = $dataShipping['rajaongkir']['results'][0]['code'];
+                $name = $dataShipping['rajaongkir']['results'][0]['name'];
+
+                $tmpEtd = 0;
+                $htmlBuilder = '';
+                $counter = 1;
+                foreach ($dataShipping['rajaongkir']['results'][0]['costs'] as $key => $value) 
+                {
+                    $getShippingCost = true;
+                    // print_r($value);
+                    if($national)
+                    {
+                        //free ongkir
+                        // $value['cost'][0]['value'] = 0;
+                        // $getAdditinalShiipingCost = 0;
+
+                        $shippingCostInCurrencyFormat = Common_helper::convert_to_current_currency(($value['cost'][0]['value'] + $getAdditinalShiipingCost));
+                        $showShippingCost = $current_currency[1].$shippingCostInCurrencyFormat[1].' '.$current_currency[2];
+
+                        //one shipping
+                        if(substr($value['cost'][0]['etd'], -1) > $tmpEtd){
+                            $tmpEtd = substr($value['cost'][0]['etd'], -1);
+                            $htmlBuilder .= '
+                                <tr>
+                                    <td>
+                                        <div class="pretty p-default p-round p-thick p-bigger">
+                                            <input type="radio" name="shipping_choose" id="shipping_choose'.$counter.'" value="'.$value['service'].':'.$value['description'].'_'.$shippingCostInCurrencyFormat[0].'_'.($value['cost'][0]['value']+ $getAdditinalShiipingCost).'_'.$value['cost'][0]['etd'].'"/>
+                                            <div class="state p-primary-o">
+                                                
+                                                <label></label>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td for="shipping_choose'.$counter.'">
+                                        <div><b>'.$value['service'].'</b></div>
+                                        <div>Estimated delivery time : <b>'.$value['cost'][0]['etd'].' day(s)</b></div>
+                                        <div>'.$showShippingCost.'</div>
+                                    </td>
+                                </tr>';
+                        }
+                            
+
+                        //more than one shipping
+                        // $htmlBuilder .= '
+                        //     <tr>
+                        //         <td>
+                        //             <div class="pretty p-default p-round p-thick p-bigger">
+                        //                 <input type="radio" name="shipping_choose" id="shipping_choose" value="'.$value['service'].':'.$value['description'].'_'.$shippingCostInCurrencyFormat[0].'_'.($value['cost'][0]['value']+ $getAdditinalShiipingCost).'_'.$value['cost'][0]['etd'].'"/>
+                        //                 <div class="state p-primary-o">
+                                            
+                        //                     <label></label>
+                        //                 </div>
+                        //             </div>
+                        //         </td>
+                        //         <td>
+                        //             <div><b>'.$value['service'].'</b></div>
+                        //             <div>Estimated delivery time : <b>'.$value['cost'][0]['etd'].' day(s)</b></div>
+                        //             <div>'.$showShippingCost.'</div>
+                        //         </td>
+                        //     </tr>';
+                    }
+                    else
+                    {
+                        $shippingCostInCurrencyFormat = Common_helper::convert_to_current_currency(($value['cost'] + $getAdditinalShiipingCost));
+                        $showShippingCost = $current_currency[1].$shippingCostInCurrencyFormat[1].' '.$current_currency[2];
+
+                        $htmlBuilder .= '
+                            <tr>
+                                <td>
+                                    <div class="pretty p-default p-round p-thick p-bigger">
+                                        <input type="radio" name="shipping_choose" id="shipping_choose'.$counter.'" value="'.$value['service'].'_'.$shippingCostInCurrencyFormat[0].'_'.($value['cost']+ $getAdditinalShiipingCost).'_'.$value['etd'].'"/>
+                                        <div class="state p-primary-o">
+                                            
+                                            <label></label>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td for="shipping_choose'.$counter.'">
+                                    <div><b>'.$value['service'].'</b></div>
+                                    <div>Estimated delivery time : <b>'.$value['etd'].' day(s)</b></div>
+                                    <div>'.$showShippingCost.'</div>
+                                </td>
+                            </tr>';
+                    }
+                    $counter++;
+                }
+
+                $htmlBuilder .= $btnUpdateShippingCost;
+
+                $result['trigger'] = 'yes';
+                $result['notif'] = $htmlBuilder;
+            }
+        }
+        if(!$getShippingCost)
+        {
+            $etd = '30';
+            $getShippingCost = MShippingCostDefault::getWhere([['shipping_cost_id', '=', '1']], '', false);
+            if($national)
+            {
+                $getShippingCost = MShippingCostDefault::getWhere([['shipping_cost_id', '=', '2']], '', false);
+                $etd = '7';
+
+                //free shipping
+                // $getShippingCost[0]->cost = 0;
+                // $getAdditinalShiipingCost = 0;
+            }
+
+            $weightinKG = ceil($weight / 1000);
+            
+            $shippingCost = ($getShippingCost[0]->cost + $getAdditinalShiipingCost) * $weightinKG;
+            $shippingCostInCurrencyFormat = Common_helper::convert_to_current_currency($shippingCost + $getAdditinalShiipingCost);
+            $showShippingCost = $current_currency[1].$shippingCostInCurrencyFormat[1].' '.$current_currency[2];
+
+            $valueData = 'Default shipping cost_'.$shippingCostInCurrencyFormat[0].'_'.$shippingCost.'_'.$etd;
+            $htmlBuilder = '
+                <tr>
+                    <td>
+                        <div class="pretty p-default p-round p-thick p-bigger">
+                            <input type="radio" name="shipping_choose" id="shipping_choose" value="'.$valueData.'"/>
+                            <div class="state p-primary-o">
+                                
+                                <label></label>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div><b>Pengiriman Standar</b></div>
+                        <div>Estimated delivery time : <b>'.$etd.' day(s)</b></div>
+                        <div>'.$showShippingCost.'</div>
+                    </td>
+                </tr>'.$btnUpdateShippingCost;
+
+            $result['trigger'] = 'yes';
+            $result['notif'] = $htmlBuilder;
+
+        }
+        return $result;
+    }
 
     private function checking_trans_code($trans_code, $allStatus = false)
     {
@@ -970,8 +967,7 @@ class ShopController extends Controller
                             'subdistrict_name' => $key->subdistrict_name
                         );
                         $getShipping = Common_helper::check_shipping($dataShipping);
-                        // $listShipping = $this->get_shipping_cost($getShipping, true, $getWeight->meta_description, false)['notif'];
-                        $listShipping = $this->get_shipping_cost($getShipping)['notif'];
+                        $listShipping = $this->get_shipping_cost($getShipping, true, $getWeight->meta_description, false)['notif'];
                     }
                     else
                     {
@@ -984,8 +980,7 @@ class ShopController extends Controller
                             'weight' => $getWeight->meta_description,
                         );
                         $getShipping = Common_helper::check_shipping($dataShipping);
-                        // $listShipping = $this->get_shipping_cost($getShipping, false, $getWeight->meta_description, false)['notif'];
-                        $listShipping = $this->get_shipping_cost($getShipping)['notif'];
+                        $listShipping = $this->get_shipping_cost($getShipping, false, $getWeight->meta_description, false)['notif'];
                     }
                 }
             }

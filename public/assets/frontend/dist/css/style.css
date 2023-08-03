@@ -120,6 +120,9 @@ h1, h2, h3{
   margin-bottom: 0px;
   vertical-align: text-bottom;
 }
+.navbar-right .nav-link .badge {
+  font-size: 10px;
+}
 
 .navbar-light .navbar-nav .nav-link{
   color: #000;

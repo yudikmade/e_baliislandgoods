@@ -14,10 +14,10 @@
                   <h4>INFO & HELP</h4>
                     <p><a href="{{url('/about-us')}}">About</a></p>
                     <p><a href="{{url('/contact-us')}}">Contact</a></p>
-                    <p><a href="#">FAQ</a></p>
-                    <p><a href="#">Terms of Payment</a></p>
-                    <p><a href="#">Shipping and Return</a></p>
-                    <p><a href="#">Privacy Policy</a></p>
+                    <p><a href="{{url('/faq')}}">FAQ</a></p>
+                    <p><a href="{{url('/terms-of-payment')}}">Terms of Payment</a></p>
+                    <p><a href="{{url('/shipping-and-return')}}">Shipping and Return</a></p>
+                    <p><a href="{{url('/privacy-policy')}}">Privacy Policy</a></p>
                 </div>
                 <div class="col-md-6 col-12 footer-section">
                     <h4>FOLLOW ALONG @BaliIslandGoods</h2>
@@ -76,23 +76,32 @@
                         <div class="right-side-cart {{$checkCart[1] == '0' ? 'none':''}}" id="right-side-cart">
                             @if(!is_null(Session::get('cart')))
                             @php 
-                            $price_in_right_side = 0;
+                                $price_in_right_side = 0;
+                                $rsCurrent_currency = \App\Helper\Common_helper::get_current_currency();
                             @endphp
                             @foreach(Session::get('cart') as $key)
                             @php 
-                            $price_in_right_side = $price_in_right_side + ($key['price'][0] * $key['qty']);
+                                $rsGetProduct = \App\Models\EmProduct::select('product_name','price','discount')->where('product_id',$key['product_id'])->first();
+                                $rsSetDiscount = \App\Helper\Common_helper::set_discount($rsGetProduct->price, $rsGetProduct->discount);
+                                $rsPriceAfterDisc = $rsSetDiscount[0];
+                                $rsDiscount = $rsSetDiscount[1];
+
+                                $rsPriceInCurrencyFormat = \App\Helper\Common_helper::convert_to_current_currency($rsPriceAfterDisc);
+                                $rsShowPriceAfterDisc = $rsCurrent_currency[1].$rsPriceInCurrencyFormat[1].' '.$rsCurrent_currency[2];
+                                
+                                $price_in_right_side = $price_in_right_side + ($rsPriceAfterDisc * $key['qty']);
                             @endphp
                             <div class="row">
                               <div class="col-md-3 col-4"><img class="img-fluid" src="{{asset(env('URL_IMAGE').'product/thumb/'.$key['product_img'])}}"></div>
                               <div class="col-md-7 col-6">
                                 <p><b>{{$key['product_name']}}</b></p>
-                                <p>{{$key['qty']}} x {{$key['price_text']}}</p>
+                                <p>{{$key['qty']}} x {{$rsShowPriceAfterDisc}}</p>
                               </div>
                               <div class="col-md-2 col-2">
-                                <a href="{{route('process_delete_item_cart').'/'.$key['product_id'].'/'.$key['sku_id']}}" class="btn btn-remove-product btn-remove-product-right-side d-flex align-items-center justify-content-center">
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                                  <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
-                                  </svg>
+                                <a href="{{route('process_delete_item_cart').'/'.$key['product_id'].'/'.$key['sku_id']}}" class="btn btn-remove-product btn-remove-product-right-side align-items-center justify-content-center" style="margin-top:-10px">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+                                    </svg>
                                 </a>
                               </div>
                             </div>
@@ -104,10 +113,8 @@
                               </div>
                               <div class="col-md-6 col-6 sub-total"><p>
                                 @php 
-                                $current_currency_in_right_side = \App\Helper\Common_helper::get_current_currency();
-
                                 $price_in_right_side = \App\Helper\Common_helper::convert_to_current_currency($price_in_right_side);
-                                echo $current_currency_in_right_side[1].$price_in_right_side[1].' '.$current_currency_in_right_side[2];
+                                echo $rsCurrent_currency[1].$price_in_right_side[1].' '.$rsCurrent_currency[2];
                                 @endphp
                               </p></div>
                             </div>
