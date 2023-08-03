@@ -658,8 +658,8 @@ class ShopController extends Controller
                         // $value['cost'][0]['value'] = 0;
                         // $getAdditinalShiipingCost = 0;
 
-                        $shippingCostInCurrencyFormat = Common_helper::convert_to_current_currency(($value['cost'][0]['value'] + $getAdditinalShiipingCost));
-                        $showShippingCost = $current_currency[1].$shippingCostInCurrencyFormat[1].' '.$current_currency[2];
+                        $shippingCostInCurrencyFormat = Common_helper::convert_to_format_currency($value['cost'][0]['value']);
+                        $showShippingCost = $current_currency[1].$shippingCostInCurrencyFormat.' '.$current_currency[2];
 
                         //one shipping
                         if(substr($value['cost'][0]['etd'], -1) > $tmpEtd){
@@ -668,7 +668,7 @@ class ShopController extends Controller
                                 <tr>
                                     <td>
                                         <div class="pretty p-default p-round p-thick p-bigger">
-                                            <input type="radio" name="shipping_choose" id="shipping_choose'.$counter.'" value="'.$value['service'].':'.$value['description'].'_'.$shippingCostInCurrencyFormat[0].'_'.($value['cost'][0]['value']+ $getAdditinalShiipingCost).'_'.$value['cost'][0]['etd'].'"/>
+                                            <input type="radio" name="shipping_choose" id="shipping_choose'.$counter.'" value="'.$value['service'].':'.$value['description'].'_'.$shippingCostInCurrencyFormat.'_'.($value['cost'][0]['value']+ $getAdditinalShiipingCost).'_'.$value['cost'][0]['etd'].'"/>
                                             <div class="state p-primary-o">
                                                 
                                                 <label></label>
@@ -684,7 +684,7 @@ class ShopController extends Controller
                         }
                             
 
-                        //more than one shipping
+                        // more than one shipping
                         // $htmlBuilder .= '
                         //     <tr>
                         //         <td>
