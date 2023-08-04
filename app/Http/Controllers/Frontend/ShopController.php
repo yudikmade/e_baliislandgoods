@@ -658,8 +658,8 @@ class ShopController extends Controller
                         // $value['cost'][0]['value'] = 0;
                         // $getAdditinalShiipingCost = 0;
 
-                        $shippingCostInCurrencyFormat = Common_helper::convert_to_format_currency($value['cost'][0]['value']);
-                        $showShippingCost = $current_currency[1].$shippingCostInCurrencyFormat.' '.$current_currency[2];
+                        $shippingCostInCurrencyFormat = Common_helper::convert_to_current_currency($value['cost'][0]['value']);
+                        $showShippingCost = $current_currency[1].$shippingCostInCurrencyFormat[1].' '.$current_currency[2];
 
                         //one shipping
                         if(substr($value['cost'][0]['etd'], -1) > $tmpEtd){
@@ -668,7 +668,7 @@ class ShopController extends Controller
                                 <tr>
                                     <td>
                                         <div class="pretty p-default p-round p-thick p-bigger">
-                                            <input type="radio" name="shipping_choose" id="shipping_choose'.$counter.'" value="'.$value['service'].':'.$value['description'].'_'.$shippingCostInCurrencyFormat.'_'.($value['cost'][0]['value']+ $getAdditinalShiipingCost).'_'.$value['cost'][0]['etd'].'"/>
+                                            <input type="radio" name="shipping_choose" id="shipping_choose'.$counter.'" value="'.$value['service'].':'.$value['description'].'_'.$shippingCostInCurrencyFormat[0].'_'.($value['cost'][0]['value']+ $getAdditinalShiipingCost).'_'.$value['cost'][0]['etd'].'"/>
                                             <div class="state p-primary-o">
                                                 
                                                 <label></label>
@@ -685,23 +685,23 @@ class ShopController extends Controller
                             
 
                         // more than one shipping
-                        // $htmlBuilder .= '
-                        //     <tr>
-                        //         <td>
-                        //             <div class="pretty p-default p-round p-thick p-bigger">
-                        //                 <input type="radio" name="shipping_choose" id="shipping_choose" value="'.$value['service'].':'.$value['description'].'_'.$shippingCostInCurrencyFormat[0].'_'.($value['cost'][0]['value']+ $getAdditinalShiipingCost).'_'.$value['cost'][0]['etd'].'"/>
-                        //                 <div class="state p-primary-o">
+                        $htmlBuilder .= '
+                            <tr>
+                                <td>
+                                    <div class="pretty p-default p-round p-thick p-bigger">
+                                        <input type="radio" name="shipping_choose" id="shipping_choose" value="'.$value['service'].':'.$value['description'].'_'.$shippingCostInCurrencyFormat[0].'_'.($value['cost'][0]['value']+ $getAdditinalShiipingCost).'_'.$value['cost'][0]['etd'].'"/>
+                                        <div class="state p-primary-o">
                                             
-                        //                     <label></label>
-                        //                 </div>
-                        //             </div>
-                        //         </td>
-                        //         <td>
-                        //             <div><b>'.$value['service'].'</b></div>
-                        //             <div>Estimated delivery time : <b>'.$value['cost'][0]['etd'].' day(s)</b></div>
-                        //             <div>'.$showShippingCost.'</div>
-                        //         </td>
-                        //     </tr>';
+                                            <label></label>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div><b>'.$value['service'].'</b></div>
+                                    <div>Estimated delivery time : <b>'.$value['cost'][0]['etd'].' day(s)</b></div>
+                                    <div>'.$showShippingCost.'</div>
+                                </td>
+                            </tr>';
                     }
                     else
                     {
@@ -738,15 +738,11 @@ class ShopController extends Controller
         if(!$getShippingCost)
         {
             $etd = '30';
-            $getShippingCost = MShippingCostDefault::getWhere([['shipping_cost_id', '=', '1']], '', false);
+            $getShippingCost = MShippingCostDefault::getWhere([['shipping_cost_id', '=', '2']], '', false);
             if($national)
             {
-                $getShippingCost = MShippingCostDefault::getWhere([['shipping_cost_id', '=', '2']], '', false);
+                $getShippingCost = MShippingCostDefault::getWhere([['shipping_cost_id', '=', '1']], '', false);
                 $etd = '7';
-
-                //free shipping
-                // $getShippingCost[0]->cost = 0;
-                // $getAdditinalShiipingCost = 0;
             }
 
             $weightinKG = ceil($weight / 1000);
@@ -768,7 +764,7 @@ class ShopController extends Controller
                         </div>
                     </td>
                     <td>
-                        <div><b>Pengiriman Standar</b></div>
+                        <div><b>Default Shipping</b></div>
                         <div>Estimated delivery time : <b>'.$etd.' day(s)</b></div>
                         <div>'.$showShippingCost.'</div>
                     </td>

@@ -951,8 +951,8 @@ class Common_helper
 				if(Session::get(env('SES_GLOBAL_CURRENCY')) != NULL){
 					$getCurrency = MCurrency::getWhere([['currency_id', '=', Session::get(env('SES_GLOBAL_CURRENCY'))]], '', false);
 				}else{
-					//dollar USD (default)
-					$getCurrency = MCurrency::getWhere([['status_permanent', '=', '1'], ['currency_id', '=', '2']], '', false);
+					//IDR (default)
+					$getCurrency = MCurrency::getWhere([['status_permanent', '=', '1'], ['currency_id', '=', '1']], '', false);
 				}
 			}
 		}
@@ -975,8 +975,8 @@ class Common_helper
 	}
 
 	public static function getAdditionalShippingCost(){
-		$helper = new \App\Helper\Common_helper;
-		$getCurrency = $helper->get_current_currency('');
+		// $helper = new \App\Helper\Common_helper;
+		// $getCurrency = $helper->get_current_currency('');
 		$additionalCost = 0;
 		// if($getCurrency[3] == '1'){
 		// 	$getData = \App\Models\MShippingCostDefault::where('shipping_cost_id', 4)->first();
