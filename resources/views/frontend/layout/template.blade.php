@@ -98,6 +98,17 @@
 							</ul>
 							
 						</li>
+                        <li class="nav-item form-search-header-mobile">
+                            <form id="form-search-header">
+                                <div class="input-group has-search black">
+                                <input name="category" id="category_search_header" type="hidden" value="all" />
+                                <input name="search" id="keyword_search_header" type="text" value="" class="form-control" placeholder="Search products..." aria-describedby="basic-addon2">
+                                <div class="input-group-append">
+                                    <span class="input-group-text" id="basic-addon2" style="height:38px"><i class="pe-7s-search"></i></span>
+                                </div>
+                                </div>
+                            </form>
+                        </li>
                     </ul>
                 </div></div>
                 <!-- <div class="pseudo-col col-3"></div> -->

@@ -81,6 +81,10 @@ h1, h2, h3{
   font-family: 'Modern-Era', sans-serif;
 }
 
+.form-search-header-mobile {
+  display: none;
+}
+
 .running-news{
   background: #d1f08f;
   width: 100%;
@@ -1608,6 +1612,7 @@ input, select:focus{
        width: 100%;
        background-color: #fff;
        padding-left: 20px;
+       padding-right: 20px;
        z-index: 9999;
        margin-left: -15px;
      }
@@ -1804,10 +1809,15 @@ input, select:focus{
     .featurette-divider {
       margin: 3rem 0 !important;
     }
-    #header-search-form{
+    #header-search-form,
+    #header-search-btn{
       display: none !important;
     }
     .customer-name {
       display: none !important;
+    }
+    .form-search-header-mobile {
+      display: block !important;
+      padding-bottom: 20px;
     }
  }
