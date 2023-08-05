@@ -971,7 +971,7 @@ class Common_helper
 		$newNominal = $helper->set_two_nominal_after_point($newNominal);
 		$newNominalCurrencyFormat = $helper->convert_to_format_currency($newNominal);
 
-		return array($newNominal, $newNominalCurrencyFormat);
+		return array($newNominal, $newNominalCurrencyFormat, $getCurrency);
 	}
 
 	public static function getAdditionalShippingCost(){

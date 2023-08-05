@@ -1347,9 +1347,14 @@ class ProcessController extends Controller
                 }
 
                 $amount = $totalPayment;
-                if(Session::get(env('SES_GLOBAL_CURRENCY')) != '1'){
-                    $amount = Common_helper::convert_to_current_currency($amount,'1');
-                    $amount = $amount[0];
+                if(Session::get(env('SES_GLOBAL_CURRENCY')) == '2'){
+                    $idr_price = 15000;
+                    $get_usd_to_idr = EmConfig::getData(array('meta_key' => 'usd_to_idr'));
+                    if($get_usd_to_idr != ''){
+                        $idr_price = $get_usd_to_idr;
+                    }
+
+                    $amount = round($amount * $idr_price);
                 }
                 EmTransactionMeta::updateMeta(array('transaction_id' => $trans_id, 'meta_key' => 'amount_idr', 'meta_description' => $amount));
 
@@ -1592,9 +1597,14 @@ class ProcessController extends Controller
                                 $discNominal = Common_helper::check_decimal($discNominal);
 
                                 $amount = $totalPayment;
-                                if(Session::get(env('SES_GLOBAL_CURRENCY')) != '1'){
-                                    $amount = Common_helper::convert_to_current_currency($amount,'1');
-                                    $amount = $amount[0];
+                                if(Session::get(env('SES_GLOBAL_CURRENCY')) == '2'){
+                                    $idr_price = 15000;
+                                    $get_usd_to_idr = EmConfig::getData(array('meta_key' => 'usd_to_idr'));
+                                    if($get_usd_to_idr != ''){
+                                        $idr_price = $get_usd_to_idr;
+                                    }
+                
+                                    $amount = round($amount * $idr_price);
                                 }
                                 EmTransactionMeta::updateMeta(array('transaction_id' => $getTransaction[0]->transaction_id, 'meta_key' => 'amount_idr', 'meta_description' => $amount));
 
@@ -1635,9 +1645,14 @@ class ProcessController extends Controller
                             // $totalPayment = Common_helper::check_decimal($totalPayment);
 
                             $amount = $totalPayment;
-                            if(Session::get(env('SES_GLOBAL_CURRENCY')) != '1'){
-                                $amount = Common_helper::convert_to_current_currency($amount,'1');
-                                $amount = $amount[0];
+                            if(Session::get(env('SES_GLOBAL_CURRENCY')) == '2'){
+                                $idr_price = 15000;
+                                $get_usd_to_idr = EmConfig::getData(array('meta_key' => 'usd_to_idr'));
+                                if($get_usd_to_idr != ''){
+                                    $idr_price = $get_usd_to_idr;
+                                }
+            
+                                $amount = round($amount * $idr_price);
                             }
                             EmTransactionMeta::updateMeta(array('transaction_id' => $getTransaction[0]->transaction_id, 'meta_key' => 'amount_idr', 'meta_description' => $amount));
 
