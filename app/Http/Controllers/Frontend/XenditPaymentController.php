@@ -7,6 +7,7 @@ use Session;
 use Validator;
 
 use App\Helper\Common_helper;
+use App\Helper\Xendit_helper;
 use App\Models\EmTransaction;
 use App\Models\EmTransactionDetail;
 use App\Models\EmTransactionMeta;
@@ -16,9 +17,7 @@ use App\Models\EmCoupon;
 use App\Models\EmProduct;
 use App\Models\EmTransactionShipping;
 
-use Cartalyst\Stripe\Stripe;
-
-class StripePaymentController extends Controller
+class XenditPaymentController extends Controller
 {
     public function __construct(){
     }
@@ -31,17 +30,23 @@ class StripePaymentController extends Controller
             'id' => 'required',
             'name_on_card' => 'required',
             'billing_address' => 'required',
-            'cc_number' => 'required',
-            'cc_expiry' => 'required',
-            'cc_cvc' => 'required'
+            'card_number' => 'required',
+            'card_expires' => 'required',
+            'cvn_code' => 'required',
+            'token_id' => 'required',
+            'authentication_id' => 'required',
+            'amount' => 'required',
         ],
         [
             'id.required' => 'Transaction is not exist.',
             'name_on_card.required' => 'Please insert name of card.',
             'billing_address.required' => 'Please insert billing address.',
-            'cc_number.required' => 'Please insert card number.',
-            'cc_expiry.required' => 'Please insert expiry card.',
-            'cc_cvc.required' => 'Please insert cvc number.'
+            'card_number.required' => 'Please insert card number.',
+            'card_expires.required' => 'Please insert expiry card.',
+            'cvn_code.required' => 'Please insert cvc number.',
+            'token_id.required' => 'Please insert Token.',
+            'authentication_id.required' => 'Please insert Authentication.',
+            'amount.required' => 'Please insert amount.'
         ]);
         
         if($validator->fails()) {
@@ -64,71 +69,24 @@ class StripePaymentController extends Controller
 
                 //payment
                 $doNext = true;
-                $paymentData = array();
-                        
-                $currencyCode = 'CAD';
-                $stripe = Stripe::make((env('STRIPE_SANDBOX')?env('STRIPE_SECRET_KEY'):env('STRIPE_SECRET_KEY_LIVE')));
-                $expiryCard = explode('/',$input['cc_expiry']);
-
-                try {
-                    $token = null;
-                    $customer = null;
-                    $charge = null;
-
-                    $token = $stripe->tokens()->create([
-                        'card' => [
-                            'number' => $input['cc_number'],
-                            'exp_month' => @$expiryCard[0],
-                            'exp_year' => @$expiryCard[1],
-                            'cvc' => $input['cc_cvc'],
-                        ],
-                    ]);
-
-                    $customer = $stripe->customers()->create([
-                        'email' => $customer_email,
-                        'source' => $token['id'],
-                    ]);
-            
-                    if (isset($token['id'])) {
-                        $charge = $stripe->charges()->create([
-                            'currency' => $currencyCode,
-                            'amount' => $get_transaction->total_price,
-                            'customer' => $customer['id'],
-                        ]);
-                    }
-
-                    if($charge != null){
-                        if($charge['status'] == 'succeeded') {
-                            $paymentData = array(
-                                'payment_status' => $charge['paid'],
-                                'payment_id' => $charge['id'],
-                                'payment_date' => gmdate('Y-m-d H:i:s'),
-                                'payment_meta' => $charge,
-                            );
-                        }
-                    }else{
-                        $doNext = false;
-                    }
-            
-                } catch (\Exception $e) {
+                $error_xendit = false;
+                
+                $cekPrice = EmTransactionMeta::getMeta(array('transaction_id' => $get_transaction->transaction_id, 'meta_key' => 'amount_idr'));
+                if($cekPrice->meta_description != $input['amount']){
                     $doNext = false;
-                    if(sizeof($e->getTrace()[0]) > 0){
-                        if(isset($e->getTrace()[0]['args'])){
-                            $result['notif'] = $e->getTrace()[0]['args'][0];
-                        }
-                    }
-                } catch ( \Cartalyst\Stripe\Exception\CardErrorException $e) {
-                    $doNext = false;
-                    $result['notif'] = 'Sorry, please try again.';
-                } catch (\Cartalyst\Stripe\Exception\MissingParameterException $e) {
-                    $doNext = false;
-                    $result['notif'] = 'Sorry, please try again.';
                 }
+
+                $result_xendit = Xendit_helper::pay($input, $input['amount']);
+                if($result_xendit['status'] != '1'){
+                    $doNext = false;
+                    $error_xendit = true;
+                }
+
 
                 if($doNext){
                     $trans_id = $get_transaction->transaction_id;
-                    EmTransaction::updateData($trans_id, ['payment_status' => '1','status' => '2','type_payment' => 'stripe']);
-                    EmTransactionMeta::updateMeta(array('transaction_id' => $trans_id, 'meta_key' => 'payment_response', 'meta_description' => json_encode($paymentData)));
+                    EmTransaction::updateData($trans_id, ['payment_status' => '1','status' => '2','type_payment' => 'xendit']);
+                    EmTransactionMeta::updateMeta(array('transaction_id' => $trans_id, 'meta_key' => 'payment_response', 'meta_description' => json_encode($result_xendit)));
                     EmTransactionMeta::updateMeta(array('transaction_id' => $trans_id, 'meta_key' => 'payment_date', 'meta_description' => gmdate('Y-m-d H:i:s')));
 
                     if(isset($get_transaction->transaction_code))
@@ -192,13 +150,19 @@ class StripePaymentController extends Controller
                     }
 
                     // view
-                    Session::put(sha1(env('AUTHOR_SITE').'_trans_code_stripe'), $input['id']);
+                    Session::put(sha1(env('AUTHOR_SITE').'_trans_code_xendit'), $input['id']);
                     Session::forget(sha1(env('AUTHOR_SITE').'_payment_trans_id'));
                     Session::forget(sha1(env('AUTHOR_SITE').'_payment_trans_code'));
 
                     $result['trigger'] = 'yes';
                     $result['notif'] = 'Payment has been successful, please wait until the process is complete.';
-                    $result['direct'] = route('user_success_payment_stripe');
+                    $result['direct'] = route('user_success_payment_xendit');
+                } else {
+                    if($error_xendit){
+                        $result['notif'] = 'Credit Card Invalid.';
+                    } else {
+                        $result['notif'] = 'Payment not same with database, please contact customer support.';
+                    }
                 }
                 //payment========
             }
@@ -317,7 +281,7 @@ class StripePaymentController extends Controller
                     }
 
                     // view
-                    Session::put(sha1(env('AUTHOR_SITE').'_trans_code_stripe'), $input['id']);
+                    Session::put(sha1(env('AUTHOR_SITE').'_trans_code_xendit'), $input['id']);
                     Session::forget(sha1(env('AUTHOR_SITE').'_payment_trans_id'));
                     Session::forget(sha1(env('AUTHOR_SITE').'_payment_trans_code'));
 
@@ -334,13 +298,13 @@ class StripePaymentController extends Controller
 
     public function success(Request $request){
 
-        if(Session::get(sha1(env('AUTHOR_SITE').'_trans_code_stripe')) == null)
+        if(Session::get(sha1(env('AUTHOR_SITE').'_trans_code_xendit')) == null)
         {
             return redirect()->route('shop_page');
         }
 
-        $trans_code = Session::get(sha1(env('AUTHOR_SITE').'_trans_code_stripe'));
-        Session::forget(sha1(env('AUTHOR_SITE').'_trans_code_stripe'));
+        $trans_code = Session::get(sha1(env('AUTHOR_SITE').'_trans_code_xendit'));
+        Session::forget(sha1(env('AUTHOR_SITE').'_trans_code_xendit'));
 
         $data = array(
             'share_page' => array(

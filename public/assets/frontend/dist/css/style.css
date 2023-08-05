@@ -127,7 +127,7 @@ h1, h2, h3{
 .navbar-light .navbar-nav .nav-link{
   color: #000;
   font-weight: 500;
-  font-size: 18px;
+  font-size: 16px;
 }
 
 .bg-white{
@@ -855,7 +855,7 @@ transition: .5s ease-in-out;
   padding-top: 3rem;
   padding-bottom: 3rem;
   color: #000;
-  font-size: 18px;
+  font-size: 16px;
 }
 
 .product-detail-bg-white input{
