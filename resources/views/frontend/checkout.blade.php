@@ -562,25 +562,25 @@ body {
                             <tr>
                                 <td>{{$carts['product_name']}} <b>× {{$carts['qty']}}</b></td>
                                 <!-- <td class="total-cart"><b>{{$current_currency[1].$showSubTotal}}</b></td> -->
-                                <td class="total-cart"><b>{{$current_currency[1].\App\Helper\Common_helper::set_two_0_after_point($showSubTotal)}}</b></td>
+                                <td class="total-cart"><b>{{$current_currency[1].$showSubTotal.' '.$current_currency[2]}}</b></td>
                             </tr>
                             @endforeach
                             @if($header_transaction)
                             <?php
-                                $subTotalInCurrencyFormat = \App\Helper\Common_helper::set_two_0_after_point(\App\Helper\Common_helper::convert_to_format_currency($header_transaction->total_price));
-                                $showSubTotal = $current_currency[1].$subTotalInCurrencyFormat;
+                                $subTotalInCurrencyFormat = \App\Helper\Common_helper::convert_to_format_currency($header_transaction->total_price);
+                                $showSubTotal = $current_currency[1].$subTotalInCurrencyFormat.' '.$current_currency[2];
 
-                                $shippingCostInCurrencyFormat = \App\Helper\Common_helper::set_two_0_after_point(\App\Helper\Common_helper::convert_to_format_currency($header_transaction->shipping_cost));
-                                $showShippingCost = $current_currency[1].$shippingCostInCurrencyFormat;
+                                $shippingCostInCurrencyFormat = \App\Helper\Common_helper::convert_to_format_currency($header_transaction->shipping_cost);
+                                $showShippingCost = $current_currency[1].$shippingCostInCurrencyFormat.' '.$current_currency[2];
 
-                                $taxInCurrencyFormat = \App\Helper\Common_helper::set_two_0_after_point(\App\Helper\Common_helper::convert_to_format_currency($header_transaction->tax));
-                                $showTax = $current_currency[1].$taxInCurrencyFormat;
+                                $taxInCurrencyFormat = \App\Helper\Common_helper::convert_to_format_currency($header_transaction->tax);
+                                $showTax = $current_currency[1].$taxInCurrencyFormat.' '.$current_currency[2];
 
-                                $grandTotalInCurrencyFormat = \App\Helper\Common_helper::set_two_0_after_point(\App\Helper\Common_helper::convert_to_format_currency($header_transaction->total_payment));
-                                $showGrandTotal = $current_currency[1].$grandTotalInCurrencyFormat;
+                                $grandTotalInCurrencyFormat = \App\Helper\Common_helper::convert_to_format_currency($header_transaction->total_payment);
+                                $showGrandTotal = $current_currency[1].$grandTotalInCurrencyFormat.' '.$current_currency[2];
 
-                                $couponInCurrencyFormat = \App\Helper\Common_helper::set_two_0_after_point(\App\Helper\Common_helper::convert_to_format_currency(($header_transaction->coupon + 0)));
-                                $showCoupon = $current_currency[1].$couponInCurrencyFormat;
+                                $couponInCurrencyFormat = \App\Helper\Common_helper::convert_to_format_currency(($header_transaction->coupon + 0));
+                                $showCoupon = $current_currency[1].$couponInCurrencyFormat.' '.$current_currency[2];
                             ?>
                             <tr class="border-subtotal">
                                 <td><b>Subtotal</b></td>
@@ -1363,6 +1363,7 @@ $(document).ready(function() {
     $('.sign-in').click(function(e){
         $('#container-checkout').fadeOut(function(){
             $('#container-login').fadeIn(); 
+            $('html, body').animate({scrollTop:0}, '500');
         });
     });
 
