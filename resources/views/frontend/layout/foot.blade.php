@@ -19,7 +19,7 @@
                     <p><a href="{{url('/shipping-and-return')}}">Shipping and Return</a></p>
                     <p><a href="{{url('/privacy-policy')}}">Privacy Policy</a></p>
                 </div>
-                <div class="col-md-6 col-12 footer-section">
+                <div class="col-md-6 col-12 footer-section follow-along">
                     <h4>FOLLOW ALONG @BaliIslandGoods</h2>
                     <div class="social-media">
                         @foreach($getSocialMedia as $key)
