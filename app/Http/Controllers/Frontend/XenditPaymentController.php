@@ -3,6 +3,8 @@
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+use Illuminate\Support\Facades\Http;
+
 use Session;
 use Validator;
 
@@ -319,5 +321,49 @@ class XenditPaymentController extends Controller
             'is_page' => 'shop',
         );
         return view('frontend.payment_complete', $data);
+    }
+
+    public function anotherPaymentMethod(Request $request){
+        $result['trigger'] = 'no';
+        $result['notif'] = 'Transaction is not exist.';
+
+        $validator = Validator::make(request()->all(), [
+            'id' => 'required',
+            'amount' => 'required',
+        ],
+        [
+            'id.required' => 'Transaction is not exist.',
+            'amount.required' => 'Please insert amount.'
+        ]);
+        
+        if($validator->fails()) {
+            $notif = '';
+            foreach ($validator->errors()->all() as $messages) {
+                $notif .= $messages.'<br>';
+            }
+            $result['notif'] = $notif;
+        }else{
+            $input = $request->all();
+
+            $secret_key = 'Basic ' .  base64_encode(env('XENDIT_SECRET_KEY') . ':');
+
+            $data_request = Http::withHeaders([
+                'Authorization' => $secret_key
+            ])->post('https://api.xendit.co/v2/invoices', [
+                'external_id' => $input['id'],
+                'amount' => $input['amount'],
+                'payment_methods' => [
+                    'BCA', 'BNI', 'BRI', 'MANDIRI', 'CIMB', 'PERMATA', 'QRIS', 'OVO'
+                ]
+            ]);
+
+            $response = $data_request->object();
+
+            $result['trigger'] = 'yes';
+            $result['notif'] = 'Link generated.';
+            $result['direct'] = $response->invoice_url;
+        }
+
+        echo json_encode($result);
     }
 }

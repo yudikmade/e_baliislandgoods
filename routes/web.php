@@ -204,6 +204,7 @@ Route::group(['middleware'=>['currency']],function (){
 	// xendit
 	Route::post('/payment/xendit', [XenditPaymentController::class, 'index'])->name('user_payment_xendit');
 	Route::post('/payment/xendit/free', [XenditPaymentController::class, 'free'])->name('user_payment_xendit_free');
+	Route::post('/payment/xendit/another-payment-method', [XenditPaymentController::class, 'anotherPaymentMethod'])->name('user_payment_xendit_another_payment_method');
 	Route::get('/payment/xendit/success', [XenditPaymentController::class, 'success'])->name('user_success_payment_xendit');
 
 	Route::group(['middleware' => ['frontend']], function() {
