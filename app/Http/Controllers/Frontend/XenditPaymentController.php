@@ -229,7 +229,7 @@ class XenditPaymentController extends Controller
 
                 if($doNext){
                     $trans_id = $get_transaction->transaction_id;
-                    EmTransaction::updateData($trans_id, ['payment_status' => '1','status' => '2','type_payment' => 'stripe']);
+                    EmTransaction::updateData($trans_id, ['payment_status' => '1','status' => '2','type_payment' => 'xendit']);
                     EmTransactionMeta::updateMeta(array('transaction_id' => $trans_id, 'meta_key' => 'payment_response', 'meta_description' => json_encode($paymentData)));
                     EmTransactionMeta::updateMeta(array('transaction_id' => $trans_id, 'meta_key' => 'payment_date', 'meta_description' => gmdate('Y-m-d H:i:s')));
 
@@ -289,7 +289,7 @@ class XenditPaymentController extends Controller
 
                     $result['trigger'] = 'yes';
                     $result['notif'] = 'Payment has been successful, please wait until the process is complete.';
-                    $result['direct'] = route('user_success_payment_stripe');
+                    $result['direct'] = route('user_success_payment_xendit');
                 }
                 //payment========
             }
@@ -365,5 +365,72 @@ class XenditPaymentController extends Controller
         }
 
         echo json_encode($result);
+    }
+
+    public function callback(Request $request){
+        $data = request()->all();
+        $status = $data['status'];
+        $external_id = $data['external_id'];
+
+        if(strtolower($status) == 'paid'){
+            $get_transaction = EmTransaction::where('transaction_code', $external_id)->where('payment_status', '0')->where('status', '1')->first();
+            if($get_transaction){
+                $paymentData = $data;
+
+                $trans_id = $get_transaction->transaction_id;
+                EmTransaction::updateData($trans_id, ['payment_status' => '1','status' => '2','type_payment' => 'xendit']);
+                EmTransactionMeta::updateMeta(array('transaction_id' => $trans_id, 'meta_key' => 'payment_response', 'meta_description' => json_encode($paymentData)));
+                EmTransactionMeta::updateMeta(array('transaction_id' => $trans_id, 'meta_key' => 'payment_date', 'meta_description' => gmdate('Y-m-d H:i:s')));
+
+                if(isset($get_transaction->transaction_code))
+                {
+                    $trans_code = $get_transaction->transaction_code;
+                    $unique_code = $get_transaction->unique_code;
+
+                    $first_name = '';
+                    $customer_email = '';
+                    if($get_transaction->customer_id == '' || $get_transaction->customer_id == null){
+                        $getFirstName = EmTransactionMeta::getMeta(array('transaction_id' => $get_transaction->transaction_id, 'meta_key' => 'first_name'));
+                        $first_name = $getFirstName->meta_description;
+                    }else{
+                        $getCustomer = EmCustomer::getWhere([['customer_id', '=', $get_transaction->customer_id]], '', false);
+                        foreach ($getCustomer as $value) 
+                        {
+                            $first_name = $value->first_name;
+                            $customer_email = $value->email;
+                        }
+                    }
+
+                    // send email to customer
+                    if($customer_email != ''){
+                        $message['first_name'] = $first_name;
+                        $message['transaction_code'] = $trans_code;
+                        $message['unique_code'] = $unique_code;
+                        Common_helper::send_email($customer_email, $message, 'Payment Complete #'.$trans_code, 'payment_to_customer');
+                    }
+
+                    //order data';
+                    $shipping_data = EmTransactionShipping::getWhere([['transaction_id', '=', $get_transaction->transaction_id]], '', false);
+                    $getCustomer = EmCustomer::getWhere([['customer_id', '=', $get_transaction->customer_id]], '', false);
+                    //order data====================
+
+                    // send email to admin
+                    $message['invoice'] = $trans_code;
+                    $message['first_name'] = $first_name;
+                    $message['unique_code'] = $unique_code;
+                    $message['data_customer'] = $getCustomer;
+                    $message['shipping_data'] = $shipping_data;
+                    $getAdmin = EmTransactionDetail::getAdmin($trans_id);
+                    foreach($getAdmin as $admin){
+                        $getDetailTransaction = EmTransactionDetail::transactionDetailPerAdmin([
+                            ['em_transaction_detail.transaction_id', '=', $get_transaction->transaction_id],
+                            ['em_product.admin_id', '=', $admin->admin_id]
+                        ]);
+                        $message['transaction_detail'] = $getDetailTransaction;
+                        Common_helper::send_email($admin->email, $message, 'Payment Complete #'.$trans_code, 'payment_to_admin');
+                    }
+                }
+            }
+        }
     }
 }
