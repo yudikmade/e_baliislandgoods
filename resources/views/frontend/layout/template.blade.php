@@ -20,7 +20,7 @@
 		<!-- header -->
         <header class="menu d-flex flex-wrap justify-content-centerx navbar-light bg-transparent navbar-expand-md">
             <nav class="navbar container-fluid">
-                <div class="col-md-5 col-2">
+                <div class="col-md-5 col-4">
                     <button class="navbar-toggler second-button" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample01" aria-controls="navbarsExample01" aria-expanded="false" aria-label="Toggle navigation">
                     <div class="animated-icon2"><span></span><span></span><span></span><span></span></div>
                     </button>
@@ -98,15 +98,26 @@
 							</ul>
 							
 						</li>
+                        <li class="nav-item form-search-header-mobile">
+                            <form id="form-search-header">
+                                <div class="input-group has-search black">
+                                <input name="category" id="category_search_header" type="hidden" value="all" />
+                                <input name="search" id="keyword_search_header" type="text" value="" class="form-control" placeholder="Search products..." aria-describedby="basic-addon2">
+                                <div class="input-group-append">
+                                    <span class="input-group-text" id="basic-addon2" style="height:38px"><i class="pe-7s-search"></i></span>
+                                </div>
+                                </div>
+                            </form>
+                        </li>
                     </ul>
                 </div></div>
                 <!-- <div class="pseudo-col col-3"></div> -->
-                <div class="col-md-2 col-8">
+                <div class="col-md-2 col-4">
                     <center>
                     <a class="navbar-brand" href="{{url('/')}}"><img src="{{asset(env('URL_IMAGE').'logo.png')}}" alt=""/></a>
                     </center>
                 </div>
-                <div class="col-md-5 col-2">
+                <div class="col-md-5 col-4">
                     <div class="">
                         <div class="navbar-right nav-pills">
                             <div class="nav-item d-flex flex-wrap justify-content-end right-icon">

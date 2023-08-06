@@ -37,6 +37,12 @@ body{
     overflow-x: hidden !important;
 }
 
+small.error {
+  font-size: 10px;
+  font-style: italic;
+  color: #d81818;
+}
+
 .btn:active,
 .btn:focus,
 .btn:visited {
@@ -73,6 +79,10 @@ a:hover{
 
 h1, h2, h3{
   font-family: 'Modern-Era', sans-serif;
+}
+
+.form-search-header-mobile {
+  display: none;
 }
 
 .running-news{
@@ -127,7 +137,7 @@ h1, h2, h3{
 .navbar-light .navbar-nav .nav-link{
   color: #000;
   font-weight: 500;
-  font-size: 18px;
+  font-size: 16px;
 }
 
 .bg-white{
@@ -360,11 +370,11 @@ top: 0px;
 }
 
 .animated-icon2 span:nth-child(2), .animated-icon2 span:nth-child(3) {
-top: 10px;
+top: 5px;
 }
 
 .animated-icon2 span:nth-child(4) {
-top: 20px;
+top: 10px;
 }
 
 .animated-icon2.open span:nth-child(1) {
@@ -735,7 +745,7 @@ transition: .5s ease-in-out;
   border-radius: 5px;
   color: #000;
   width: auto!important;
-  padding: 10px 20px;
+  padding: 8px 30px 7px 30px;
   border: 1px solid  #000;
   font-size: 14px;
 }
@@ -748,7 +758,7 @@ transition: .5s ease-in-out;
   border-radius: 0px;
   color: #fff;
   width: auto!important;
-  padding: 10px 30px;
+  padding: 8px 30px 7px 30px;
   border-radius: 20px;
   border-color: transparent !important
 }
@@ -776,7 +786,7 @@ transition: .5s ease-in-out;
   border-radius: 0px;
   color: #fff;
   width: 100%!important;
-  padding: 10px 30px;
+  padding: 8px 30px 7px 30px;
   border-radius: 20px;
 }
 
@@ -791,7 +801,7 @@ transition: .5s ease-in-out;
   border-radius: 0px;
   color: #000;
   width: 100%!important;
-  padding: 5px 0px;
+  padding: 8px 30px 7px 30px;
   border: 1px solid #000;
   margin: 10px 0;
 }
@@ -807,7 +817,7 @@ transition: .5s ease-in-out;
   border-radius: 0px;
   color: #000;
   width: 100%!important;
-  padding: 5px 10px;
+  padding: 8px 30px 7px 30px;
   border: 1px solid #000;
   text-align: left;
 }
@@ -821,7 +831,7 @@ transition: .5s ease-in-out;
   border-radius: 20px;
   color: #000;
   width: auto!important;
-  padding: 10px 20px;
+  padding: 8px 30px 7px 30px;
   font-size: 16px;
   font-weight: 700;
   border: 1px solid #000;
@@ -843,7 +853,7 @@ transition: .5s ease-in-out;
   border-radius: 0px;
   color: #fff;
   width: auto!important;
-  padding: 10px 10px;
+  padding: 8px 30px 7px 30px;
   font-size: 14px;
   font-weight: 700;
   width: 100% !important;
@@ -855,7 +865,7 @@ transition: .5s ease-in-out;
   padding-top: 3rem;
   padding-bottom: 3rem;
   color: #000;
-  font-size: 18px;
+  font-size: 16px;
 }
 
 .product-detail-bg-white input{
@@ -1564,12 +1574,20 @@ input, select:focus{
    }
 
     .bg-transparent, .bg-white{
-      height:100px;
+      height:80px;
       padding-top: 0px!important;
     }
 
      .mb-3 {
-         margin-bottom: 0!important;
+         /* margin-bottom: 0!important; */
+     }
+
+     .nav .dropdown:hover>.dropdown-menu {
+      padding: 0px;
+     }
+
+     .nav .dropdown-border-left {
+      border-left: none;
      }
 
      .navbar{
@@ -1579,12 +1597,22 @@ input, select:focus{
        padding-right: 0px;
      }
 
+     .nav-link {
+      padding-top: 10px;
+      padding-bottom: 10px;
+     }
+
+     .navbar-brand img {
+      width: 100px;
+     }
+
      .navbar-collapse{
-       margin-top: 50px;
+       margin-top: 40px;
        position: absolute;
        width: 100%;
        background-color: #fff;
-       padding-left: 10px;
+       padding-left: 20px;
+       padding-right: 20px;
        z-index: 9999;
        margin-left: -15px;
      }
@@ -1638,7 +1666,7 @@ input, select:focus{
      }
 
      .navbar-right{
-       padding-right: 20px;
+       padding-right: 5px;
      }
 
      .navbar-right .nav-link{
@@ -1647,16 +1675,12 @@ input, select:focus{
 
      .navbar-right.nav-pills .link-dark{
        width: auto!important;
-     }
-
-     .navbar-right .nav-link.icon-shop-right{
-       display: none!important;
+       margin-top: 10px;
      }
 
      .middle-woman{
        margin-bottom: 20px;
      }
-
 
      .man-title{
          position: absolute;
@@ -1778,5 +1802,22 @@ input, select:focus{
     }
     .margin-shop-page {
       margin-top: 0px;
+    }
+    .follow-along {
+      text-align: center;
+    }
+    .featurette-divider {
+      margin: 3rem 0 !important;
+    }
+    #header-search-form,
+    #header-search-btn{
+      display: none !important;
+    }
+    .customer-name {
+      display: none !important;
+    }
+    .form-search-header-mobile {
+      display: block !important;
+      padding-bottom: 20px;
     }
  }

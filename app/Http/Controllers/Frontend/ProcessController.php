@@ -1197,6 +1197,8 @@ class ProcessController extends Controller
             $input = $request->all();
             if($triggerValidation)
             {
+                $amount = 0;
+
                 $trans_id = $input['trans_id'];
 
                 $arraySession = array();
@@ -1344,12 +1346,23 @@ class ProcessController extends Controller
                     $totalPayment = Common_helper::check_decimal($totalPayment);
                 }
 
+                $amount = $totalPayment;
+                if(Session::get(env('SES_GLOBAL_CURRENCY')) == '2'){
+                    $idr_price = 15000;
+                    $get_usd_to_idr = EmConfig::getData(array('meta_key' => 'usd_to_idr'));
+                    if($get_usd_to_idr != ''){
+                        $idr_price = $get_usd_to_idr;
+                    }
+
+                    $amount = round($amount * $idr_price);
+                }
+                EmTransactionMeta::updateMeta(array('transaction_id' => $trans_id, 'meta_key' => 'amount_idr', 'meta_description' => $amount));
+
                 // echo $shippingCost;
                 EmTransaction::updateData($trans_id, array('shipping_cost' => $shippingCost, 'total_payment' => $totalPayment));
                 $result['total_payment'] = Common_helper::convert_to_format_currency(Common_helper::set_two_nominal_after_point($totalPayment));
 
                 Session::put(sha1(env('AUTHOR_SITE').'_checkout_shipping'), $arraySession);
-
 
                 // send invoice
                 $getTransaction = EmTransaction::getWhereLastOne([['transaction_id', '=', $trans_id]]);
@@ -1425,21 +1438,9 @@ class ProcessController extends Controller
                     }
                 }
 
-                // midtrans
-                // $result['snap_token'] = self::getSnapToken(
-                //     $message['invoice_number'],
-                //     $message['details'], 
-                //     array(
-                //         'first_name' => $message['first_name'].' '.$message['last_name'],
-                //         'email' => $emailCustomer,
-                //         'phone' => $message['phone_number'],
-                //     ),
-                //     array(
-                //         'shipping' => $shippingCost,
-                //         'pajak' => $pajak,
-                //         'kode_bayar' => $additional_price,
-                //     ),
-                // );
+
+                $result['amount'] = $amount;
+
 
                 $result['snap_token'] = '';
                 $result['trigger'] = 'yes';
@@ -1595,6 +1596,18 @@ class ProcessController extends Controller
                                 $totalPayment = Common_helper::check_decimal($totalPayment);
                                 $discNominal = Common_helper::check_decimal($discNominal);
 
+                                $amount = $totalPayment;
+                                if(Session::get(env('SES_GLOBAL_CURRENCY')) == '2'){
+                                    $idr_price = 15000;
+                                    $get_usd_to_idr = EmConfig::getData(array('meta_key' => 'usd_to_idr'));
+                                    if($get_usd_to_idr != ''){
+                                        $idr_price = $get_usd_to_idr;
+                                    }
+                
+                                    $amount = round($amount * $idr_price);
+                                }
+                                EmTransactionMeta::updateMeta(array('transaction_id' => $getTransaction[0]->transaction_id, 'meta_key' => 'amount_idr', 'meta_description' => $amount));
+
                                 EmTransaction::updateData($getTransaction[0]->transaction_id, ['coupon' => $discNominal, 'total_payment' => $totalPayment]);
 
                                 $totalPayment = Common_helper::convert_to_format_currency(Common_helper::set_two_nominal_after_point($totalPayment));
@@ -1605,6 +1618,8 @@ class ProcessController extends Controller
 
                                 //change amount of usage
                                 Common_helper::manageAmoutofUsage($getCoupon, (($getTransaction[0]->total_price + $getTransaction[0]->additional_price + $getTransaction[0]->tax) + $getTransaction[0]->shipping_cost), 'minus');
+
+                                $result['amount'] = $amount;
 
                                 $result['trigger'] = 'yes';
                                 $result['notif'] = 'Coupon verified.';
@@ -1629,12 +1644,26 @@ class ProcessController extends Controller
                             // $totalPayment = Common_helper::convert_to_format_currency(Common_helper::set_two_nominal_after_point($totalPayment));
                             // $totalPayment = Common_helper::check_decimal($totalPayment);
 
+                            $amount = $totalPayment;
+                            if(Session::get(env('SES_GLOBAL_CURRENCY')) == '2'){
+                                $idr_price = 15000;
+                                $get_usd_to_idr = EmConfig::getData(array('meta_key' => 'usd_to_idr'));
+                                if($get_usd_to_idr != ''){
+                                    $idr_price = $get_usd_to_idr;
+                                }
+            
+                                $amount = round($amount * $idr_price);
+                            }
+                            EmTransactionMeta::updateMeta(array('transaction_id' => $getTransaction[0]->transaction_id, 'meta_key' => 'amount_idr', 'meta_description' => $amount));
+
                             EmTransaction::updateData($getTransaction[0]->transaction_id, ['coupon' => 0, 'total_payment' => $totalPayment]);
                             EmTransactionMeta::updateMeta(array('transaction_id' => $getTransaction[0]->transaction_id, 'meta_key' => 'coupon_id', 'meta_description' => ''));
                             EmTransactionMeta::updateMeta(array('transaction_id' => $getTransaction[0]->transaction_id, 'meta_key' => 'coupon_price', 'meta_description' => ''));
 
                             //change amount of usage
                             Common_helper::manageAmoutofUsage($getCoupon, $remaining_coupon, 'plus');
+
+                            $result['amount'] = $amount;
 
                             $result['trigger'] = 'yes';
                             $result['notif'] = 'Coupon has been deleted.';

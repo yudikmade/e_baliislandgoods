@@ -19,7 +19,8 @@
         "reliese/laravel": "^0.0.18",
         "shippo/shippo-php": "^2.0",
         "srmklive/paypal": "~1.0",
-        "thejacer87/canadapost-api": "^0.2.4"
+        "thejacer87/canadapost-api": "^0.2.4",
+        "xendit/xendit-php": "^2.19"
     },
     "require-dev": {
         "facade/ignition": "^2.5",

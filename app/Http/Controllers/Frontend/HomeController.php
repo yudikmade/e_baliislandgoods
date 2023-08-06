@@ -171,7 +171,7 @@ class HomeController extends Controller{
                                     'Message' => $input['contact_message'],
                         ),
                     );
-            // Common_helper::send_email(env('MAIL_USERNAME'), $message, 'Someone contact you from contact page', 'contact_to_owner', false);
+            Common_helper::send_email(env('MAIL_USERNAME'), $message, 'Someone contact you from contact page', 'contact_to_owner', false);
 
             $result['trigger'] = 'yes';
             $result['notif'] = 'Thank you, can\'t wait to connect with you!';

@@ -1,4 +1,8 @@
 <style type="text/css">
+    .form-control:focus {
+        outline: 0;
+        box-shadow: none;
+    }
     #section-forgot-password {
         display: none;
     }
@@ -39,13 +43,19 @@
         font-weight: 700;
     }
     @media (max-width: 575px){
-        .visible-xs {
+        /* .visible-xs {
             display: block;
-        }
+        } */
     }
     @media (min-width: 992px){
         .modal-lg, .modal-xl {
             max-width: 900px !important;
+        }
+    }
+    @media (max-width: 768px) {
+        .lost-password {
+            border-bottom: 1px solid #dedede;
+            padding-bottom: 50px;
         }
     }
 </style>

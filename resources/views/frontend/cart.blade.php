@@ -32,6 +32,9 @@ body {
         font-size:20px;
         background:none!important;
     }
+    .empty-cart .btn-primary {
+        display: none;
+    }
 </style>
 @stop
 
@@ -95,10 +98,10 @@ body {
                                 $disableMin = ' disabled="disabled" ';
                             }
 
-                            //$showPrice = $current_currency[1].$priceInCurrencyFormat[1].' '.$current_currency[2];
-                            $showPrice = $current_currency[1].$priceInCurrencyFormat[1];
-                            //$showSubTotal = $current_currency[1].$subTotalInCurrencyFormat[1].' '.$current_currency[2];
-                            $showSubTotal = $current_currency[1].$subTotalInCurrencyFormat[1];
+                            $showPrice = $current_currency[1].$priceInCurrencyFormat[1].' '.$current_currency[2];
+                            //$showPrice = $current_currency[1].$priceInCurrencyFormat[1];
+                            $showSubTotal = $current_currency[1].$subTotalInCurrencyFormat[1].' '.$current_currency[2];
+                            //$showSubTotal = $current_currency[1].$subTotalInCurrencyFormat[1];
                         @endphp
                         <tr class="row-{{$no}}">
                             <td class="remove-cart" align="center">
@@ -189,9 +192,9 @@ body {
                 <div class="col-lg-4 col-md-5">
                     <div class="summary">
                         @php
-                        $countSubTotalInCurrencyFormat = \App\Helper\Common_helper::set_two_0_after_point(\App\Helper\Common_helper::convert_to_format_currency($countSubTotal));
-                        //$showCountSubTotal = $current_currency[1].$countSubTotalInCurrencyFormat.' '.$current_currency[2];
-                        $showCountSubTotal = $current_currency[1].$countSubTotalInCurrencyFormat;
+                        $countSubTotalInCurrencyFormat = \App\Helper\Common_helper::convert_to_format_currency($countSubTotal);
+                        $showCountSubTotal = $current_currency[1].$countSubTotalInCurrencyFormat.' '.$current_currency[2];
+                        //$showCountSubTotal = $current_currency[1].$countSubTotalInCurrencyFormat;
 
                         $country_id = '';
                         $country_name = '';
@@ -294,12 +297,12 @@ body {
                                     </tr>
                                     @php
                                         $taxTotal = ($tax * $countSubTotal) / 100;
-                                        $taxInCurrencyFormat = \App\Helper\Common_helper::set_two_0_after_point(\App\Helper\Common_helper::convert_to_format_currency($taxTotal));
-                                        //$showTax = $current_currency[1].$taxInCurrencyFormat.' '.$current_currency[2];
-                                        $showTax = $current_currency[1].$taxInCurrencyFormat;
+                                        $taxInCurrencyFormat = \App\Helper\Common_helper::convert_to_format_currency($taxTotal);
+                                        $showTax = $current_currency[1].$taxInCurrencyFormat.' '.$current_currency[2];
+                                        //$showTax = $current_currency[1].$taxInCurrencyFormat;
 
                                         $granTotal = $taxTotal + $countSubTotal + $shippingCostTotal;
-                                        $grandTotalInCurrencyFormat = \App\Helper\Common_helper::set_two_0_after_point(\App\Helper\Common_helper::convert_to_format_currency($granTotal));
+                                        $grandTotalInCurrencyFormat = \App\Helper\Common_helper::convert_to_format_currency($granTotal);
                                         $showGrandTotal = $current_currency[1].$grandTotalInCurrencyFormat.' '.$current_currency[2];
                                     @endphp
                                     <tr>

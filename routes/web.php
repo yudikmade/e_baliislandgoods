@@ -25,8 +25,7 @@ use App\Http\Controllers\Frontend\ShopController;
 use App\Http\Controllers\Frontend\Auth_userController;
 use App\Http\Controllers\Frontend\ProcessController;
 use App\Http\Controllers\Frontend\UserProfileController;
-use App\Http\Controllers\Frontend\PaypalPaymentController;
-use App\Http\Controllers\Frontend\StripePaymentController;
+use App\Http\Controllers\Frontend\XenditPaymentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -228,18 +227,10 @@ Route::group(['middleware'=>['currency']],function (){
 
 	Route::post('/check-before-payment', [ProcessController::class, 'checkBeforePayment'])->name('check_before_payment');
 
-	// // paypal - cart
-	Route::get('/payment', [PaypalPaymentController::class, 'index'])->name('user_payment');
-	// Route::get('/cancel-payment', [PaypalPaymentController::class, 'cancel'])->name('user_cancel_payment');
-	// Route::get('/payment/success', [PaypalPaymentController::class, 'success'])->name('user_success_payment');
-
-	// // stripe - cart
-	Route::post('/payment/stripe', [StripePaymentController::class, 'index'])->name('user_payment_stripe');
-	Route::post('/payment/stripe/free', [StripePaymentController::class, 'free'])->name('user_payment_stripe_free');
-	// Route::get('/payment/stripe/success', [StripePaymentController::class, 'success'])->name('user_success_payment_stripe');
-
-	// Route::post('/process-payment', [ProcessController::class, 'processPayment'])->name('user_process_payment');
-	// Route::get('/payment-complete', [ShopController::class, 'paymentComplete'])->name('payment_complete');
+	// xendit
+	Route::post('/payment/xendit', [XenditPaymentController::class, 'index'])->name('user_payment_xendit');
+	Route::post('/payment/xendit/free', [XenditPaymentController::class, 'free'])->name('user_payment_xendit_free');
+	Route::get('/payment/xendit/success', [XenditPaymentController::class, 'success'])->name('user_success_payment_xendit');
 
 	Route::group(['middleware' => ['frontend']], function() {
 		Route::get('/profile', [UserProfileController::class, 'index'])->name('user_profile');
@@ -248,7 +239,4 @@ Route::group(['middleware'=>['currency']],function (){
 		Route::get('/detail-transaction/{id?}', [UserProfileController::class, 'transactionDetail'])->name('user_detail_transaction');
 		Route::post('/process-profile', [UserProfileController::class, 'process'])->name('user_process_profile');
 	});
-
-	// // other page
-	// Route::get('/{page?}', [HomeController::class, 'otherPage'])->name('other_page');
 });

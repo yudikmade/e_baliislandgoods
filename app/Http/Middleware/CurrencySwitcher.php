@@ -18,7 +18,7 @@ class CurrencySwitcher
     {
         if (!Session::has(env('SES_GLOBAL_CURRENCY')))
         {
-           Session::put(env('SES_GLOBAL_CURRENCY'), '2');
+           Session::put(env('SES_GLOBAL_CURRENCY'), '1');
         }
         return $next($request);
     }

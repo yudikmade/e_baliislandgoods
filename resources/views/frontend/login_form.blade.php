@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col-md-6 login-form">
-        <div id="section-login">
+        <div id="section-login" class="mb-5">
             <h4><b>Login</b></h4>
             <br>
             <form id="login-form" action="{{route('user_process_authentication')}}" method="post">

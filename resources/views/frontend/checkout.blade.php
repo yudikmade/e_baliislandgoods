@@ -5,41 +5,6 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.2.0/dist/select2-bootstrap-5-theme.min.css" />
 <link href="{{asset(env('URL_ASSETS').'frontend/dist/css/shop.css')}}" rel="stylesheet">
 <style>
-.paypal-logo {
-  font-family: Verdana, Tahoma;
-  font-weight: bold;
-  font-size: 26px;
-}
-.paypal-logo i:first-child {
-  color: #253b80;
-}
-.paypal-logo i:last-child {
-  color: #179bd7;
-}
-.paypal-button {
-    width: 100%;
-    display: block;
-  padding: 6px 30px;
-  border: 1px solid #ff9933;
-  border-radius: 5px;
-  /* background-image: linear-gradient(#fff0a8, #f9b421); */
-  background: #f9b421;
-  margin: 0 auto;
-  display: block;
-  min-width: 138px;
-  position: relative;
-}
-.paypal-button-title {
-  font-size: 14px;
-  color: #505050;
-  vertical-align: baseline;
-  text-shadow: 0px 1px 0px rgba(255, 255, 255, 0.6);
-}
-.paypal-button .paypal-logo {
-  display: inline-block;
-  text-shadow: 0px 1px 0px rgba(255, 255, 255, 0.6);
-  font-size: 20px;
-}
 body {
 		background: #f7faff;
 	}
@@ -66,6 +31,26 @@ body {
     box-shadow: none;
     outline: none;
 }
+#three-ds-container {
+		width: 100%;
+		height: 100%;
+		line-height: 200px;
+		background-color: #ffffff;
+		text-align: center;
+	}
+	#display-payment-processing p {
+		color: #212529;
+		font-size: 24px;
+    	font-style: italic;
+		margin-bottom: 0;
+		margin-top:0px;
+	}
+	#staticBackdropLoading .modal-body {
+		padding-top:20%;
+	}
+	#staticBackdropLoading .modal-body i {
+		color: #279384;
+	}
 </style>
 @include('frontend.login_style')
 @stop
@@ -445,18 +430,16 @@ body {
 
                                     <!-- <button class="btn btn-primary" id="pay-button">PAY</button> -->
                                     <p>Please click the button below to process payment</p>
-                                    <!-- <div id="showBtnPaypal">
-                                        <p class="sbp-header">Paypal</p>
-                                        <a data-id="{{$header_transaction->transaction_id}}" id="btn-paypal-payment" href="{{route('user_payment')}}" class="btn btn-paypal sbp-container">
-                                            <img class="img-fluid" src="{{asset(env('URL_IMAGE').'paypal.svg')}}">
-                                        </a>
-                                    </div> -->
                                     <div id="showBtnStripe">
                                         <!-- <p class="sbs-header">Stripe</p> -->
                                         <div class="sbs-container">
-                                            <form style="width: 100%;" id="form-pay-now" name="form-pay-now" action="{{route('user_payment_stripe')}}" method="post" novalidate="novalidate">
+                                            <form style="width: 100%;" id="form-pay-now" name="form-pay-now" action="{{route('user_payment_xendit')}}" method="post" novalidate="novalidate">
                                                 {{ csrf_field() }}
                                                 <input type="hidden" name="id" id="id" value="{{$header_transaction->transaction_code}}" />
+                                                <input type="hidden" name="amount" id="amount" value="" />
+                                                <!-- xendit -->
+                                                <input type="hidden" name="token_id" id="token_id" value="" />
+                                                <input type="hidden" name="authentication_id" id="authentication_id" value="" />
 
                                                 <fieldset class="form-group p-3" id="box-price-cc">
                                                     <div class="form-group row">
@@ -474,19 +457,19 @@ body {
                                                     <div class="form-group row">
                                                         <label for="cc_number" class="col-md-4 col-form-label text-md-right">Card Number</label>
                                                         <div class="col-md-8 field">
-                                                            <input autocomplete="off" class="form-control cc-number" name="cc_number" id="cc_number" type="text" required pattern="(\d{4}\s?){4}" placeholder="&#8226;&#8226;&#8226;&#8226; &#8226;&#8226;&#8226;&#8226; &#8226;&#8226;&#8226;&#8226; &#8226;&#8226;&#8226;&#8226;" maxlength="19">
+                                                            <input autocomplete="off" class="form-control cc-number" name="card_number" id="card_number" type="text" required pattern="(\d{4}\s?){4}" placeholder="&#8226;&#8226;&#8226;&#8226; &#8226;&#8226;&#8226;&#8226; &#8226;&#8226;&#8226;&#8226; &#8226;&#8226;&#8226;&#8226;" maxlength="19">
                                                         </div>
                                                     </div>
                                                     <div class="form-group row">
                                                         <label for="cc_expiry" class="col-md-4 col-form-label text-md-right">Expiration Date</label>
                                                         <div class="col-md-8 field">
-                                                            <input autocomplete="off" class="form-control cc-expires" name="cc_expiry" id="cc_expiry" type="text" maxlength='5' placeholder="MM/YY">
+                                                            <input autocomplete="off" class="form-control cc-expires" name="card_expires" id="card_expires" type="text" maxlength='5' placeholder="MM/YY">
                                                         </div>
                                                     </div>
                                                     <div class="form-group row">
                                                         <label for="cc_cvc" class="col-md-4 col-form-label text-md-right">CVC Code</label>
                                                         <div class="col-md-8 field">
-                                                            <input autocomplete="off" class="form-control cc-cvc" name="cc_cvc" id="cc_cvc" placeholder="CVC" type="text" maxlength="4">
+                                                            <input autocomplete="off" class="form-control cc-cvc" name="cvn_code" id="cvn_code" placeholder="CVC" type="text" maxlength="4">
                                                         </div>
                                                     </div>
                                                 </fieldset>
@@ -500,7 +483,7 @@ body {
                                     </div>
                                     <div id="showBtnStripeFree">
                                         <div class="sbs-container">
-                                            <form style="width: 100%;" id="form-pay-now-free" name="form-pay-now-free" action="{{route('user_payment_stripe_free')}}" method="post" novalidate="novalidate">
+                                            <form style="width: 100%;" id="form-pay-now-free" name="form-pay-now-free" action="{{route('user_payment_xendit_free')}}" method="post" novalidate="novalidate">
                                                 {{ csrf_field() }}
                                                 <input type="hidden" name="id" id="id" value="{{$header_transaction->transaction_code}}" />
                                                 <div class="form-group row">
@@ -562,25 +545,25 @@ body {
                             <tr>
                                 <td>{{$carts['product_name']}} <b>× {{$carts['qty']}}</b></td>
                                 <!-- <td class="total-cart"><b>{{$current_currency[1].$showSubTotal}}</b></td> -->
-                                <td class="total-cart"><b>{{$current_currency[1].\App\Helper\Common_helper::set_two_0_after_point($showSubTotal)}}</b></td>
+                                <td class="total-cart"><b>{{$current_currency[1].$showSubTotal.' '.$current_currency[2]}}</b></td>
                             </tr>
                             @endforeach
                             @if($header_transaction)
                             <?php
-                                $subTotalInCurrencyFormat = \App\Helper\Common_helper::set_two_0_after_point(\App\Helper\Common_helper::convert_to_format_currency($header_transaction->total_price));
-                                $showSubTotal = $current_currency[1].$subTotalInCurrencyFormat;
+                                $subTotalInCurrencyFormat = \App\Helper\Common_helper::convert_to_format_currency($header_transaction->total_price);
+                                $showSubTotal = $current_currency[1].$subTotalInCurrencyFormat.' '.$current_currency[2];
 
-                                $shippingCostInCurrencyFormat = \App\Helper\Common_helper::set_two_0_after_point(\App\Helper\Common_helper::convert_to_format_currency($header_transaction->shipping_cost));
-                                $showShippingCost = $current_currency[1].$shippingCostInCurrencyFormat;
+                                $shippingCostInCurrencyFormat = \App\Helper\Common_helper::convert_to_format_currency($header_transaction->shipping_cost);
+                                $showShippingCost = $current_currency[1].$shippingCostInCurrencyFormat.' '.$current_currency[2];
 
-                                $taxInCurrencyFormat = \App\Helper\Common_helper::set_two_0_after_point(\App\Helper\Common_helper::convert_to_format_currency($header_transaction->tax));
-                                $showTax = $current_currency[1].$taxInCurrencyFormat;
+                                $taxInCurrencyFormat = \App\Helper\Common_helper::convert_to_format_currency($header_transaction->tax);
+                                $showTax = $current_currency[1].$taxInCurrencyFormat.' '.$current_currency[2];
 
-                                $grandTotalInCurrencyFormat = \App\Helper\Common_helper::set_two_0_after_point(\App\Helper\Common_helper::convert_to_format_currency($header_transaction->total_payment));
-                                $showGrandTotal = $current_currency[1].$grandTotalInCurrencyFormat;
+                                $grandTotalInCurrencyFormat = \App\Helper\Common_helper::convert_to_format_currency($header_transaction->total_payment);
+                                $showGrandTotal = $current_currency[1].$grandTotalInCurrencyFormat.' '.$current_currency[2];
 
-                                $couponInCurrencyFormat = \App\Helper\Common_helper::set_two_0_after_point(\App\Helper\Common_helper::convert_to_format_currency(($header_transaction->coupon + 0)));
-                                $showCoupon = $current_currency[1].$couponInCurrencyFormat;
+                                $couponInCurrencyFormat = \App\Helper\Common_helper::convert_to_format_currency(($header_transaction->coupon + 0));
+                                $showCoupon = $current_currency[1].$couponInCurrencyFormat.' '.$current_currency[2];
                             ?>
                             <tr class="border-subtotal">
                                 <td><b>Subtotal</b></td>
@@ -620,6 +603,37 @@ body {
         </div>
     </div>
     @endif
+    
+    <!-- xendit -->
+	<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+		<div class="modal-dialog modal-fullscreen">
+			<div class="modal-content">
+				<div class="modal-body">
+					<div id="three-ds-container">
+						<iframe height="100%" width="100%" id="sample-inline-frame" name="sample-inline-frame"> </iframe>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>	
+
+	<!-- loading -->
+	<div class="modal fade" id="staticBackdropLoading" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelloading" aria-hidden="true">
+		<div class="modal-dialog modal-fullscreen">
+			<div class="modal-content">
+				<div class="modal-body" align="center">
+					<div class="row">
+						<div class="col-md-3"></div>
+						<div class="col-md-6">
+							<i class="fa fa-spin fa-6x fa-cog" id="loading-icon"></i>
+							<div id="display-payment-processing"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>	
+
 </div>
 
 
@@ -649,114 +663,205 @@ body {
 @section('script')
 <script src="{{asset(env('URL_ASSETS').'select2/select2.full.min.js')}}"></script>
 <script type="text/javascript" src="{{asset(env('URL_ASSETS').'countdown/jQuery.countdownTimer.min.js')}}"></script>
-<!-- midtrans -->
-<!-- <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}"></script>
-<script>
-    const payButton = document.querySelector('#pay-button');
-    payButton.addEventListener('click', function(e) {
-        e.preventDefault();
 
-        snap.pay($('#snapToken').val(), {
-            // Optional
-            onSuccess: function(result) {
-                /* You may add your own js here, this is just example */
-                // document.getElementById('result-json').innerHTML += JSON.stringify(result, null, 2);
-                console.log(result)
-                savePayment(result, 'success');
-                // location.href = response.finish_redirect_url;
-            },
-            // Optional
-            onPending: function(result) {
-                /* You may add your own js here, this is just example */
-                // document.getElementById('result-json').innerHTML += JSON.stringify(result, null, 2);
-                console.log(result)
-                savePayment(result, 'pending');
-                // location.href = response.finish_redirect_url;
-            },
-            // Optional
-            onError: function(result) {
-                /* You may add your own js here, this is just example */
-                // document.getElementById('result-json').innerHTML += JSON.stringify(result, null, 2);
-                console.log(result)
-                savePayment(result, 'error');
-
-                // location.href = response.finish_redirect_url;
-            }
-        });
-    });
-
-    function savePayment(dataPayment, trigger){
-        var trans_id = $('.edit-cart').attr('data-id');
-        $.ajax({
-            url: $('#savePayment').val(),
-            dataType: 'json',
-            type: 'POST',
-            data: {
-                'trans_id': trans_id,
-                'trigger': trigger,
-                'payment': dataPayment,
-                '_token': $('input[name=_token]').val()
-            },
-            success: function(response, textStatus, XMLHttpRequest){
-                if(response.trigger=="yes")
-                {
-                    location.href = response.notif;
-                } else {
-                    toastr.remove();
-                    toastr.error(response.notif);
-                }
-            },
-            error: function(XMLHttpRequest, textStatus, errorThrown){
-                toastr.remove();
-                toastr.error('There is something wrong, please refresh page and try again.');
-            }
-        });
-    }
-</script> -->
-<!-- ==== midtrans ==== -->
-
-<!-- paypall -->
+<!-- xendit -->
+<script type="text/javascript" src="https://js.xendit.co/v1/xendit.min.js"></script>
 <script>
 $(document).ready(function() {
-    $('#btn-paypal-payment').click(function(e){
-        e.preventDefault();
-
-        var urlActionNext = $(this).attr('href');
-        var trans_id = $(this).attr('data-id');
-        var urlAction = $('#actionCheckBeforePayment').val();
-        $.ajax({
-            url: urlAction,
-            dataType: 'json',
-            type: 'POST',
-            data: {
-                'trans_id': trans_id, 
-                '_token': $('input[name=_token]').val()
+    var $form = $('#form-pay-now');
+    $("#form-pay-now").validate({
+        rules :{
+            name_on_card :{
+                required : true,
             },
-            success: function(response, textStatus, XMLHttpRequest)
-            {
-                if(response.trigger=="yes")
-                {
-                    location.href = response.notif;
-                }
-                else
-                {
-                        toastr.warning(response.notif)
+            billing_address :{
+                required : true,
+            },
+            card_number :{
+                required : true,
+            },
+            card_expires :{
+                required : true,
+            },
+            cvn_code :{
+                required : true,
+            },
+        },
+        messages: {
+            name_on_card: {
+                required: 'Card Name is required!',
+            },
+            billing_address: {
+                required: 'Billing Address is required!',
+            },
+            card_number: {
+                required: 'Card Number is required!',
+            },
+            card_expires: {
+                required: 'Card Expiry is required!',
+            },
+            cvn_code: {
+                required: 'CVC is required!',
+            },
+        },
+        errorElement: 'small',
+        submitHandler: function(form) {
 
-                        if(response.url != undefined)
-                        {
-                        setTimeout(function(){ location.reload(); }, 3000);
+            if($('#shipping_form_complete').val() == '1' && $('#customer_form_complete').val() == '1'){
+                
+                var do_next = false
+                if($form.find('#token_id').val() != ''){
+                    do_next = true
+                } else {
+                    Xendit.setPublishableKey('{{env('XENDIT_PUBLIC_KEY')}}');
+
+                    // Request a token from Xendit:
+                    var tokenData = getTokenData();
+                    Xendit.card.createToken(tokenData, xenditResponseHandler);
+                }
+
+                if(do_next){
+                // $("#form-payment-loader").fadeIn();
+                $("#form-payment-btn").attr('disabled', 'disabled');
+                var formData = new FormData(form);
+                $.ajax({
+                    url: form.action,
+                    type: form.method,
+                    data: formData,
+                    dataType: 'json',
+                    contentType: false,
+                    processData: false,
+                    success: function(response) {
+                        $("#form-payment-btn").removeAttr('disabled');
+                        // $('#form-payment-loader').fadeOut();
+                        if(response.trigger == "yes"){
+                            location.href = response.direct
+                        }else{
+                            toastr.warning(response.notif);
+                            $('#display-payment-processing').html('')
+                            $('#staticBackdropLoading').modal('hide');
                         }
+                    },
+                    error: function()
+                    {
+                        // $('#form-payment-loader').fadeOut();
+                        $("#form-payment-btn").removeAttr('disabled');
+                        toastr.warning('There is something wrong, please refresh page and try again.');
+                        $('#display-payment-processing').html('')
+                        $('#staticBackdropLoading').modal('hide');
+                    }            
+                });
+                } else {
+                    return false
                 }
-            },
-            error: function(XMLHttpRequest, textStatus, errorThrown)
-            {
-                toastr.remove();
-                toastr.error('There is something wrong, please refresh page and try again.');
+            }else{
+                NProgress.done();
+                if($('#customer_form_complete').val() == '0'){
+                    toastr.warning('Please complete customer form.');
+                }
+                if($('#shipping_form_complete').val() == '0'){
+                    toastr.warning('Please complete shipping information.');   
+                }
             }
-        });
+        }
+    });
+
+    function getTokenData () {
+        var card_expires = $form.find('#card_expires').val();
+        var card_exp_month = '';
+        var card_exp_year = '';
+        card_expires = card_expires.split('/');
+        try {
+            card_exp_month = card_expires[0];
+            card_exp_year = '20'+card_expires[1];
+        } catch (error) {
+            
+        }
+
+        var card_number = $form.find('#card_number').val();
+        card_number = card_number.split(" ").join("");
+
+        return {
+            amount: $form.find('#amount').val(),
+            currency: 'IDR',
+            card_number: card_number,
+            card_exp_month: card_exp_month,
+            card_exp_year: card_exp_year,
+            card_cvn: $form.find('#cvn_code').val(),
+            is_multiple_use: false,
+            should_authenticate: true,
+            token_id: $form.find('#token_id').val(),
+        };
+    }  
+
+    function xenditResponseHandler (err, creditCardToken) {
+        $form.find('.submit').prop('disabled', false);
+        if (err) {
+            return displayError(err);
+        }
+        if (creditCardToken.status === 'APPROVED' || creditCardToken.status === 'VERIFIED') {
+            $form.find('#token_id').val(creditCardToken.id);
+            $form.find('#authentication_id').val(creditCardToken.authentication_id);
+            $form.submit();
+            $('#staticBackdrop').modal('hide');
+            $('#staticBackdropLoading').modal('show');
+            $form.find('.submit').prop('disabled', true);
+            $('#display-payment-processing').html('<br/><p>payment is still in process, please do not close this page</p>')
+        } else if (creditCardToken.status === 'IN_REVIEW') {
+            window.open(creditCardToken.payer_authentication_url, 'sample-inline-frame');
+            $('#staticBackdrop').modal('show');
+        } else if (creditCardToken.status === 'FRAUD') {
+            displayError(creditCardToken);
+        } else if (creditCardToken.status === 'FAILED') {
+            displayError(creditCardToken);
+        }
+    }
+
+    function displayError (err) {
+        toastr.warning(JSON.stringify(err, null, 4));
+        $('#staticBackdrop').modal('hide');
+        $('#staticBackdropLoading').modal('hide');
+    };
+
+    // payment stripe free
+    $("#form-pay-now-free").validate({
+        rules :{},
+        messages: {},
+        errorElement: 'small',
+        submitHandler: function(form) {
+            $("#form-pay-now-free-btn").attr('disabled', 'disabled');
+            var formData = new FormData(form);
+            NProgress.start();
+            $.ajax({
+                url: form.action,
+                type: form.method,
+                data: formData,
+                dataType: 'json',
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                    NProgress.done();
+                    $("#form-pay-now-free-btn").removeAttr('disabled');
+                    if(response.trigger == "yes"){
+                        toastr.success(response.notif)
+                        setTimeout(function(){ 
+                            location.href = response.direct; 
+                        }, 2000);
+                    }else{
+                        toastr.warning(response.notif)
+                    }
+                },
+                error: function()
+                {
+                    NProgress.done();
+                    $("#form-pay-now-free-btn").removeAttr('disabled');
+                }            
+            });
+        }
     });
 });
 </script>
+<!-- ==== xendit ==== -->
 
 <script>
 $(document).ready(function() {
@@ -826,7 +931,7 @@ $(document).ready(function() {
             success: function(response) {
                 $("#btn-shipping").removeAttr('disabled');
                 if(response.trigger == "yes"){
-                    $('#snapToken').val(response.snap_token);
+                    $('#amount').val(response.amount);
                     $('.notif-shipping').html('');
                     var currency = $('.btm-plc-shipping').attr('data-currency');
                     $('.btm-plc-shipping').find('span').text(currency+response.shipping_cost);
@@ -1091,6 +1196,7 @@ $(document).ready(function() {
                         $("#btn-coupon").removeAttr('disabled');
                         if(response.trigger == "yes")
                         {
+                            $('#amount').val(response.amount);
                             var currency = $('.btm-plc-shipping').attr('data-currency');
                             // $('.btm-plc-discount').find('label').text('DISC. ('+response.discount+'%)');
                             // $('.btm-plc-discount').find('span').text('-'+currency+response.discount_nominal);
@@ -1158,7 +1264,7 @@ $(document).ready(function() {
     });
 
     // js credit card
-    $('#cc_number').on('keyup',function (e) {
+    $('#card_number').on('keyup',function (e) {
         if (e.keyCode !== 8) {
             if (this.value.length === 4 || this.value.length === 9 || this.value.length === 14) {
             this.value = this.value += ' ';
@@ -1166,7 +1272,7 @@ $(document).ready(function() {
         }
     });
 
-    $('#cc_expiry').on('keyup',function (event) {
+    $('#card_expires').on('keyup',function (event) {
         var inputChar = String.fromCharCode(event.keyCode);
         var code = event.keyCode;
         var allowedKeys = [8];
@@ -1189,122 +1295,6 @@ $(document).ready(function() {
         ).replace(
             /\/\//g, '/' // Prevent entering more than 1 `/`
         );
-    });
-
-    // payment stripe
-    $("#form-pay-now").validate({
-        rules :{
-            name_on_card :{
-                required : true,
-            },
-            billing_address :{
-                required : true,
-            },
-            cc_number :{
-                required : true,
-            },
-            cc_expiry :{
-                required : true,
-            },
-            cc_cvc :{
-                required : true,
-            },
-        },
-        messages: {
-            name_on_card: {
-                required: 'Card Name is required!',
-            },
-            billing_address: {
-                required: 'Billing Address is required!',
-            },
-            cc_number: {
-                required: 'Card Number is required!',
-            },
-            cc_expiry: {
-                required: 'Card Expiry is required!',
-            },
-            cc_cvc: {
-                required: 'CVC is required!',
-            },
-        },
-        errorElement: 'small',
-        submitHandler: function(form) {
-
-            if($('#shipping_form_complete').val() == '1' && $('#customer_form_complete').val() == '1'){
-                $("#form-pay-now-btn").attr('disabled', 'disabled');
-                var formData = new FormData(form);
-                NProgress.start();
-                $.ajax({
-                    url: form.action,
-                    type: form.method,
-                    data: formData,
-                    dataType: 'json',
-                    contentType: false,
-                    processData: false,
-                    success: function(response) {
-                        NProgress.done();
-                        $("#form-pay-now-btn").removeAttr('disabled');
-                        if(response.trigger == "yes"){
-                            toastr.success(response.notif)
-                            setTimeout(function(){ 
-                                location.href = response.direct; 
-                            }, 2000);
-                        }else{
-                            toastr.warning(response.notif)
-                        }
-                    },
-                    error: function()
-                    {
-                        $("#form-pay-now-btn").removeAttr('disabled');
-                    }            
-                });
-            }else{
-                NProgress.done();
-                if($('#customer_form_complete').val() == '0'){
-                    toastr.warning('Please complete customer form.');
-                }
-                if($('#shipping_form_complete').val() == '0'){
-                    toastr.warning('Please complete shipping information.');   
-                }
-            }
-        }
-    });
-
-    // payment stripe free
-    $("#form-pay-now-free").validate({
-        rules :{},
-        messages: {},
-        errorElement: 'small',
-        submitHandler: function(form) {
-            $("#form-pay-now-free-btn").attr('disabled', 'disabled');
-            var formData = new FormData(form);
-            NProgress.start();
-            $.ajax({
-                url: form.action,
-                type: form.method,
-                data: formData,
-                dataType: 'json',
-                contentType: false,
-                processData: false,
-                success: function(response) {
-                    NProgress.done();
-                    $("#form-pay-now-free-btn").removeAttr('disabled');
-                    if(response.trigger == "yes"){
-                        toastr.success(response.notif)
-                        setTimeout(function(){ 
-                            location.href = response.direct; 
-                        }, 2000);
-                    }else{
-                        toastr.warning(response.notif)
-                    }
-                },
-                error: function()
-                {
-                    NProgress.done();
-                    $("#form-pay-now-free-btn").removeAttr('disabled');
-                }            
-            });
-        }
     });
 
     $(document).on('click', '.edit-customer', function(e){
@@ -1363,6 +1353,7 @@ $(document).ready(function() {
     $('.sign-in').click(function(e){
         $('#container-checkout').fadeOut(function(){
             $('#container-login').fadeIn(); 
+            $('html, body').animate({scrollTop:0}, '500');
         });
     });
 
