@@ -51,6 +51,20 @@ body {
 	#staticBackdropLoading .modal-body i {
 		color: #279384;
 	}
+.separator{
+  display:flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.separator .line{
+  height: 1px;
+  flex: 1;
+  background-color: #dedede;
+}
+.separator p{
+    padding: 0px 15px;
+    margin-top: 15px;
+}
 </style>
 @include('frontend.login_style')
 @stop
@@ -494,6 +508,12 @@ body {
                                             </form>
                                         </div>
                                     </div>
+                                    <div class="separator">
+                                        <div class="line"></div>
+                                        <p>or</p>
+                                        <div class="line"></div>
+                                    </div>
+                                    <button type="button" id="btn-xendit" class="btn btn-primary btn-main-2 btn-round-full mb-3">ANOTHER PAYMENT METHOD</button>
                                 </div>
                             </div>
                         </div>
@@ -669,6 +689,27 @@ body {
 <script>
 $(document).ready(function() {
     var $form = $('#form-pay-now');
+    
+    $('#btn-xendit').click(function(e){
+        $.ajax({
+            url: '{{route("user_payment_xendit_another_payment_method")}}',
+            type: "POST",
+            data: {'_token':  $form.find('input[name=_token]').val(), 'id': $form.find('#id').val(), 'amount': $form.find('#amount').val()},
+            dataType: 'json',
+            success: function(response) {
+                if(response.trigger == "yes"){
+                    location.href = response.direct
+                }else{
+                    toastr.warning(response.notif);
+                }
+            },
+            error: function()
+            {
+                toastr.warning('There is something wrong, please refresh page and try again.');
+            }            
+        });
+    });
+
     $("#form-pay-now").validate({
         rules :{
             name_on_card :{
