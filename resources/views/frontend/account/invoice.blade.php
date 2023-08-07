@@ -62,7 +62,7 @@
     						echo $statusHeader;
 
     						$total = \App\Helper\Common_helper::currency_transaction($header_transaction->transaction_id, $header_transaction->total_payment);
-							echo '<div class="text-center mrg-tp20">'.$total[2].\App\Helper\Common_helper::set_two_nominal_after_point($total[1]).' '.$total[3].'</div>';
+							echo '<div class="text-center mrg-tp20">'.$total[2].$total[1].' '.$total[3].'</div>';
     					?>
     				</div>
     			</div>
@@ -93,7 +93,7 @@
                                     $priceDisc = \App\Helper\Common_helper::set_discount(($key->price * $key->qty), $key->discount);
                                     $formatPriceTotal = \App\Helper\Common_helper::currency_transaction($key->transaction_id, $priceDisc[0]);
 
-                                    $imgProduct = \App\Models\EmProductImg::getWhereLimitOne([['product_id', '=', $key->product_id]]);
+                                    $imgProduct = \App\Models\EmProductImg::getWhereLimitOne([['product_id', '=', $key->product_id],['sku_id', '=', $key->sku_id]]);
 
                                     echo '
                                         <tr>
@@ -115,11 +115,9 @@
                                             </td>
                                             <td>'.$key->qty.'</td>';
 
-                                    // echo '<td>'.$formatPrice[2].$formatPrice[1].' '.$formatPrice[3].'</td>';
-                                            echo '<td>'.$formatPrice[2].\App\Helper\Common_helper::set_two_nominal_after_point($formatPrice[1]).'</td>';
+                                    echo '<td>'.$formatPrice[2].$formatPrice[1].' '.$formatPrice[3].'</td>';
                                     echo '<td>'.\App\Helper\Common_helper::trans_detail_status($key->status).'</td>';
-                                    // echo '<td class="text-right">'.$formatPriceTotal[2].$formatPriceTotal[1].' '.$formatPriceTotal[3].'</td>';
-                                	echo '<td class="text-right">'.$formatPriceTotal[2].\App\Helper\Common_helper::set_two_nominal_after_point($formatPriceTotal[1]).'</td>
+                                    echo '<td class="text-right">'.$formatPriceTotal[2].$formatPriceTotal[1].' '.$formatPriceTotal[3].'</td>
                                         </tr>
                                     ';
                                     $no++;
@@ -140,38 +138,33 @@
 					<table>
 						<tr>
 							<th class="text-left">Sub Total</th>
-							<!-- <td class="text-right">{{$subTotal[2].$subTotal[1].' '.$subTotal[3]}}</td> -->
-							<td class="text-right">{{$subTotal[2].\App\Helper\Common_helper::set_two_nominal_after_point($subTotal[1])}}</td>
+							<td class="text-right">{{$subTotal[2].$subTotal[1].' '.$subTotal[3]}}</td>
 						</tr>
                         <tr>
-                            <th class="text-left">Discount</th>
-                            <!-- <td class="text-right">-{{$coupon[2].$coupon[1].' '.$coupon[3]}}</td> -->
-							@if($coupon[1] == '')
-							<td class="text-right">{{$coupon[2]}}0</td>
+                            <th class="text-left">Voucher</th>
+							@if($coupon[1] == '' || $coupon[1] == '0')
+							<td class="text-right">{{$coupon[2]}}0 {{$coupon[3]}}</td>
 							@else 
-							<td class="text-right">-{{$coupon[2].$coupon[1]}}</td>
+							<td class="text-right">-{{$coupon[2].$coupon[1]}} {{$coupon[3]}}</td>
 							@endif
                         </tr>
 						<tr>
 							<th class="text-left">Shipping Cost</th>
-							<!-- <td class="text-right">{{$shippingCost[2].$shippingCost[1].' '.$shippingCost[3]}}</td> -->
-							<td class="text-right">{{$shippingCost[2].\App\Helper\Common_helper::set_two_nominal_after_point($shippingCost[1])}}</td>
+							<td class="text-right">{{$shippingCost[2].$shippingCost[1].' '.$shippingCost[3]}}</td>
 						</tr>
 						@if($header_transaction->additional_price != 0)
 						<tr>
 							<th class="text-left">Additional Price</th>
-							<!-- <td class="text-right">{{$additionalPrice[2].$additionalPrice[1].' '.$additionalPrice[3]}}</td> -->
-							<td class="text-right">{{$additionalPrice[2].$additionalPrice[1]}}</td>
+							<td class="text-right">{{$additionalPrice[2].$additionalPrice[1].' '.$additionalPrice[3]}}</td>
 						</tr>
 						@endif
 						<tr>
 							<th class="text-left">Tax</th>
-							<!-- <td class="text-right">{{$tax[2].$tax[1].' '.$tax[3]}}</td> -->
-							<td class="text-right">{{$tax[2].\App\Helper\Common_helper::set_two_nominal_after_point($tax[1])}}</td>
+							<td class="text-right">{{$tax[2].$tax[1].' '.$tax[3]}}</td>
 						</tr>
 						<tr class="total">
 							<th class="text-left">Total</th>
-							<td class="text-right">{{$total[2].\App\Helper\Common_helper::set_two_nominal_after_point($total[1]).' '.$total[3]}}</td>
+							<td class="text-right">{{$total[2].$total[1].' '.$total[3]}}</td>
 						</tr>
 						<tr>
 							<th class="text-left" colspan="2"><hr></th>
@@ -179,7 +172,7 @@
 						<tr>
 							@if($header_transaction->payment_status == '1')
 								<th class="text-left">PAID</th>
-								<td class="text-right">{{$total[2].\App\Helper\Common_helper::set_two_nominal_after_point($total[1]).' '.$total[3]}}</td>
+								<td class="text-right">{{$total[2].$total[1].' '.$total[3]}}</td>
 							@else
 								<th class="text-left">PAID</th>
 								<td class="text-right">{{$subTotal[2].'0.00 '.$subTotal[3]}}</td>
