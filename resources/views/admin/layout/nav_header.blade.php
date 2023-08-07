@@ -186,7 +186,7 @@
                                     <li><a href="'.route('control_add_coupon').'"><i class="fa fa-plus"></i> Add new coupon</a></li>
                                 </ul>
                             </li>
-                            <li class="'.$masterSlide_.' none">
+                            <li class="'.$masterSlide_.'">
                                 <a href="#"><i class="fa fa-picture-o"></i> Data slide <i class="fa fa-angle-left pull-right"></i></a>
                                 <ul class="treeview-menu">
                                     <li><a href="'.route('control_slide').'"><i class="fa fa-file-text-o"></i> Slide</a></li>
@@ -197,6 +197,7 @@
                                 <a href="#"><i class="fa fa-list"></i> Information <i class="fa fa-angle-left pull-right"></i></a>
                                 <ul class="treeview-menu">
                                     <li><a href="'.route('control_info_contact').'"><i class="fa fa-file-text-o"></i> Contact Us</a></li>
+                                    <li><a href="'.route('control_info_about_us').'"><i class="fa fa-file-text-o"></i> About Us</a></li>
                                     <li><a href="'.route('control_info_terms_of_payment').'"><i class="fa fa-file-text-o"></i> Terms of Payment</a></li>
                                     <li><a href="'.route('control_info_shipping_and_return').'"><i class="fa fa-file-text-o"></i> Shipping & Return</a></li>
                                     <li><a href="'.route('control_info_privacy_policy').'"><i class="fa fa-file-text-o"></i> Privacy Policy</a></li>
@@ -211,12 +212,18 @@
                             </li>
                         </ul>  
                     </li>',
+                    6=>'">
+                        <a href="#"><i class="fa fa-list"></i> Pages <i class="fa fa-angle-left pull-right"></i></a>
+                            <ul class="treeview-menu">
+                                <li><a href="'.route('control_home_index').'"><i class="fa fa-file-text-o"></i> Home</a></li>
+                            </ul>
+                        </li>',
                     7=>'">
                         <a href="'.route('control_subscribe').'"><i class="fa fa-users"></i> <span>Subscriber</span></a>
                     </li>',
                 );
                 
-                $finish = 5;
+                $finish = 6;
                 
                 for ($i = 1; $i <= $finish ; $i++) 
                 { 

@@ -12,7 +12,7 @@ use App\Models\EmConfig;
 
 class SlideController extends Controller
 {
-    private $menu_order = 6;
+    private $menu_order = 5;
 
     public function index($search = '')
     {

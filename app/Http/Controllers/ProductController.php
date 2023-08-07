@@ -198,7 +198,7 @@ class ProductController extends Controller
             }
             else
             {
-                $getData = EmProductImg::getWhere([['img_id', '=', $input['id']], ['product_id', '=', $input['product_id']]], '', false);
+                $getData = EmProductImg::getWhere([['em_product_img.img_id', '=', $input['id']], ['em_product_img.product_id', '=', $input['product_id']]], '', false);
                 foreach ($getData as $key) 
                 {
                     @unlink($_SERVER['DOCUMENT_ROOT'].'/'.env('URL_IMAGE').'/product/'.$key->image);

@@ -19,6 +19,7 @@ use App\Http\Controllers\TestController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\SlideController;
+use App\Http\Controllers\HomePageController;
 
 use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\ShopController;
@@ -95,6 +96,10 @@ Route::group(['middleware' => ['backend']], function() {
 
 	if(is_null(Session::get(env('SES_BACKEND_CATEGORY')))){
 
+		//contact-us
+		Route::get('/home', [HomePageController::class, 'index'])->name('control_home_index');
+		Route::post('/home/save/process', [HomePageController::class, 'saveProcess'])->name('control_home_process');
+
 		//customer
 		Route::get('/'.env('URL_AFTER_LOGIN_BACKEND').'/customers/{search?}', [CustomerController::class, 'index'])->name('control_customers');
 		Route::get('/'.env('URL_AFTER_LOGIN_BACKEND').'/export-customers/{search?}', [CustomerController::class, 'exportCustomer'])->name('control_customers_export');
@@ -117,6 +122,7 @@ Route::group(['middleware' => ['backend']], function() {
 		//information
 		Route::get('/'.env('URL_AFTER_LOGIN_BACKEND').'/tax', [InformationController::class, 'tax'])->name('control_info_tax');
 		Route::get('/'.env('URL_AFTER_LOGIN_BACKEND').'/contact', [InformationController::class, 'contact'])->name('control_info_contact');
+		Route::get('/'.env('URL_AFTER_LOGIN_BACKEND').'/about-us', [InformationController::class, 'aboutUs'])->name('control_info_about_us');
 		Route::get('/'.env('URL_AFTER_LOGIN_BACKEND').'/terms-of-payment', [InformationController::class, 'control_info_terms_of_payment'])->name('control_info_terms_of_payment');
 		Route::get('/'.env('URL_AFTER_LOGIN_BACKEND').'/shipping-and-return', [InformationController::class, 'control_info_shipping_and_return'])->name('control_info_shipping_and_return');
 		Route::get('/'.env('URL_AFTER_LOGIN_BACKEND').'/privacy-policyn', [InformationController::class, 'control_info_privacy_policy'])->name('control_info_privacy_policy');
@@ -126,13 +132,9 @@ Route::group(['middleware' => ['backend']], function() {
 		Route::get('/'.env('URL_AFTER_LOGIN_BACKEND').'/slide/{search?}', [SlideController::class, 'index'])->name('control_slide');
 		Route::get('/'.env('URL_AFTER_LOGIN_BACKEND').'/add-slide', [SlideController::class, 'add'])->name('control_add_slide');
 		Route::post('/'.env('URL_AFTER_LOGIN_BACKEND').'/add-slide-process', [SlideController::class, 'addProcess'])->name('control_add_slide_process');
-
-		// Route::get('/'.env('URL_AFTER_LOGIN_BACKEND').'/edit-slide/{id?}', ['as'=>'control_edit_slide','uses'=>'SlideController@edit']);
-		// Route::post('/'.env('URL_AFTER_LOGIN_BACKEND').'/edit-slide-process', ['as'=>'control_edit_slide_process','uses'=>'SlideController@editProcess']);
-		// Route::any('/'.env('URL_AFTER_LOGIN_BACKEND').'/action-slide/{id?}', ['as'=>'control_action_slide','uses'=>'SlideController@actionData']);
-		// Route::get('/'.env('URL_AFTER_LOGIN_BACKEND').'/kind-slide', ['as'=>'control_kind_slide','uses'=>'SlideController@kindSlide']);
-		// Route::get('/'.env('URL_AFTER_LOGIN_BACKEND').'/video-slide', ['as'=>'control_update_video_slide','uses'=>'SlideController@videoSlide']);
-		// Route::post('/'.env('URL_AFTER_LOGIN_BACKEND').'/kind-video-process', ['as'=>'control_edit_kind_video','uses'=>'SlideController@editKindVideo']);
+		Route::get('/'.env('URL_AFTER_LOGIN_BACKEND').'/edit-slide/{id?}', ['as'=>'control_edit_slide','uses'=>'SlideController@edit']);
+		Route::post('/'.env('URL_AFTER_LOGIN_BACKEND').'/edit-slide-process', ['as'=>'control_edit_slide_process','uses'=>'SlideController@editProcess']);
+		Route::any('/'.env('URL_AFTER_LOGIN_BACKEND').'/action-slide/{id?}', ['as'=>'control_action_slide','uses'=>'SlideController@actionData']);
 
 		//faq
 		Route::get('/'.env('URL_AFTER_LOGIN_BACKEND').'/faq/{search?}', [FaqController::class, 'index'])->name('control_faq');

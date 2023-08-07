@@ -39,11 +39,32 @@ class InformationController extends Controller
         return view('admin.master.config.information_edit', $data);
     }
 
+    public function aboutUs()
+    {
+        Common_helper::check_session_backend(true);
+
+        $meta_key = 'about_us_text';
+
+        $data = array(
+            'title' => 'About Us | Administrator',
+            'title_page' => 'About Us',
+            'title_form' => 'Form edit About Us of site',
+            'breadcrumbs' => '
+                                <li class="active"><i class="fa fa-edit"></i> Edit About Us</li>
+                            ',
+            'data_result' => EmConfig::getData(array('meta_key' => $meta_key)),
+            'menu_order' => $this->menu_order,
+            'meta_key' => $meta_key,
+            'masterInformation' => 'active',
+        );
+        return view('admin.master.config.information_edit', $data);
+    }
+
     public function control_info_terms_of_payment()
     {
         Common_helper::check_session_backend(true);
 
-        $meta_key = 'terms_of_payment_page';
+        $meta_key = 'terms_of_payment_text';
 
         $data = array(
             'title' => 'Terms of Payment | Administrator',
@@ -64,7 +85,7 @@ class InformationController extends Controller
     {
         Common_helper::check_session_backend(true);
 
-        $meta_key = 'shipping_and_return_page';
+        $meta_key = 'shipping_and_return_text';
 
         $data = array(
             'title' => 'Shipping & Return | Administrator',
@@ -85,7 +106,7 @@ class InformationController extends Controller
     {
         Common_helper::check_session_backend(true);
 
-        $meta_key = 'privacy_policy_page';
+        $meta_key = 'privacy_policy_text';
 
         $data = array(
             'title' => 'Privacy Policy | Administrator',

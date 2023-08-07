@@ -46,7 +46,7 @@
                                     </div>
                                 </div>
                             @endif
-                            @if($meta_key == 'terms_of_payment_page' || $meta_key == 'shipping_and_return_page' || $meta_key == 'privacy_policy_page')
+                            @if($meta_key == 'terms_of_payment_text' || $meta_key == 'shipping_and_return_text' || $meta_key == 'privacy_policy_text' || $meta_key == 'about_us_text')
                             <div class="form-group">
                                 <label for="information" class="col-sm-2 control-label"><span class="text-danger">*</span>{{$title_page}}</label>
                                 <div class="col-sm-10">
