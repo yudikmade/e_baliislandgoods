@@ -285,20 +285,22 @@
             var data_id = $(this).val();
             var trigger = $(this).attr('id');
 
-            if($('#country').val() == '236')
-            {
-                $('.select-national').fadeIn();
-            }
-            else
-            {
-                if($('#country').val() != '')
-                {
-                    $('.select-national').fadeOut();
-                }
-            }
+            // if($('#country').val() == '236')
+            // {
+            //     $('.select-national').fadeIn();
+            // }
+            // else
+            // {
+            //     if($('#country').val() != '')
+            //     {
+            //         $('.select-national').fadeOut();
+            //     }
+            // }
 
-            if($('#country').val() == '236')
-            {
+            $('.select-national').fadeIn();
+
+            // if($('#country').val() == '236')
+            // {
                 var urlAction = $('#actionLocation').val();
                 $.ajax({
                     url: urlAction,
@@ -315,7 +317,11 @@
                         {
                             if(trigger == 'country')
                             {
-                                $('#province').html(response.notif);
+                                if(response.notif.length > 50){
+                                    $('#province').html(response.notif);
+                                } else {
+                                    $('.select-national').fadeOut();   
+                                }
                             }
                             else if(trigger == 'province')
                             {
@@ -337,7 +343,7 @@
                         toastr.error('There is something wrong, please refresh page and try again.');
                     }
                 });
-            }
+            // }
         });
     });
 </script>
