@@ -369,10 +369,10 @@ class XenditPaymentController extends Controller
 
     public function callback(Request $request){
         $data = request()->all();
-        // $status = $data['status'];
+        $status = $data['status'];
         $external_id = $data['external_id'];
 
-        // if(strtolower($status) == 'paid'){
+        if(strtolower($status) == 'paid'){
             $get_transaction = EmTransaction::where('transaction_code', $external_id)->where('payment_status', '0')->where('status', '1')->first();
             if($get_transaction){
                 $paymentData = $data;
@@ -431,6 +431,6 @@ class XenditPaymentController extends Controller
                     }
                 }
             }
-        // }
+        }
     }
 }
