@@ -15,20 +15,22 @@
 	    	var data_id = $(this).val();
 	    	var trigger = $(this).attr('id');
 
-	    	if($('#country_reg').val() == '236')
-	    	{
-    			$('.select-national').fadeIn();
-	    	}
-	    	else
-	    	{
-	    		if($('#country_reg').val() != '')
-	    		{
-	    			$('.select-national').fadeOut();
-	    		}
-	    	}
+	    	// if($('#country_reg').val() == '236')
+	    	// {
+    		// 	$('.select-national').fadeIn();
+	    	// }
+	    	// else
+	    	// {
+	    	// 	if($('#country_reg').val() != '')
+	    	// 	{
+	    	// 		$('.select-national').fadeOut();
+	    	// 	}
+	    	// }
 
-	    	if($('#country_reg').val() == '236')
-	    	{
+            $('.select-national').fadeIn();
+
+	    	// if($('#country_reg').val() == '236')
+	    	// {
 	    		var urlAction = $('#actionLocation').val();
 	    		var new_trigger = trigger.split('_reg');
 		        $.ajax({
@@ -46,7 +48,11 @@
 	                	{
 	                		if(trigger == 'country_reg')
 	                		{
-	                			$('#province_reg').html(response.notif);
+                                if(response.notif.length > 50){
+                                    $('#province_reg').html(response.notif);
+                                } else {
+                                    $('.select-national').fadeOut();
+                                }
 	                		}
 	                		else if(trigger == 'province_reg')
 	                		{
@@ -68,7 +74,7 @@
 		                toastr.error('There is something wrong, please refresh page and try again.');
 		            }
 		        });
-	    	}
+	    	// }
 	    });
 
         $("#login-form").validate({

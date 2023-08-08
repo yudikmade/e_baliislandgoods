@@ -1114,17 +1114,10 @@ class Common_helper
             }
         }
 
-		if($currency_id == '1')
-		{
-			return array($nominal, $newFormatNominal, '$', 'CAD', $currency_id);
-		}
-		else
-		{
-			$getMeta = EmTransactionMeta::getMeta(array('transaction_id' => $transaction_id, 'meta_key' => 'currency_id'));
-			$getCurrency = $helper->get_current_currency($getMeta->meta_description);
+		$getMeta = EmTransactionMeta::getMeta(array('transaction_id' => $transaction_id, 'meta_key' => 'currency_id'));
+		$getCurrency = $helper->get_current_currency($getMeta->meta_description);
 
-			return array($nominal, $newFormatNominal, $getCurrency[1], $getCurrency[2], $currency_id);
-		}
+		return array($nominal, $newFormatNominal, $getCurrency[1], $getCurrency[2], $currency_id);
 	}
 
 
