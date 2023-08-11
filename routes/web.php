@@ -132,9 +132,9 @@ Route::group(['middleware' => ['backend']], function() {
 		Route::get('/'.env('URL_AFTER_LOGIN_BACKEND').'/slide/{search?}', [SlideController::class, 'index'])->name('control_slide');
 		Route::get('/'.env('URL_AFTER_LOGIN_BACKEND').'/add-slide', [SlideController::class, 'add'])->name('control_add_slide');
 		Route::post('/'.env('URL_AFTER_LOGIN_BACKEND').'/add-slide-process', [SlideController::class, 'addProcess'])->name('control_add_slide_process');
-		Route::get('/'.env('URL_AFTER_LOGIN_BACKEND').'/edit-slide/{id?}', ['as'=>'control_edit_slide','uses'=>'SlideController@edit']);
-		Route::post('/'.env('URL_AFTER_LOGIN_BACKEND').'/edit-slide-process', ['as'=>'control_edit_slide_process','uses'=>'SlideController@editProcess']);
-		Route::any('/'.env('URL_AFTER_LOGIN_BACKEND').'/action-slide/{id?}', ['as'=>'control_action_slide','uses'=>'SlideController@actionData']);
+		Route::get('/'.env('URL_AFTER_LOGIN_BACKEND').'/edit-slide/{id?}', [SlideController::class, 'edit'])->name('control_edit_slide');
+		Route::post('/'.env('URL_AFTER_LOGIN_BACKEND').'/edit-slide-process', [SlideController::class, 'editProcess'])->name('control_edit_slide_process');
+		Route::any('/'.env('URL_AFTER_LOGIN_BACKEND').'/action-slide/{id?}', [SlideController::class, 'actionData'])->name('control_action_slide');
 
 		//faq
 		Route::get('/'.env('URL_AFTER_LOGIN_BACKEND').'/faq/{search?}', [FaqController::class, 'index'])->name('control_faq');

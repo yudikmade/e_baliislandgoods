@@ -89,7 +89,7 @@
                         <li class="nav-item"><a href="{{url('/about-us')}}" class="nav-link link-dark">About</a></li>
                         <li class="nav-item"><a href="{{url('/contact-us')}}" class="nav-link link-dark">Contact</a></li>
                         <li class="nav-item dropdown">
-							<a class="nav-link link-dark" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">{{isset($global_currency_selected->currency_id) ? $global_currency_selected->code.' '.$global_currency_selected->symbol : ''}}</a>
+							<a class="nav-link link-dark" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">{{isset($global_currency_selected->currency_id) ? $global_currency_selected->code.' ('.$global_currency_selected->symbol.')' : ''}}</a>
 							
 							<ul class="dropdown-menu" aria-labelledby="navbarDarkDropdownMenuLink">
 								@foreach($global_currency as $key)
