@@ -98,10 +98,10 @@ body {
                                 $disableMin = ' disabled="disabled" ';
                             }
 
-                            $showPrice = $current_currency[1].$priceInCurrencyFormat[1].' '.$current_currency[2];
-                            //$showPrice = $current_currency[1].$priceInCurrencyFormat[1];
-                            $showSubTotal = $current_currency[1].$subTotalInCurrencyFormat[1].' '.$current_currency[2];
-                            //$showSubTotal = $current_currency[1].$subTotalInCurrencyFormat[1];
+                            //$showPrice = $current_currency[1].$priceInCurrencyFormat[1].' '.$current_currency[2];
+                            $showPrice = $current_currency[1].$priceInCurrencyFormat[1];
+                            //$showSubTotal = $current_currency[1].$subTotalInCurrencyFormat[1].' '.$current_currency[2];
+                            $showSubTotal = $current_currency[1].$subTotalInCurrencyFormat[1];
                         @endphp
                         <tr class="row-{{$no}}">
                             <td class="remove-cart" align="center">
