@@ -159,7 +159,7 @@
                       $tmpArray = array();
                       echo '
 						<select class="select2" name="select-size" id="select-size">
-							<option value="">--Size--</option>';
+							<option value="">-- Choose size --</option>';
 							foreach ($data_product_sku as $key) {
 							if($key->size != ''){
 								if(!in_array($key->size, $tmpArray)){
@@ -329,7 +329,7 @@
         $(this).addClass('active');
         var chooseHexa = $(this).attr('data-hexa');
 
-        var dataSizeOption = '<option value="">Size</option>';
+        var dataSizeOption = '<option value="">-- Choose size --</option>';
         for(var i = 0; i < json_size.length; i++){
           var color_hexa = json_size[i][0];
           if(color_hexa == chooseHexa)

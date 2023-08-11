@@ -2,13 +2,24 @@
 
 @section('style')
 <link href="{{asset(env('URL_ASSETS').'frontend/dist/css/carousel.css')}}" rel="stylesheet">
+<style>
+  .carousel-item{
+    height: auto!important;
+    max-height: 800px !important;
+    background-size: cover;
+  }
+  .carousel-item img{
+    width: 100%;
+    height: auto;
+  }
+</style>
 @stop
 
 @section('content')
 <div id="myCarousel" class="carousel slide" data-bs-ride="carousel">
     <div class="carousel-inner">
       @foreach($banner as $index => $key)
-      <div class="carousel-item {{$index == '0' ? 'active':''}}" style="background-image: url('{{asset(env('URL_IMAGE').'slide/thumb/'.$key->image)}}')">
+      <!-- <div class="carousel-item {{$index == '0' ? 'active':''}}" style="background-image: url('{{asset(env('URL_IMAGE').'slide/thumb/'.$key->image)}}')">
         <div class="carousel-caption">
           <div class="row">
             <div class="col-md-6">
@@ -18,6 +29,9 @@
             <div class="col-md-6"></div>
           </div>
         </div>
+      </div> -->
+      <div class="carousel-item {{$index == '0' ? 'active':''}}">
+        <img src="{{asset(env('URL_IMAGE').'slide/thumb/'.$key->image)}}" />
       </div>
       @endforeach
     </div>
