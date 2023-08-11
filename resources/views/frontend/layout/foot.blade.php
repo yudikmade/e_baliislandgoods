@@ -220,22 +220,22 @@
         }, 500);
       })
 
-      $('#form-search-header').submit(function() {
-        return false;
-      });
-      $('#form-search-header').on('keyup keypress', function(e) {
-        var keyCode = e.keyCode || e.which;
-        if (keyCode === 13) { 
-          e.preventDefault();
+    //   $('#form-search-header').submit(function() {
+    //     return false;
+    //   });
+    //   $('#form-search-header').on('keyup keypress', function(e) {
+    //     var keyCode = e.keyCode || e.which;
+    //     if (keyCode === 13) { 
+    //       e.preventDefault();
 
-          var search_keyword = $('#keyword_search_header').val();
-          var search_category = $('#category_search_header').val();
+    //       var search_keyword = $('#keyword_search_header').val();
+    //       var search_category = $('#category_search_header').val();
 
-          if(search_keyword != ''){
-            location.href = '{{route('shop_page')}}'+'/'+search_category+'/'+search_keyword;
-          } 
-          return false;
-        }
-      });
+    //       if(search_keyword != ''){
+    //         location.href = '{{route('shop_page')}}'+'/'+search_category+'/'+search_keyword;
+    //       } 
+    //       return false;
+    //     }
+    //   });
     });
 </script>

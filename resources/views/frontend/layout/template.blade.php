@@ -99,7 +99,7 @@
 							
 						</li>
                         <li class="nav-item form-search-header-mobile">
-                            <form id="form-search-header">
+                            <form id="form-search-header" method="GET" action="{{route('shop_page')}}">
                                 <div class="input-group has-search black">
                                 <input name="category" id="category_search_header" type="hidden" value="all" />
                                 <input name="search" id="keyword_search_header" type="text" value="" class="form-control" placeholder="Search products..." aria-describedby="basic-addon2">
@@ -122,7 +122,7 @@
                         <div class="navbar-right nav-pills">
                             <div class="nav-item d-flex flex-wrap justify-content-end right-icon">
                                 <div class="nav-link" id="header-search-form">
-                                    <form id="form-search-header">
+                                    <form id="form-search-header" method="GET" action="{{route('shop_page')}}">
                                         <div class="input-group has-search black">
                                         <input name="category" id="category_search_header" type="hidden" value="all" />
                                         <input name="search" id="keyword_search_header" type="text" value="" class="form-control" placeholder="Search products..." aria-describedby="basic-addon2">
