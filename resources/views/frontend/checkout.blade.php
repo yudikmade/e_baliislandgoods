@@ -163,12 +163,12 @@ body {
             $getTimerTrans = array();
             if(isset($timezone['timezone']->meta_description)){
                 $getTimerTrans = \App\Helper\Common_helper::timerCheckout($header_transaction->transaction_date, $timezone['timezone']->meta_description);
-                echo '
-                    <div id="countdowntimer" class="text-center mb-3">
-                        <p>Please make payment before the time runs out!</p>
-                        <span id="future_date" class="alert alert-info"></span>
-                    </div>
-                ';
+                // echo '
+                //     <div id="countdowntimer" class="text-center mb-3">
+                //         <p>Please make payment before the time runs out!</p>
+                //         <span id="future_date" class="alert alert-info"></span>
+                //     </div>
+                // ';
             }
         ?>
 
@@ -1140,19 +1140,21 @@ $(document).ready(function() {
         // $('#city').select2('val', '');
         // $('#subdistrict').select2('val', '');
 
-        if($('#country').val() == '236')
-        {
-            $('.select-national').fadeIn();
-        }
-        else
-        {
-            $('.select-national').fadeOut();
-        }
+        // if($('#country').val() == '236')
+        // {
+        //     $('.select-national').fadeIn();
+        // }
+        // else
+        // {
+        //     $('.select-national').fadeOut();
+        // }
+
+        $('.select-national').fadeIn();
 
         if(trigger != 'subdistrict')
         {
-            if($('#country').val() == '236')
-            {
+            // if($('#country').val() == '236')
+            // {
                 if($(this).val() != '')
                 {
                     var urlAction = $('#actionLocation').val();
@@ -1194,7 +1196,7 @@ $(document).ready(function() {
                         }
                     });
                 }
-            }
+            // }
         }
     });
 
