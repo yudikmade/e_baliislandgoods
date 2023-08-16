@@ -313,7 +313,7 @@ class Common_helper
 	public function generateProduct($key){
 		$description = $key->description;
         if(strlen($description) > 80){
-          $description = str_split($description,0,80).'...';
+          $description = substr($description,0,80).'...';
         }
 
 		$image = array();
