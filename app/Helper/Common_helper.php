@@ -317,7 +317,7 @@ class Common_helper
         }
 
 		$image = array();
-		$get_product = EmProductSku::where('status','1')->where('product_id', $key->product_id)->orderBy('order','ASC')->get();
+		$get_product = EmProductSku::where('status','1')->where('product_id', $key->product_id)->groupBy('color_hexa')->orderBy('order','ASC')->get();
 		// product image
 		foreach($get_product as $value){
 			array_push($image, array(
