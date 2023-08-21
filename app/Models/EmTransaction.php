@@ -60,7 +60,7 @@ class EmTransaction extends Eloquent
 	    	->leftJoin('em_customer', $this->table.'.customer_id', '=', 'em_customer.customer_id')
 			->join('em_transaction_detail', $this->table.'.transaction_id', '=', 'em_transaction_detail.transaction_id')
 			->join('em_product', 'em_transaction_detail.product_id', '=', 'em_product.product_id')
-			->join('em_administrator', 'em_product.admin_id', '=', 'em_administrator.admin_id')
+			// ->join('em_administrator', 'em_product.admin_id', '=', 'em_administrator.admin_id')
 	    	->whereNotIn($this->table.'.status', ['0', '6']);
 
     	if($payment != 'all-payments')
@@ -78,9 +78,9 @@ class EmTransaction extends Eloquent
         	$getData = $getData->whereRaw("(".$this->table.".transaction_code like '%".$search."%' OR em_customer.first_name like '%".$search."%' OR em_customer.last_name like '%".$search."%' OR ".$this->table.".total_payment like '%".$search."%')");
         }
 
-		if(!is_null($admin_id)){
-			$getData = $getData->where('em_administrator.admin_id',$admin_id);
-		}
+		// if(!is_null($admin_id)){
+		// 	$getData = $getData->where('em_administrator.admin_id',$admin_id);
+		// }
 
         if(sizeof($date_transaction) == 2)
         {

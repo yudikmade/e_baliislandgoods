@@ -35,7 +35,7 @@
                         <div class="icon">
                             <i class="fa fa-users"></i>
                         </div>
-                        <a href="" class="small-box-footer">Detail <i class="fa fa-arrow-circle-right"></i></a>
+                        <a href="{{route('control_customers')}}" class="small-box-footer">Detail <i class="fa fa-arrow-circle-right"></i></a>
                     </div>
                 </div>
                 @endif
@@ -48,7 +48,7 @@
                         <div class="icon">
                             <i class="fa fa-list"></i>
                         </div>
-                        <a href="" class="small-box-footer">Detail <i class="fa fa-arrow-circle-right"></i></a>
+                        <a href="{{route('control_products')}}" class="small-box-footer">Detail <i class="fa fa-arrow-circle-right"></i></a>
                     </div>
                 </div>
                 <div class="col-lg-4 col-xs-12">
@@ -60,7 +60,7 @@
                         <div class="icon">
                             <i class="fa fa-file-text-o"></i>
                         </div>
-                        <a href="" class="small-box-footer">Detail <i class="fa fa-arrow-circle-right"></i></a>
+                        <a href="{{route('control_transactions')}}" class="small-box-footer">Detail <i class="fa fa-arrow-circle-right"></i></a>
                     </div>
                 </div>
                 

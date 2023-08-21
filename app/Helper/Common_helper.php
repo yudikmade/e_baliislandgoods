@@ -340,10 +340,12 @@ class Common_helper
 		$current_currency = self::get_current_currency();
 
 		$priceInCurrencyFormat = self::convert_to_current_currency($priceAfterDisc);
-		$showPriceAfterDisc = $current_currency[1].$priceInCurrencyFormat[1].' '.$current_currency[2];
+		// $showPriceAfterDisc = $current_currency[1].$priceInCurrencyFormat[1].' '.$current_currency[2];
+		$showPriceAfterDisc = $current_currency[1].$priceInCurrencyFormat[1];
 
 		$priceInCurrencyFormat = self::convert_to_current_currency($key->price);
-		$showPriceNormal = $current_currency[1].$priceInCurrencyFormat[1].' '.$current_currency[2];
+		// $showPriceNormal = $current_currency[1].$priceInCurrencyFormat[1].' '.$current_currency[2];
+		$showPriceNormal = $current_currency[1].$priceInCurrencyFormat[1];
 
 		$showPriceHTML = '';
 		if($discount == '0'){
