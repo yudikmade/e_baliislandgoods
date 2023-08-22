@@ -194,7 +194,7 @@ class ShopController extends Controller
                 
                 
                 $htmlBuilder .= '
-                <div class="col-md-3 col-6">
+                <div class="col-md-3 col-6 mb-4">
                     <div class="product-grid">
                         '.$htmlDiscount.'
                         <div id="product'.$detail['id'].'" class="carousel slide carousel-fade carousel-product" data-bs-ride="carousel" data-bs-interval="false">
