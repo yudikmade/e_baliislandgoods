@@ -336,11 +336,11 @@ class Common_helper
 
 		$current_currency = self::get_current_currency();
 
-		$priceInCurrencyFormat = self::convert_to_current_currency($priceAfterDisc, "", false);
+		$priceInCurrencyFormat = self::convert_to_current_currency($priceAfterDisc);
 		// $showPriceAfterDisc = $current_currency[1].$priceInCurrencyFormat[1].' '.$current_currency[2];
 		$showPriceAfterDisc = $current_currency[1].$priceInCurrencyFormat[1];
 
-		$priceInCurrencyFormat = self::convert_to_current_currency($key->price, "", false);
+		$priceInCurrencyFormat = self::convert_to_current_currency($key->price);
 		// $showPriceNormal = $current_currency[1].$priceInCurrencyFormat[1].' '.$current_currency[2];
 		$showPriceNormal = $current_currency[1].$priceInCurrencyFormat[1];
 
@@ -985,7 +985,10 @@ class Common_helper
 		// }
 
 		if($set_two_nominal){
-			$newNominal = $helper->set_two_nominal_after_point($newNominal);
+			// if no idr
+			if(Session::get(env('SES_GLOBAL_CURRENCY')) != '1'){
+				$newNominal = $helper->set_two_nominal_after_point($newNominal);
+			}
 		}
 		$newNominalCurrencyFormat = $helper->convert_to_format_currency($newNominal);
 

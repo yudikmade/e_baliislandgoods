@@ -513,7 +513,7 @@ class ProcessController extends Controller
 
                             //set up tax
                             $tax = EmConfig::getData(array('meta_key' => 'tax'));
-                            $taxTotal = ($tax * $totalCost) / 100;
+                            $taxTotal = round(($tax * $totalCost) / 100,2);
 
                             $newInvoice = Common_helper::create_invoice_number();
                             $additional_price = 0;

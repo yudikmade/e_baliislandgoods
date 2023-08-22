@@ -92,10 +92,10 @@
 			$priceAfterDisc = $setDiscount[0];
 			$discount = $setDiscount[1];
 
-			$priceInCurrencyFormat = \App\Helper\Common_helper::convert_to_current_currency($priceAfterDisc, "", false);
+			$priceInCurrencyFormat = \App\Helper\Common_helper::convert_to_current_currency($priceAfterDisc);
 			$showPriceAfterDisc = $current_currency[1].$priceInCurrencyFormat[1];//.' '.$current_currency[2];
 
-			$priceInCurrencyFormat = \App\Helper\Common_helper::convert_to_current_currency($products->price, "", false);
+			$priceInCurrencyFormat = \App\Helper\Common_helper::convert_to_current_currency($products->price);
 			$showPriceNormal = $current_currency[1].$priceInCurrencyFormat[1];//.' '.$current_currency[2];
 			@endphp
             <h5 class="mb-3">

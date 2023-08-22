@@ -549,10 +549,10 @@ body {
                             $discount = $setDiscount[1];
                             //--------
 
-                            $priceInCurrencyFormat = \App\Helper\Common_helper::convert_to_current_currency($priceAfterDisc, "", false);
+                            $priceInCurrencyFormat = \App\Helper\Common_helper::convert_to_current_currency($priceAfterDisc);
 
                             $subTotal = $priceAfterDisc * $carts['qty'];
-                            $subTotalInCurrencyFormat = \App\Helper\Common_helper::convert_to_current_currency($subTotal, "", false);
+                            $subTotalInCurrencyFormat = \App\Helper\Common_helper::convert_to_current_currency($subTotal);
                             $countSubTotal += $subTotalInCurrencyFormat[0];
 
                             $productWeight = ($carts['weight'] * $carts['qty']);
