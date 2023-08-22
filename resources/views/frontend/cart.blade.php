@@ -81,10 +81,10 @@ body {
                             $discount = $setDiscount[1];
                             //--------
 
-                            $priceInCurrencyFormat = \App\Helper\Common_helper::convert_to_current_currency($priceAfterDisc);
+                            $priceInCurrencyFormat = \App\Helper\Common_helper::convert_to_current_currency($priceAfterDisc, "", false);
 
                             $subTotal = $priceAfterDisc * $carts['qty'];
-                            $subTotalInCurrencyFormat = \App\Helper\Common_helper::convert_to_current_currency($subTotal);
+                            $subTotalInCurrencyFormat = \App\Helper\Common_helper::convert_to_current_currency($subTotal, "", false);
                             $countSubTotal += $subTotalInCurrencyFormat[0];
 
                             $productWeight = ($carts['weight'] * $carts['qty']);
@@ -193,8 +193,8 @@ body {
                     <div class="summary">
                         @php
                         $countSubTotalInCurrencyFormat = \App\Helper\Common_helper::convert_to_format_currency($countSubTotal);
-                        $showCountSubTotal = $current_currency[1].$countSubTotalInCurrencyFormat.' '.$current_currency[2];
-                        //$showCountSubTotal = $current_currency[1].$countSubTotalInCurrencyFormat;
+                        //$showCountSubTotal = $current_currency[1].$countSubTotalInCurrencyFormat.' '.$current_currency[2];
+                        $showCountSubTotal = $current_currency[1].$countSubTotalInCurrencyFormat;
 
                         $country_id = '';
                         $country_name = '';
@@ -298,8 +298,8 @@ body {
                                     @php
                                         $taxTotal = ($tax * $countSubTotal) / 100;
                                         $taxInCurrencyFormat = \App\Helper\Common_helper::convert_to_format_currency($taxTotal);
-                                        $showTax = $current_currency[1].$taxInCurrencyFormat.' '.$current_currency[2];
-                                        //$showTax = $current_currency[1].$taxInCurrencyFormat;
+                                        //$showTax = $current_currency[1].$taxInCurrencyFormat.' '.$current_currency[2];
+                                        $showTax = $current_currency[1].$taxInCurrencyFormat;
 
                                         $granTotal = $taxTotal + $countSubTotal + $shippingCostTotal;
                                         $grandTotalInCurrencyFormat = \App\Helper\Common_helper::convert_to_format_currency($granTotal);
@@ -386,61 +386,28 @@ body {
             }
         });
 
-        function encodeRp(bilangan)
-        {
-            var tmpData = bilangan.toString().split('.');
+        function encodeRp(bilangan){
+            if(bilangan !== undefined){
+                var tmpData = bilangan.toString().split('.');
 
-            if(tmpData.length == 1){
-                return bilangan+".00";
-            }else if(tmpData.length == 2){
-                if(tmpData[1].length == 1){
-                    return bilangan+"0";
+                var	number_string = bilangan.toString();
+                var last_string = '';
+                if(tmpData.length == 2){
+                    number_string = tmpData[0];
+                    last_string = '.'+tmpData[1].substr(0, 2);
                 }
-            }
-            return bilangan;
 
-
-            var  number_string = bilangan.toString();
-            var last_string = '';
-            if(tmpData.length == 2)
-            {
-                number_string = tmpData[0];
-                last_string = '.'+tmpData[1].substr(0, 2);
-            }
-
-            sisa     = number_string.length % 3,
-            rupiah   = number_string.substr(0, sisa),
-            ribuan   = number_string.substr(sisa).match(/\d{3}/g);
-            
-            if (ribuan) {
-                separator = sisa ? '.' : '';
-                rupiah += separator + ribuan.join('.');
-            }
-
-            return rupiah+last_string;
-
-            // if(bilangan !== undefined){
-                // var tmpData = bilangan.toString().split('.');
-
-                // var	number_string = bilangan.toString();
-                // var last_string = '';
-                // if(tmpData.length == 2)
-                // {
-                //     number_string = tmpData[0];
-                //     last_string = ','+tmpData[1].substr(0, 2);
-                // }
-
-                // sisa 	= number_string.length % 3,
-                // rupiah 	= number_string.substr(0, sisa),
-                // ribuan 	= number_string.substr(sisa).match(/\d{3}/g);
+                sisa 	= number_string.length % 3,
+                rupiah 	= number_string.substr(0, sisa),
+                ribuan 	= number_string.substr(sisa).match(/\d{3}/g);
                 
-                // if (ribuan) {
-                //     separator = sisa ? '.' : '';
-                //     rupiah += separator + ribuan.join('.');
-                // }
-
-                // return rupiah+last_string;
-            // }
+                if (ribuan) {
+                    separator = sisa ? ',' : '';
+                    rupiah += separator + ribuan.join(',');
+                }
+                // console.log(bilangan, rupiah, rupiah+last_string);
+                return rupiah+last_string;
+            }
         }
 
         function calculationTotal()
@@ -459,14 +426,15 @@ body {
             });
 
             var add2lastNominal = '';
-            if(code == 'IDR')
-            {
-                add2lastNominal = ',00';
-            }
+            // if(code == 'IDR')
+            // {
+            //     add2lastNominal = ',00';
+            // }
 
 
             $('.btm-plc-total').attr('data-sub-total', totalPrice);
             // $('.btm-plc-total').find('span').text(symbol+encodeRp(totalPrice)+add2lastNominal+' '+code);
+            console.log('aa', encodeRp(totalPrice));
             $('.btm-plc-total').find('span').text(symbol+encodeRp(totalPrice)+add2lastNominal);
 
             $('#weight_total').val(totalWeight);
@@ -495,10 +463,10 @@ body {
         {
             var code = $('#code_global').val();
             var add2lastNominal = '';
-            if(code == 'IDR')
-            {
-                add2lastNominal = ',00';
-            }
+            // if(code == 'IDR')
+            // {
+            //     add2lastNominal = ',00';
+            // }
 
             var qty = parseInt(qty);
             var index = parseInt(index);

@@ -539,7 +539,7 @@ body {
                         <tbody>
                             <tr>
                                 <td>PRODUCT</td>
-                                <td class="title-subtotal total-cart">SUBTOTAL</td>
+                                <td class="title-subtotal total-cart"></td>
                             </tr>
                             @foreach($data_cart as $carts)
                             @php
@@ -549,10 +549,10 @@ body {
                             $discount = $setDiscount[1];
                             //--------
 
-                            $priceInCurrencyFormat = \App\Helper\Common_helper::convert_to_current_currency($priceAfterDisc);
+                            $priceInCurrencyFormat = \App\Helper\Common_helper::convert_to_current_currency($priceAfterDisc, "", false);
 
                             $subTotal = $priceAfterDisc * $carts['qty'];
-                            $subTotalInCurrencyFormat = \App\Helper\Common_helper::convert_to_current_currency($subTotal);
+                            $subTotalInCurrencyFormat = \App\Helper\Common_helper::convert_to_current_currency($subTotal, "", false);
                             $countSubTotal += $subTotalInCurrencyFormat[0];
 
                             $productWeight = ($carts['weight'] * $carts['qty']);
@@ -565,13 +565,14 @@ body {
                             <tr>
                                 <td>{{$carts['product_name']}} <b>× {{$carts['qty']}}</b></td>
                                 <!-- <td class="total-cart"><b>{{$current_currency[1].$showSubTotal}}</b></td> -->
-                                <td class="total-cart"><b>{{$current_currency[1].$showSubTotal.' '.$current_currency[2]}}</b></td>
+                                <td class="total-cart"><b>{{$current_currency[1].$showSubTotal}}</b></td>
                             </tr>
                             @endforeach
                             @if($header_transaction)
                             <?php
                                 $subTotalInCurrencyFormat = \App\Helper\Common_helper::convert_to_format_currency($header_transaction->total_price);
-                                $showSubTotal = $current_currency[1].$subTotalInCurrencyFormat.' '.$current_currency[2];
+                                // $showSubTotal = $current_currency[1].$subTotalInCurrencyFormat.' '.$current_currency[2];
+                                $showSubTotal = $current_currency[1].$subTotalInCurrencyFormat;
 
                                 $shippingCostInCurrencyFormat = \App\Helper\Common_helper::convert_to_format_currency($header_transaction->shipping_cost);
                                 $showShippingCost = $current_currency[1].$shippingCostInCurrencyFormat.' '.$current_currency[2];

@@ -261,18 +261,15 @@ class Common_helper
         return false;
     }
 
-    public static function convert_to_format_currency($data)
-	{
+    public static function convert_to_format_currency($data){
 		// return $data;
 		$tmpData = explode('.', $data);
 
 		$belakangKoma="";
-		if(count($tmpData)>1)
-		{
-			$belakangKoma=",".$tmpData[1];
-			if(strlen($tmpData[1]) == 1)
-			{
-				$belakangKoma=",".$tmpData[1].'0';
+		if(count($tmpData)>1){
+			$belakangKoma=".".$tmpData[1];
+			if(strlen($tmpData[1]) == 1){
+				$belakangKoma=".".$tmpData[1].'0';
 			}
 		}
 		$data=$tmpData[0];
@@ -290,7 +287,7 @@ class Common_helper
 			
 			for($i=1;$i<=$pjgDataBaru/3;$i++)
 			{
-				$h.=".";
+				$h.=",";
 				$h.=substr($data,$sisaBagi,$ambil);
 				$sisaBagi+=3;
 			}
@@ -302,7 +299,7 @@ class Common_helper
 				$h=$h.substr($data,$aw2,$ambil);
 				if($a<$hasilBagi)
 				{
-					$h=$h.".";
+					$h=$h.",";
 				}
 				$aw2+=3;
 			}
@@ -339,11 +336,13 @@ class Common_helper
 
 		$current_currency = self::get_current_currency();
 
-		$priceInCurrencyFormat = self::convert_to_current_currency($priceAfterDisc);
-		$showPriceAfterDisc = $current_currency[1].$priceInCurrencyFormat[1].' '.$current_currency[2];
+		$priceInCurrencyFormat = self::convert_to_current_currency($priceAfterDisc, "", false);
+		// $showPriceAfterDisc = $current_currency[1].$priceInCurrencyFormat[1].' '.$current_currency[2];
+		$showPriceAfterDisc = $current_currency[1].$priceInCurrencyFormat[1];
 
-		$priceInCurrencyFormat = self::convert_to_current_currency($key->price);
-		$showPriceNormal = $current_currency[1].$priceInCurrencyFormat[1].' '.$current_currency[2];
+		$priceInCurrencyFormat = self::convert_to_current_currency($key->price, "", false);
+		// $showPriceNormal = $current_currency[1].$priceInCurrencyFormat[1].' '.$current_currency[2];
+		$showPriceNormal = $current_currency[1].$priceInCurrencyFormat[1];
 
 		$showPriceHTML = '';
 		if($discount == '0'){
@@ -961,14 +960,33 @@ class Common_helper
 		return array($getCurrency[0]->rate, $getCurrency[0]->symbol, $code, $getCurrency[0]->currency_id);
 	}
 
-	public static function convert_to_current_currency($nominal, $currency_id = '')
+	public static function convert_to_current_currency($nominal, $currency_id = '', $set_two_nominal = true)
 	{
 		$helper = new \App\Helper\Common_helper;
 
 		//convert to current currency
 		$getCurrency = $helper->get_current_currency($currency_id);
 		$newNominal = $getCurrency[0] * $nominal;
-		$newNominal = $helper->set_two_nominal_after_point($newNominal);
+
+		// $check_decimal = explode('.', $newNominal);
+		// if(sizeof($check_decimal) == 2){
+		// 	$tmp_data = $check_decimal[1];
+		// 	if(strlen($tmp_data) > 2){
+		// 		if(substr($tmp_data, -1) >= 5){
+		// 			$newNominal = $check_decimal[0].'.'.substr($tmp_data, 0, 1)
+		// 		}else{
+
+		// 		}
+		// 	}else{
+		// 		if(strlen($tmp_data) == 1){
+		// 			$newNominal = $check_decimal[0].'.'.$tmp_data.'0';
+		// 		}
+		// 	}
+		// }
+
+		if($set_two_nominal){
+			$newNominal = $helper->set_two_nominal_after_point($newNominal);
+		}
 		$newNominalCurrencyFormat = $helper->convert_to_format_currency($newNominal);
 
 		return array($newNominal, $newNominalCurrencyFormat, $getCurrency);
@@ -1058,8 +1076,7 @@ class Common_helper
 	public static function set_two_nominal_after_point($nominal)
 	{
 		$expNominal = explode('.', $nominal);
-		if(count($expNominal) == 2)
-		{
+		if(count($expNominal) == 2){
 			if(strlen($expNominal[1]) > 2)
 			{
 				$lastNominal = (substr($expNominal[1], 0, 2)) + 1;
@@ -1070,9 +1087,7 @@ class Common_helper
 				$strAdd = '00';
 				$nominal = $expNominal[0].'.'.$expNominal[1].substr($strAdd, 0, (2 - strlen($expNominal[1])));
 			}
-		}
-		else
-		{
+		}else{
 			$nominal .= '.00';
 		}
 		return $nominal;

@@ -1533,6 +1533,11 @@ input, select:focus{
   color: #000!important;
 }
 
+.carousel-product .carousel-indicators button{
+  border-radius: 20px;
+  height: 12px !important;
+  width: 12px !important;
+}
 .carousel-product .carousel-indicators .active {
   border: none !important;
 }
