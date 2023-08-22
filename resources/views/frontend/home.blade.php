@@ -94,7 +94,7 @@
         @php 
         $detail = \App\Helper\Common_helper::generateProduct($key);
         @endphp
-        <div class="col-md-3 col-6">
+        <div class="col-md-3 col-6 mb-5">
           <div class="product-grid">
             @if($detail['discount'] != '0')
             <div class="product-label product-label-save">Save {{$detail['discount']}}%</div>
@@ -160,7 +160,7 @@
         @php 
         $detail = \App\Helper\Common_helper::generateProduct($key);
         @endphp
-        <div class="col-md-3 col-6">
+        <div class="col-md-3 col-6 mb-5">
           <div class="product-grid">
             @if($detail['discount'] != '0')
             <div class="product-label product-label-save">Save {{$detail['discount']}}%</div>
