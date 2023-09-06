@@ -40,8 +40,7 @@ use App\Http\Controllers\Frontend\XenditPaymentController;
 */
 
 // Route::get('/test-shipping', [TestController::class, 'index'])->name('control_dashboard');
-Route::get('/test-email', [TestemailController::class, 'index'])->name('index');
-
+// Route::get('/test-email', [TestemailController::class, 'index'])->name('index');
 
 // backend ======================================
 Route::group(['prefix' => env('URL_LOGIN_BACKEND')], function(){
