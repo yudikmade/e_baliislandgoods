@@ -307,7 +307,7 @@ class Common_helper
 		return $h.$belakangKoma;
 	}
 
-	public function generateProduct($key){
+	public static function generateProduct($key){
 		$description = $key->description;
         if(strlen($description) > 80){
           $description = substr($description,0,80).'...';
