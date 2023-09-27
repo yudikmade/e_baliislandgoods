@@ -1347,15 +1347,11 @@ class ProcessController extends Controller
                 }
 
                 $amount = $totalPayment;
-                if(Session::get(env('SES_GLOBAL_CURRENCY')) == '2'){
-                    $idr_price = 15000;
-                    $get_usd_to_idr = EmConfig::getData(array('meta_key' => 'usd_to_idr'));
-                    if($get_usd_to_idr != ''){
-                        $idr_price = $get_usd_to_idr;
-                    }
-
-                    $amount = round($amount * $idr_price);
-                }
+                // convert to IDR
+                // if(Session::get(env('SES_GLOBAL_CURRENCY')) == '2'){
+                //     $get_convertion = MCurrency::where('currency_id', Session::get(env('SES_GLOBAL_CURRENCY')))->first();
+                //     $amount = round($amount * $get_convertion->covertion);
+                // }
                 EmTransactionMeta::updateMeta(array('transaction_id' => $trans_id, 'meta_key' => 'amount_idr', 'meta_description' => $amount));
 
                 // echo $shippingCost;
@@ -1452,46 +1448,34 @@ class ProcessController extends Controller
         echo json_encode($result);
     }
 
-    public function checkBeforePayment(Request $request)
-    {
+    public function checkBeforePayment(Request $request){
         $result['trigger'] = 'no';
         $result['notif'] = 'Sorry, system can\'t process your payment. Please input customer and shipping info correctly.';
 
-        if(Session::get(sha1(env('AUTHOR_SITE').'_checkout_customer')) != '' && Session::get(sha1(env('AUTHOR_SITE').'_checkout_shipping')) != '')
-        {
+        if(Session::get(sha1(env('AUTHOR_SITE').'_checkout_customer')) != '' && Session::get(sha1(env('AUTHOR_SITE').'_checkout_shipping')) != ''){
             $validator = Validator::make(request()->all(), [
-                'trans_id' => 'required',
-            ],
-            [
-                'trans_id.required' => 'Please refresh the page. System can\'t found the transaction.',
+                'trans_code' => 'required',
+            ],[
+                'trans_code.required' => 'Please refresh the page. System can\'t found the transaction.',
             ]);
 
             $notif = '';
-            if($validator->fails()) 
-            {
-                foreach ($validator->errors()->all() as $messages) 
-                {
+            if($validator->fails()) {
+                foreach ($validator->errors()->all() as $messages) {
                     $notif .= $messages.'<br>';
                 }
-
                 $result['notif'] = $notif;
-            }
-            else
-            {
+            }else{
                 $input = $request->all();
 
-                $getTransaction = EmTransaction::getWhere([['transaction_id', '=', $input['trans_id']]], '', false);
-                foreach ($getTransaction as $key) 
-                {
-                    if($key->payment_status == '0')
-                    {
+                $getTransaction = EmTransaction::getWhere([['transaction_code', '=', $input['trans_code']]], '', false);
+                foreach ($getTransaction as $key) {
+                    if($key->payment_status == '0'){
                         $validation = true;
                         $notif = '';
-                        if(Session::get(env('SES_FRONTEND_ID')) == null)
-                        {
+                        if(Session::get(env('SES_FRONTEND_ID')) == null){
                             $getMeta = EmTransactionMeta::getMeTa(array('transaction_id' => $key->transaction_id, 'meta_key' => 'name'));
-                            if(!isset($getMeta->meta_description))
-                            {
+                            if(!isset($getMeta->meta_description)){
                                 $validation = false;
                                 $notif .= 'Please fill customer form.<br>';
                                 Session::forget(sha1(env('AUTHOR_SITE').'_checkout_customer'));
@@ -1499,34 +1483,23 @@ class ProcessController extends Controller
                         }
 
                         $getShipping = EmTransactionShipping::getWhere([['transaction_id', '=', $key->transaction_id]], '', false);
-                        if(sizeof($getShipping) == 0)
-                        {
+                        if(sizeof($getShipping) == 0){
                             $validation = false;
                             $notif .= 'Please fill shipping form.<br>';
                             Session::forget(sha1(env('AUTHOR_SITE').'_checkout_shipping'));
                         }
 
-                        if($validation)
-                        {
+                        if($validation){
                             Session::put(sha1(env('AUTHOR_SITE').'_payment_trans_id'), $key->transaction_id);
-
-                            if(Session::get(env('SES_FRONTEND_ID')) == null)
-                            {
+                            if(Session::get(env('SES_FRONTEND_ID')) == null){
                                 Session::put(sha1(env('AUTHOR_SITE').'_payment_trans_code'), $key->unique_code);
-                            }
-                            else
-                            {
+                            }else{
                                 Session::put(sha1(env('AUTHOR_SITE').'_payment_trans_code'), $key->transaction_code);   
                             }
 
-                            // Session::forget(sha1(env('AUTHOR_SITE').'_checkout_customer'));
-                            // Session::forget(sha1(env('AUTHOR_SITE').'_checkout_shipping'));
-
                             $result['trigger'] = 'yes';
-                            $result['notif'] = route('user_payment');  
-                        }
-                        else
-                        {
+                            $result['notif'] = route('paymentPaypal');  
+                        }else{
                             $result['trigger'] = 'no';
                             $result['notif'] = $notif;  
                             $result['url'] = '';
@@ -1597,15 +1570,11 @@ class ProcessController extends Controller
                                 $discNominal = Common_helper::check_decimal($discNominal);
 
                                 $amount = $totalPayment;
-                                if(Session::get(env('SES_GLOBAL_CURRENCY')) == '2'){
-                                    $idr_price = 15000;
-                                    $get_usd_to_idr = EmConfig::getData(array('meta_key' => 'usd_to_idr'));
-                                    if($get_usd_to_idr != ''){
-                                        $idr_price = $get_usd_to_idr;
-                                    }
-                
-                                    $amount = round($amount * $idr_price);
-                                }
+                                // convert to IDR
+                                // if(Session::get(env('SES_GLOBAL_CURRENCY')) == '2'){
+                                //     $get_convertion = MCurrency::where('currency_id', Session::get(env('SES_GLOBAL_CURRENCY')))->first();
+                                //     $amount = round($amount * $get_convertion->covertion);
+                                // }
                                 EmTransactionMeta::updateMeta(array('transaction_id' => $getTransaction[0]->transaction_id, 'meta_key' => 'amount_idr', 'meta_description' => $amount));
 
                                 EmTransaction::updateData($getTransaction[0]->transaction_id, ['coupon' => $discNominal, 'total_payment' => $totalPayment]);
@@ -1645,15 +1614,11 @@ class ProcessController extends Controller
                             // $totalPayment = Common_helper::check_decimal($totalPayment);
 
                             $amount = $totalPayment;
-                            if(Session::get(env('SES_GLOBAL_CURRENCY')) == '2'){
-                                $idr_price = 15000;
-                                $get_usd_to_idr = EmConfig::getData(array('meta_key' => 'usd_to_idr'));
-                                if($get_usd_to_idr != ''){
-                                    $idr_price = $get_usd_to_idr;
-                                }
-            
-                                $amount = round($amount * $idr_price);
-                            }
+                            // convert to IDR
+                            // if(Session::get(env('SES_GLOBAL_CURRENCY')) == '2'){
+                            //     $get_convertion = MCurrency::where('currency_id', Session::get(env('SES_GLOBAL_CURRENCY')))->first();
+                            //     $amount = round($amount * $get_convertion->covertion);
+                            // }
                             EmTransactionMeta::updateMeta(array('transaction_id' => $getTransaction[0]->transaction_id, 'meta_key' => 'amount_idr', 'meta_description' => $amount));
 
                             EmTransaction::updateData($getTransaction[0]->transaction_id, ['coupon' => 0, 'total_payment' => $totalPayment]);

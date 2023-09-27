@@ -129,10 +129,10 @@
 				</div>
 				<?php
 					$subTotal = \App\Helper\Common_helper::currency_transaction($header_transaction->transaction_id, $header_transaction->total_price);
+					$coupon = \App\Helper\Common_helper::currency_transaction($header_transaction->transaction_id, ($header_transaction->coupon + 0));
 					$shippingCost = \App\Helper\Common_helper::currency_transaction($header_transaction->transaction_id, $header_transaction->shipping_cost);
 					$additionalPrice = \App\Helper\Common_helper::currency_transaction($header_transaction->transaction_id, $header_transaction->additional_price);
 					$tax = \App\Helper\Common_helper::currency_transaction($header_transaction->transaction_id, $header_transaction->tax);
-                    $coupon = \App\Helper\Common_helper::currency_transaction($header_transaction->transaction_id, $header_transaction->coupon);
 				?>
 				<div class="col-sm-6 col-sm-offset-6">
 					<table>

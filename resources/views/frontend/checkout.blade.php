@@ -65,6 +65,23 @@ body {
     padding: 0px 15px;
     margin-top: 15px;
 }
+
+.plc-paypal-btn{
+	border: 1px solid #2f8cd7;
+	background: #2f8cd7;
+	color: #FFFFFF;
+	font-size: 18px;
+	border-radius: 2px;
+	padding-top: 10px; 
+	padding-bottom: 10px;
+    border-radius: 30px;
+}
+.plc-paypal-btn img{
+	height: 35px;
+	background: #FFFFFF;
+	border: 1px solid #FFFFFF;
+}
+
 </style>
 @include('frontend.login_style')
 @stop
@@ -446,12 +463,17 @@ body {
                                     <p>Please click the button below to process payment</p>
                                     <div id="showBtnStripe">
                                         <!-- <p class="sbs-header">Stripe</p> -->
-                                        <div class="sbs-container">
+                                        <a data-code="{{$header_transaction->transaction_code}}" id="btn-paypal-payment" href="{{route('paymentPaypal')}}">
+                                            <div class="plc-paypal-btn text-center">
+                                                Click to process <img class="" src="{{asset(env('URL_IMAGE').'paypal.png')}}">				        
+                                            </div>
+                                        </a>
+                                        <div class="mb-3"></div>
+                                        <!-- <div class="sbs-container">
                                             <form style="width: 100%;" id="form-pay-now" name="form-pay-now" action="{{route('user_payment_xendit')}}" method="post" novalidate="novalidate">
                                                 {{ csrf_field() }}
                                                 <input type="hidden" name="id" id="id" value="{{$header_transaction->transaction_code}}" />
                                                 <input type="hidden" name="amount" id="amount" value="" />
-                                                <!-- xendit -->
                                                 <input type="hidden" name="token_id" id="token_id" value="" />
                                                 <input type="hidden" name="authentication_id" id="authentication_id" value="" />
 
@@ -493,7 +515,7 @@ body {
                                                     </div>
                                                 </div>
                                             </form>
-                                        </div>
+                                        </div> -->
                                     </div>
                                     <div id="showBtnStripeFree">
                                         <div class="sbs-container">
@@ -508,12 +530,12 @@ body {
                                             </form>
                                         </div>
                                     </div>
-                                    <div class="separator">
+                                    <!-- <div class="separator">
                                         <div class="line"></div>
                                         <p>or</p>
                                         <div class="line"></div>
                                     </div>
-                                    <button type="button" id="btn-xendit" class="btn btn-primary btn-main-2 btn-round-full mb-3">ANOTHER PAYMENT METHOD</button>
+                                    <button type="button" id="btn-xendit" class="btn btn-primary btn-main-2 btn-round-full mb-3">ANOTHER PAYMENT METHOD</button> -->
                                 </div>
                             </div>
                         </div>
@@ -704,10 +726,40 @@ $(document).ready(function() {
                     toastr.warning(response.notif);
                 }
             },
-            error: function()
-            {
+            error: function(){
                 toastr.warning('There is something wrong, please refresh page and try again.');
             }            
+        });
+    });
+
+    $('#btn-paypal-payment').click(function(e){
+        e.preventDefault();
+
+        var trans_code = $(this).attr('data-code');
+        var urlAction = $('#actionCheckBeforePayment').val();
+        $.ajax({
+            url: urlAction,
+            dataType: 'json',
+            type: 'POST',
+            data: {
+                'trans_code': trans_code, 
+                '_token': $('input[name=_token]').val()
+            },
+            success: function(response, textStatus, XMLHttpRequest){
+                if(response.trigger=="yes"){
+                    location.href = response.notif;
+                }else{
+                    toastr.warning(response.notif)
+
+                    if(response.url != undefined){
+                        setTimeout(function(){ location.reload(); }, 3000);
+                    }
+                }
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown){
+                toastr.remove();
+                toastr.error('There is something wrong, please refresh page and try again.');
+            }
         });
     });
 
