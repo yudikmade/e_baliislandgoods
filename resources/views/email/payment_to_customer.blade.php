@@ -6,6 +6,4 @@
 <p><a target="_blank" href="<?=route('show_invoice').'/'.$unique_code?>"><?=route('show_invoice').'/'.$unique_code?></a></p>
 
 <br/><br/>
-<p>We appreciate your support in our mission,</p>
-<br/>
-<p>British Colombia Wildlife Federation</p>
+<p>Team <?=env('AUTHOR_SITE')?></p>
