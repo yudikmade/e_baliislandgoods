@@ -6,4 +6,7 @@
 <p><a target="_blank" href="<?=route('show_invoice').'/'.$unique_code?>"><?=route('show_invoice').'/'.$unique_code?></a></p>
 
 <br/><br/>
+Kind regards,
+<br/>
 <p>Team <?=env('AUTHOR_SITE')?></p>
+<br/><br/>
