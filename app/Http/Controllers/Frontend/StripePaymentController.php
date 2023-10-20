@@ -95,7 +95,7 @@ class StripePaymentController extends Controller
                             'amount' => $get_transaction->total_payment,
                             'customer' => $customer['id'],
                         ]);
-                    }
+                    } 
 
                     if($charge != null){
                         if($charge['status'] == 'succeeded') {
