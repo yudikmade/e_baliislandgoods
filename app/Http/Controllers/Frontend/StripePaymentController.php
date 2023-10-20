@@ -92,7 +92,7 @@ class StripePaymentController extends Controller
                     if (isset($token['id'])) {
                         $charge = $stripe->charges()->create([
                             'currency' => $currencyCode,
-                            'amount' => $get_transaction->total_price,
+                            'amount' => $get_transaction->total_payment,
                             'customer' => $customer['id'],
                         ]);
                     }
