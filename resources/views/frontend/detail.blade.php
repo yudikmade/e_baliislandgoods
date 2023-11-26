@@ -92,10 +92,10 @@
 			$priceAfterDisc = $setDiscount[0];
 			$discount = $setDiscount[1];
 
-			$priceInCurrencyFormat = \App\Helper\Common_helper::convert_to_current_currency($priceAfterDisc, "", false);
+			$priceInCurrencyFormat = \App\Helper\Common_helper::convert_to_current_currency($priceAfterDisc);
 			$showPriceAfterDisc = $current_currency[1].$priceInCurrencyFormat[1];//.' '.$current_currency[2];
 
-			$priceInCurrencyFormat = \App\Helper\Common_helper::convert_to_current_currency($products->price, "", false);
+			$priceInCurrencyFormat = \App\Helper\Common_helper::convert_to_current_currency($products->price);
 			$showPriceNormal = $current_currency[1].$priceInCurrencyFormat[1];//.' '.$current_currency[2];
 			@endphp
             <h5 class="mb-3">
@@ -267,7 +267,7 @@
 		@php 
         $detail = \App\Helper\Common_helper::generateProduct($key);
         @endphp
-        <div class="col-md-3 col-6">
+        <div class="col-md-3 col-6 mb-5">
           <div class="product-grid">
             @if($detail['discount'] != '0')
             <div class="product-label product-label-save">Save {{$detail['discount']}}%</div>

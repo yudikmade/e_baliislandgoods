@@ -27,6 +27,7 @@ use App\Http\Controllers\Frontend\Auth_userController;
 use App\Http\Controllers\Frontend\ProcessController;
 use App\Http\Controllers\Frontend\UserProfileController;
 use App\Http\Controllers\Frontend\XenditPaymentController;
+use App\Http\Controllers\Frontend\PaypalPaymentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -40,8 +41,7 @@ use App\Http\Controllers\Frontend\XenditPaymentController;
 */
 
 // Route::get('/test-shipping', [TestController::class, 'index'])->name('control_dashboard');
-Route::get('/test-email', [TestemailController::class, 'index'])->name('index');
-
+// Route::get('/test-email', [TestemailController::class, 'index'])->name('index');
 
 // backend ======================================
 Route::group(['prefix' => env('URL_LOGIN_BACKEND')], function(){
@@ -222,6 +222,11 @@ Route::group(['middleware'=>['currency']],function (){
 	Route::post('/get-shipping-estimate', [ShopController::class, 'shippingEstimate'])->name('process_shipping_estimate');
 	Route::post('/checkout-process', [ProcessController::class, 'checkoutProcess'])->name('process_checkout');
 	Route::post('/edit-cart', [ProcessController::class, 'editCartProcess'])->name('process_edit_cart');
+
+	Route::get('/payment/paypal', [PaypalPaymentController::class, 'index'])->name('paymentPaypal');
+	Route::get('/payment/paypal/process', [PaypalPaymentController::class, 'process'])->name('paymentPaypalProcess');
+	Route::get('/payment/paypal/cancel', [PaypalPaymentController::class, 'cancel'])->name('paymentPaypalCancel');
+	Route::get('/payment/complete', [PaypalPaymentController::class, 'paymentComplete'])->name('payment_complete');
 
 	Route::post('/process-checkout-guest', [ProcessController::class, 'checkoutGuestProcess'])->name('process_checkout_guest');
 	Route::post('/process-checkout-shipping', [ProcessController::class, 'checkoutShippingProcess'])->name('process_checkout_shipping');

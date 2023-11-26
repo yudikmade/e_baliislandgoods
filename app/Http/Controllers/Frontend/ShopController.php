@@ -194,7 +194,7 @@ class ShopController extends Controller
                 
                 
                 $htmlBuilder .= '
-                <div class="col-md-3 col-6">
+                <div class="col-md-3 col-6 mb-5">
                     <div class="product-grid">
                         '.$htmlDiscount.'
                         <div id="product'.$detail['id'].'" class="carousel slide carousel-fade carousel-product" data-bs-ride="carousel" data-bs-interval="false">
@@ -401,8 +401,7 @@ class ShopController extends Controller
                 {
                     $getWeight = EmTransactionMeta::getMeta(array('transaction_id' => $input['trans_id'], 'meta_key' => 'weight'));
                     $getCountry = MCountry::getWhere([['country_id', '=', $input['country']]], '', false);
-                    if($input['country'] == '236')
-                    {
+                    if($input['country'] == '236'){
                         $getProvince = MProvince::getWhere([['province_id', '=', $input['province']]], '', false);
                         $getCity = MCity::getWhere([['city_id', '=', $input['city']]], '', false);
                         $getSubdistrict = MSubdistrict::getWhere([['subdistrict_id', '=', $input['subdistrict']]], '', false);
@@ -608,8 +607,7 @@ class ShopController extends Controller
     //     return $result;
     // }
 
-    private function get_shipping_cost($getShipping, $national, $weight, $showButtonUpdate = true)
-    {
+    private function get_shipping_cost($getShipping, $national, $weight, $showButtonUpdate = true){
         $current_currency = \App\Helper\Common_helper::get_current_currency();
 
         $result['trigger'] = 'no';
@@ -1244,58 +1242,5 @@ class ShopController extends Controller
         }
 
         echo json_encode($result);
-    }
-
-    public function paymentComplete()
-    {
-        if(Session::get(sha1(env('AUTHOR_SITE').'_payment_trans_id')) == null)
-        {
-            return redirect()->route('shop_page');
-        }
-
-        $getTransaction = EmTransaction::getWhereLastOne([['transaction_id', '=', Session::get(sha1(env('AUTHOR_SITE').'_payment_trans_id'))]]);
-        $trans_code = '';
-        if(isset($getTransaction->transaction_code))
-        {
-            $trans_code = $getTransaction->transaction_code;
-
-            $first_name = '';
-            if($getTransaction->customer_id == '' || $getTransaction->customer_id == null){
-                $getFirstName = EmTransactionMeta::getMeta(array('transaction_id' => $getTransaction->transaction_id, 'meta_key' => 'first_name'));
-                $first_name = $getFirstName->meta_description;
-            }else{
-                $getCustomer = EmCustomer::getWhere([['customer_id', '=', $getTransaction->customer_id]], '', false);
-                foreach ($getCustomer as $value) 
-                {
-                    $first_name = $value->first_name;
-                }
-            }
-            $message['invoice'] = $trans_code;
-            $message['first_name'] = $first_name;
-            $message['total_payment'] = $getTransaction->total_payment;
-            $getCurrency = EmTransactionMeta::getMeta(array('transaction_id' => $getTransaction->transaction_id, 'meta_key' => 'currency_id'));
-            if($getCurrency){
-                $checkCurrency = MCurrency::getWhere([['currency_id', '=', $getCurrency->meta_description]], '', false);
-                $message['total_payment'] = $checkCurrency[0]->symbol.$getTransaction->total_payment.' '.$checkCurrency[0]->code;
-            }
-            Common_helper::send_email(env('MAIL_REPLAY_TO'), $message, 'Pembayaran untuk transaksi '.$trans_code, 'payment_paypal');
-        }
-
-        Session::forget(sha1(env('AUTHOR_SITE').'_payment_trans_id'));
-        Session::forget(sha1(env('AUTHOR_SITE').'_payment_trans_code'));
-
-        $data = array(
-            'share_page' => array(
-                'description' => env('META_DESCRIPTION'),
-                'keyword' => env('META_KEYWORD'),
-                'title' => env('AUTHOR_SITE'),
-                'image' => asset(env('URL_IMAGE').'logo.png')
-            ),
-            'title' => 'Payment Complete | '.env('AUTHOR_SITE'),
-            'description' => env('META_DESCRIPTION'),
-            'trans_code' => $trans_code,
-            'is_page' => 'shop',
-        );
-        return view('frontend.payment_complete', $data);
     }
 }

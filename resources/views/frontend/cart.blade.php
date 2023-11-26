@@ -81,10 +81,10 @@ body {
                             $discount = $setDiscount[1];
                             //--------
 
-                            $priceInCurrencyFormat = \App\Helper\Common_helper::convert_to_current_currency($priceAfterDisc, "", false);
+                            $priceInCurrencyFormat = \App\Helper\Common_helper::convert_to_current_currency($priceAfterDisc);
 
                             $subTotal = $priceAfterDisc * $carts['qty'];
-                            $subTotalInCurrencyFormat = \App\Helper\Common_helper::convert_to_current_currency($subTotal, "", false);
+                            $subTotalInCurrencyFormat = \App\Helper\Common_helper::convert_to_current_currency($subTotal);
                             $countSubTotal += $subTotalInCurrencyFormat[0];
 
                             $productWeight = ($carts['weight'] * $carts['qty']);
@@ -296,7 +296,7 @@ body {
                                         <td class="btm-plc-shipping total-cart" data-shipping-raw="{{$shippingCostRaw}}" data-shipping-total="{{$shippingCostTotal}}"><b><span><a class="action-shipping-info pointer">{{$showShippingCost}}</a></span></b></td>
                                     </tr>
                                     @php
-                                        $taxTotal = ($tax * $countSubTotal) / 100;
+                                        $taxTotal = round(($tax * $countSubTotal) / 100, 2);
                                         $taxInCurrencyFormat = \App\Helper\Common_helper::convert_to_format_currency($taxTotal);
                                         //$showTax = $current_currency[1].$taxInCurrencyFormat.' '.$current_currency[2];
                                         $showTax = $current_currency[1].$taxInCurrencyFormat;

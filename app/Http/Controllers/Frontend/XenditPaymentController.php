@@ -38,8 +38,7 @@ class XenditPaymentController extends Controller
             'token_id' => 'required',
             'authentication_id' => 'required',
             'amount' => 'required',
-        ],
-        [
+        ],[
             'id.required' => 'Transaction is not exist.',
             'name_on_card.required' => 'Please insert name of card.',
             'billing_address.required' => 'Please insert billing address.',
@@ -105,50 +104,21 @@ class XenditPaymentController extends Controller
                             $customer_email = $getEmailCustomer->meta_description;
                         }else{
                             $getCustomer = EmCustomer::getWhere([['customer_id', '=', $get_transaction->customer_id]], '', false);
-                            foreach ($getCustomer as $value) 
-                            {
+                            foreach ($getCustomer as $value) {
                                 $first_name = $value->first_name;
                                 $customer_email = $value->email;
                             }
                         }
 
+                        $message['first_name'] = $first_name;
+                        $message['transaction_code'] = $trans_code;
+                        $message['unique_code'] = $unique_code;
                         // send email to customer
                         if($customer_email != ''){
-                            $message['first_name'] = $first_name;
-                            $message['transaction_code'] = $trans_code;
-                            $message['unique_code'] = $unique_code;
                             Common_helper::send_email($customer_email, $message, 'Payment Complete #'.$trans_code, 'payment_to_customer');
                         }
-
-                        //order data';
-                        $shipping_data = EmTransactionShipping::getWhere([['transaction_id', '=', $get_transaction->transaction_id]], '', false);
-                        $getCustomer = EmCustomer::getWhere([['customer_id', '=', $get_transaction->customer_id]], '', false);
-                        $getCustomerMeta = [];
-                        if(sizeof($getCustomer) == 0){
-                            $getCustomerMeta = EmTransactionMeta::getWhere([['transaction_id', '=', $get_transaction->transaction_id]]);
-                        }
-                        //order data====================
-
                         // send email to admin
-                        $message['invoice'] = $trans_code;
-                        $message['first_name'] = $first_name;
-                        $message['unique_code'] = $unique_code;
-                        $message['data_customer'] = $getCustomer;
-                        $message['data_customer_meta'] = $getCustomerMeta;
-                        $message['shipping_data'] = $shipping_data;
-                        $getAdmin = EmTransactionDetail::getAdmin($trans_id);
-                        foreach($getAdmin as $admin){
-                            $getDetailTransaction = EmTransactionDetail::transactionDetailPerAdmin([
-                                ['em_transaction_detail.transaction_id', '=', $get_transaction->transaction_id],
-                                ['em_product.admin_id', '=', $admin->admin_id]
-                            ]);
-                            $message['transaction_detail'] = $getDetailTransaction;
-
-                            $email_admin = $admin->email;
-                            // $email_admin = env('MAIL_ADMIN');
-
-                            Common_helper::send_email($admin->email, $message, 'Payment Complete #'.$trans_code, 'payment_to_admin');
-                        }
+                        Common_helper::send_email(env('MAIL_REPLAY_TO'), $message, 'Someone made a payment for transaction number #'.$trans_code, 'payment_to_admin');
                     }
 
                     // view
