@@ -36,8 +36,8 @@ class EmConfig extends Eloquent
     				['meta_key', '=', $dataWhere['meta_key']]
     			])->first();
 		
-		if($value){
-			return $value->meta_value;
+		if(isset($value->meta_value)){
+			return $value->meta_value ? $value->meta_value : "";
 		} else {
 			return '';
 		}

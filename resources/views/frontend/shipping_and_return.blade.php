@@ -8,7 +8,7 @@
 <div class="title-other-page">
   <div id="myCarousel" class="carousel slide" data-bs-ride="carousel">
     <div class="carousel-inner">
-      <div class="carousel-item active" style="background-image: url('{{asset(env('URL_IMAGE').'banner-other.webp')}}');opacity:0.9">
+      <div class="carousel-item active" style="background-image: url('{{asset(env('URL_IMAGE').'home/thumb/'.$data_image)}}');opacity:0.9">
         <div class="carousel-caption carousel-caption-left">
         <center>
           <h1>SHIPPING AND RETURN</h1>

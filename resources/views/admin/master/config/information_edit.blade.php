@@ -28,6 +28,19 @@
                             <input type="hidden" name="meta_key" id="meta_key" value="{{$meta_key}}">
                             @if($meta_key == 'contact_us')
                                 <div class="form-group">
+                                    <input type="hidden" name="meta_image" id="meta_image" value="{{$meta_image}}">
+                                    <label for="fileBuku" class="col-sm-2 control-label"><span class="text-danger">*</span>Image</label>
+                                    <div class="col-sm-7">
+                                        <input class="filestyle" id="up_image" type="file" name="up_image" data-buttonName="btn-primary" data-buttonText=" Select image">
+                                        <small class="text-primary">* Format jpg|.jpeg|.png (max. size 2MB), upload all images in one size for better result (standard 1800px X 900px).</small>
+                                        <br>
+                                        <br>
+                                        <div class="show-image">
+                                        <?=\App\Helper\Common_helper::check_image($data_image, array('ori' => '/home/', 'thumb' => '/home/thumb/'), '150px')?>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
                                     <label for="information" class="col-sm-2 control-label">Address</label>
                                     <div class="col-sm-10">
                                         <input class="form-control" type="text" name="address" id="address" value="{{$data_result_address == '' ? '':$data_result_address}}">
@@ -47,6 +60,19 @@
                                 </div>
                             @endif
                             @if($meta_key == 'terms_of_payment_text' || $meta_key == 'shipping_and_return_text' || $meta_key == 'privacy_policy_text' || $meta_key == 'about_us_text')
+                            <div class="form-group">
+                                <input type="hidden" name="meta_image" id="meta_image" value="{{$meta_image}}">
+                                <label for="fileBuku" class="col-sm-2 control-label"><span class="text-danger">*</span>Image</label>
+                                <div class="col-sm-7">
+                                    <input class="filestyle" id="up_image" type="file" name="up_image" data-buttonName="btn-primary" data-buttonText=" Select image">
+                                    <small class="text-primary">* Format jpg|.jpeg|.png (max. size 2MB), upload all images in one size for better result (standard 1800px X 900px).</small>
+                                    <br>
+                                    <br>
+                                    <div class="show-image">
+                                    <?=\App\Helper\Common_helper::check_image($data_image, array('ori' => '/home/', 'thumb' => '/home/thumb/'), '150px')?>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="form-group">
                                 <label for="information" class="col-sm-2 control-label"><span class="text-danger">*</span>{{$title_page}}</label>
                                 <div class="col-sm-10">
@@ -70,8 +96,10 @@
 
 @section('script')
 <script src="{{asset(env('URL_ASSETS').'ckeditor/ckeditor.js')}}"></script>
+<script src="{{asset(env('URL_ASSETS').'upload/bootstrap-filestyle.min.js')}}"></script>
 <script type="text/javascript">
     $(document).ready(function() {
+        $(":file").filestyle({buttonName: "btn-primary"});
         @if($meta_key != 'contact_us')
         var company_profile = document.getElementById("information");
             CKEDITOR.replace(company_profile,{
@@ -103,6 +131,7 @@
                         if(response.trigger == "yes")
                         {
                             toastr.success(response.notif);
+                            location.reload();
                         }
                         else
                         {
