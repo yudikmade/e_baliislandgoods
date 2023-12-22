@@ -377,12 +377,12 @@ class ShopController extends Controller
                     $validator = Validator::make(request()->all(), [
                         'province' => 'required',
                         'city' => 'required',
-                        'subdistrict' => 'required',
+                        // 'subdistrict' => 'required',
                     ],
                     [
                         'province.required' => 'Please choose province.',
                         'city.required' => 'Please choose city.',
-                        'subdistrict.required' => 'Please choose subdistrict.',
+                        // 'subdistrict.required' => 'Please choose subdistrict.',
                     ]);
 
                     if($validator->fails()) 
@@ -399,27 +399,32 @@ class ShopController extends Controller
 
                 if($triggerProcess)
                 {
-                    $getWeight = EmTransactionMeta::getMeta(array('transaction_id' => $input['trans_id'], 'meta_key' => 'weight'));
-                    $getCountry = MCountry::getWhere([['country_id', '=', $input['country']]], '', false);
-                    if($input['country'] == '236'){
-                        $getProvince = MProvince::getWhere([['province_id', '=', $input['province']]], '', false);
-                        $getCity = MCity::getWhere([['city_id', '=', $input['city']]], '', false);
-                        $getSubdistrict = MSubdistrict::getWhere([['subdistrict_id', '=', $input['subdistrict']]], '', false);
+                    $subdistrict = "";
+                    if(isset($input['subdistrict'])){
+                        $subdistrict = $input['subdistrict'];
+                    }
 
+                    $getWeight = EmTransactionMeta::getMeta(array('transaction_id' => $input['trans_id'], 'meta_key' => 'weight'));
+                    $getCountry = Common_helper::setLocation('country', isset($input['country']) ? $input['country'] : "");
+                    $getProvince = Common_helper::setLocation('province', isset($input['province']) ? $input['province'] : "");;
+                    $getCity = Common_helper::setLocation('city', isset($input['city']) ? $input['city'] : "");;
+                    $getSubdistrict = Common_helper::setLocation('subdistrict', isset($input['subdistrict']) ? $input['subdistrict'] : "");;
+
+                    if($input['country'] == '236'){
                         $dataShipping = array(
                             'national' => true,
                             'origin_type' => 'city',
                             'weight' => $getWeight->meta_description,
                             'postalcode' => $input['postalcode'],
 
-                            'country' => $input['country'],
-                            'country_name' => $getCountry[0]->country_name,
-                            'province' => $input['province'],
-                            'province_name' => $getProvince[0]->province_name,
-                            'city' => $input['city'],
-                            'city_name' => $getCity[0]->city_name,
-                            'subdistrict' => $input['subdistrict'],
-                            'subdistrict_name' => $getSubdistrict[0]->subdistrict_name
+                            'country' => $getCountry['id'],
+                            'country_name' => $getCountry['name'],
+                            'province' => $getProvince['id'],
+                            'province_name' => $getProvince['name'],
+                            'city' => $getCity['id'],
+                            'city_name' => $getCity['name'],
+                            'subdistrict' => $getSubdistrict['id'],
+                            'subdistrict_name' => $getSubdistrict['name'],
                         );
 
                         $getShipping = Common_helper::check_shipping($dataShipping);
@@ -427,13 +432,11 @@ class ShopController extends Controller
                     }
                     else
                     {
-                        $getCountry = MCountry::getWhere([['country_id', '=', $input['country']]], '', false);
-
                         $dataShipping = array(
                             'national' => false,
                             'postalcode' => $input['postalcode'],
-                            'country' => $input['country'],
-                            'country_name' => $getCountry[0]->country_name,
+                            'country' => $getCountry['id'],
+                            'country_name' => $getCountry['name'],
                             'address' => $input['address'],
                             'weight' => $getWeight->meta_description
                         );
@@ -493,10 +496,10 @@ class ShopController extends Controller
                     }
                     else
                     {
-                        $getCountry = MCountry::getWhere([['country_id', '=', $input['country']]], '', false);
-                        $getProvince = MProvince::getWhere([['province_id', '=', $input['province']]], '', false);
-                        $getCity = MCity::getWhere([['city_id', '=', $input['city']]], '', false);
-                        $getSubdistrict = MSubdistrict::getWhere([['subdistrict_id', '=', $input['subdistrict']]], '', false);
+                        $getCountry = Common_helper::setLocation('country', isset($input['country']) ? $input['country'] : "");
+                        $getProvince = Common_helper::setLocation('province', isset($input['province']) ? $input['province'] : "");
+                        $getCity = Common_helper::setLocation('city', isset($input['city']) ? $input['city'] : "");
+                        $getSubdistrict = Common_helper::setLocation('subdistrict', isset($input['subdistrict']) ? $input['subdistrict'] : "");
 
                         $dataShipping = array(
                             'national' => true,
@@ -504,14 +507,14 @@ class ShopController extends Controller
                             'weight' => $input['weight_total'],
                             'postalcode' => $input['postalcode'],
 
-                            'country' => $input['country'],
-                            'country_name' => $getCountry[0]->country_name,
-                            'province' => $input['province'],
-                            'province_name' => $getProvince[0]->province_name,
-                            'city' => $input['city'],
-                            'city_name' => $getCity[0]->city_name,
-                            'subdistrict' => $input['subdistrict'],
-                            'subdistrict_name' => $getSubdistrict[0]->subdistrict_name
+                            'country' => $getCountry['id'],
+                            'country_name' => $getCountry['name'],
+                            'province' => $getProvince['id'],
+                            'province_name' => $getProvince['name'],
+                            'city' => $getCity['id'],
+                            'city_name' => $getCity['name'],
+                            'subdistrict' => $getSubdistrict['id'],
+                            'subdistrict_name' => $getSubdistrict['name']
                         );
 
                         Session::put('delivery', array(0 => $dataShipping));
@@ -539,13 +542,22 @@ class ShopController extends Controller
                     }
                     else
                     {
-                        $getCountry = MCountry::getWhere([['country_id', '=', $input['country']]], '', false);
+                        $getCountry = Common_helper::setLocation('country', isset($input['country']) ? $input['country'] : "");
+                        $getProvince = Common_helper::setLocation('province', isset($input['province']) ? $input['province'] : "");
+                        $getCity = Common_helper::setLocation('city', isset($input['city']) ? $input['city'] : "");
+                        $getSubdistrict = Common_helper::setLocation('subdistrict', isset($input['subdistrict']) ? $input['subdistrict'] : "");
 
                         $dataShipping = array(
                             'national' => false,
                             'postalcode' => $input['postalcode'],
-                            'country' => $input['country'],
-                            'country_name' => $getCountry[0]->country_name,
+                            'country' => $getCountry['id'],
+                            'country_name' => $getCountry['name'],
+                            'province' => $getProvince['id'],
+                            'province_name' => $getProvince['name'],
+                            'city' => $getCity['id'],
+                            'city_name' => $getCity['name'],
+                            'subdistrict' => $getSubdistrict['id'],
+                            'subdistrict_name' => $getSubdistrict['name'],
                             'address' => $input['address'],
                             'weight' => $input['weight_total']
                         );
