@@ -1297,8 +1297,8 @@ class ProcessController extends Controller
                         'rupiah_cost' => $rupiahCost
                     ]; 
 
-                    $result['province'] = $getProvince[0]->province_name;
-                    $result['city'] = $getCity[0]->city_name; 
+                    $result['province'] = $getProvince['name'];
+                    $result['city'] = $getCity['name']; 
 
                     $arraySession['country_id'] = $getCountry['id'];
                     $arraySession['country_name'] = $getCountry['name'];

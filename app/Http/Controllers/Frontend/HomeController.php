@@ -31,6 +31,7 @@ class HomeController extends Controller{
             'home_image_1' => EmConfig::getData(array('meta_key' => 'home_image_1')),
             'home_image_2' => EmConfig::getData(array('meta_key' => 'home_image_2')),
             'home_image_3' => EmConfig::getData(array('meta_key' => 'home_image_3')),
+            'home_image_contact' => EmConfig::getData(array('meta_key' => 'home_image_contact')),
             'best_seller' => EmProduct::getWithImage("",0,4,false),
             'favorite_kits' => EmProduct::getWithImage("",0,4,false),
             'is_page' => 'home'
@@ -134,6 +135,9 @@ class HomeController extends Controller{
             'description' => env('META_DESCRIPTION'),
             'alt_image' => 'Contact Us | '.env('AUTHOR_SITE'),
             'data_image' => EmConfig::getData(array('meta_key' => 'contact_us_image')),
+            'data_result_address' => EmConfig::getData(array('meta_key' => 'contact_us_address')),
+            'data_result_telp' => EmConfig::getData(array('meta_key' => 'contact_us_telp')),
+            'data_result_email' => EmConfig::getData(array('meta_key' => 'contact_us_email')),
         );
         return view('frontend.contact_us', $data);
     }

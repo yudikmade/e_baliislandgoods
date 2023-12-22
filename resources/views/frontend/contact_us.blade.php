@@ -24,11 +24,11 @@
     <div class="col-md-12">
     <div class="featurette-divider"></div>
     <center>
-      <p><b>BaliIslandGoods</b></p>
+      <p><b>{{env('AUTHOR_SITE')}}</b></p>
       <br/>
-      <p>Jalan By Pass Ngurah Rai</p>
-      <p>Phone: 0857</p>
-      <p>Email: info@gmail.com</p>
+      <p>{{$data_result_address}}</p>
+      <p>Phone: <a href="tel:{{str_replace(' ', '', str_replace('-', '', $data_result_telp))}}">{{$data_result_telp}}</a></p>
+      <p>Email: <a href="mailto:{{$data_result_email}}">{{$data_result_email}}</a></p>
       <div class="featurette-divider"></div>
     </center>
     </div>

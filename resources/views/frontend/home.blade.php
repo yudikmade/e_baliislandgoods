@@ -139,7 +139,9 @@
 
 <div class="row g-0">
       <div class="col-md-6">
-        <img class="img-fluid" src="assets/images/banner.webp">
+      @if($home_image_contact != '')
+      <img class="img-fluid" src="{{asset(env('URL_IMAGE').'home/thumb/'.$home_image_contact)}}">
+      @endif
       </div>
       <div class="col-md-6 purple-bg d-flex justify-content-center align-items-center">
         <div class="caption-banner">

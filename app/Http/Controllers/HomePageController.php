@@ -31,6 +31,7 @@ class HomePageController extends Controller
             'home_image_1' => EmConfig::getData(array('meta_key' => 'home_image_1')),
             'home_image_2' => EmConfig::getData(array('meta_key' => 'home_image_2')),
             'home_image_3' => EmConfig::getData(array('meta_key' => 'home_image_3')),
+            'home_image_contact' => EmConfig::getData(array('meta_key' => 'home_image_contact')),
         );
         return view('admin.pages.home', $data);
     }
@@ -102,6 +103,18 @@ class HomePageController extends Controller
                     }
                 }
                 EmConfig::updateData(array('meta_key' => 'home_image_3', 'meta_value' => $getImage));
+            }
+
+            if(isset($input['home_image_contact'])){
+                $getImage = Common_helper::upload_image($this->upload_image, $this->upload_image_thumb, $newSize, $request->file('home_image_contact'));
+                if($getImage != ''){
+                    $getOldImage = EmConfig::getData(array('meta_key' => 'home_image_contact'));
+                    if($getOldImage != ''){
+                        @unlink($_SERVER['DOCUMENT_ROOT'].'/'.env('URL_IMAGE').$this->upload_image.$getOldImage);
+                        @unlink($_SERVER['DOCUMENT_ROOT'].'/'.env('URL_IMAGE').$this->upload_image_thumb.$getOldImage);
+                    }
+                }
+                EmConfig::updateData(array('meta_key' => 'home_image_contact', 'meta_value' => $getImage));
             }
 
             EmConfig::updateData(array('meta_key' => 'home_text', 'meta_value' => $input['home_text']));
