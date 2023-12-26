@@ -12,6 +12,11 @@
     width: 100%;
     height: auto;
   }
+  .home-contact{
+    object-fit: cover;
+    width: 100%;
+    height: auto:
+  }
 </style>
 @stop
 
@@ -140,7 +145,7 @@
 <div class="row g-0">
       <div class="col-md-6">
       @if($home_image_contact != '')
-      <img class="img-fluid" src="{{asset(env('URL_IMAGE').'home/thumb/'.$home_image_contact)}}">
+      <img class="home-contact" src="{{asset(env('URL_IMAGE').'home/thumb/'.$home_image_contact)}}">
       @endif
       </div>
       <div class="col-md-6 purple-bg d-flex justify-content-center align-items-center">
