@@ -10,6 +10,10 @@ use App\Models\EmTransaction;
 use App\Models\EmTransactionMeta;
 use App\Models\EmSocialMedia;
 use App\Models\EmCustomer;
+use App\Models\MCountry;
+use App\Models\MProvince;
+use App\Models\MCity;
+use App\Models\MSubdistrict;
 use View;
 use Session;
 use Cookie;
@@ -1446,4 +1450,42 @@ class Common_helper
   	{
   		return '';
   	}
+
+	public static function setLocation($type, $id = ""){
+		$result = array(
+			'id' => "",
+			'name' => ""
+		);
+		if($id != "" && $id != null){
+			if($type == "country"){
+				$get_data = MCountry::getWhere([['country_id', '=', $id]], '', false);
+				$result = array(
+					'id' => $id,
+					'name' => $get_data[0]->country_name
+				);
+			}
+			if($type == "province"){
+				$get_data = MProvince::getWhere([['province_id', '=', $id]], '', false);
+				$result = array(
+					'id' => $id,
+					'name' => $get_data[0]->province_name
+				);
+			}
+			if($type == "city"){
+				$get_data = MCity::getWhere([['city_id', '=', $id]], '', false);
+				$result = array(
+					'id' => $id,
+					'name' => $get_data[0]->city_name
+				);
+			}
+			if($type == "subdistrict"){
+				$get_data = MSubdistrict::getWhere([['subdistrict_id', '=', $id]], '', false);
+				$result = array(
+					'id' => $id,
+					'name' => $get_data[0]->subdistrict_name
+				);
+			}
+		}
+		return $result;
+	}
 }

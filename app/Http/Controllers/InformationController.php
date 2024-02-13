@@ -21,6 +21,7 @@ class InformationController extends Controller
         $meta_key_address = "contact_us_address";
         $meta_key_telp = "contact_us_telp";
         $meta_key_email = "contact_us_email";
+        $meta_image = 'contact_us_image';
 
         $data = array(
             'title' => 'Contact Us | Administrator',
@@ -32,6 +33,8 @@ class InformationController extends Controller
             'data_result_address' => EmConfig::getData(array('meta_key' => $meta_key_address)),
             'data_result_telp' => EmConfig::getData(array('meta_key' => $meta_key_telp)),
             'data_result_email' => EmConfig::getData(array('meta_key' => $meta_key_email)),
+            'data_image' => EmConfig::getData(array('meta_key' => $meta_image)),
+            'meta_image' => $meta_image,
             'menu_order' => $this->menu_order,
             'meta_key' => $meta_key,
             'masterInformation' => 'active',
@@ -44,6 +47,7 @@ class InformationController extends Controller
         Common_helper::check_session_backend(true);
 
         $meta_key = 'about_us_text';
+        $meta_image = 'about_us_image';
 
         $data = array(
             'title' => 'About Us | Administrator',
@@ -53,6 +57,8 @@ class InformationController extends Controller
                                 <li class="active"><i class="fa fa-edit"></i> Edit About Us</li>
                             ',
             'data_result' => EmConfig::getData(array('meta_key' => $meta_key)),
+            'data_image' => EmConfig::getData(array('meta_key' => $meta_image)),
+            'meta_image' => $meta_image,
             'menu_order' => $this->menu_order,
             'meta_key' => $meta_key,
             'masterInformation' => 'active',
@@ -65,6 +71,7 @@ class InformationController extends Controller
         Common_helper::check_session_backend(true);
 
         $meta_key = 'terms_of_payment_text';
+        $meta_image = 'terms_of_payment_image';
 
         $data = array(
             'title' => 'Terms of Payment | Administrator',
@@ -74,6 +81,8 @@ class InformationController extends Controller
                                 <li class="active"><i class="fa fa-edit"></i> Edit Terms of Payment</li>
                             ',
             'data_result' => EmConfig::getData(array('meta_key' => $meta_key)),
+            'data_image' => EmConfig::getData(array('meta_key' => $meta_image)),
+            'meta_image' => $meta_image,
             'menu_order' => $this->menu_order,
             'meta_key' => $meta_key,
             'masterInformation' => 'active',
@@ -86,6 +95,7 @@ class InformationController extends Controller
         Common_helper::check_session_backend(true);
 
         $meta_key = 'shipping_and_return_text';
+        $meta_image = 'shipping_and_return_image';
 
         $data = array(
             'title' => 'Shipping & Return | Administrator',
@@ -95,6 +105,8 @@ class InformationController extends Controller
                                 <li class="active"><i class="fa fa-edit"></i> Edit Shipping & Return</li>
                             ',
             'data_result' => EmConfig::getData(array('meta_key' => $meta_key)),
+            'data_image' => EmConfig::getData(array('meta_key' => $meta_image)),
+            'meta_image' => $meta_image,
             'menu_order' => $this->menu_order,
             'meta_key' => $meta_key,
             'masterInformation' => 'active',
@@ -107,6 +119,7 @@ class InformationController extends Controller
         Common_helper::check_session_backend(true);
 
         $meta_key = 'privacy_policy_text';
+        $meta_image = 'privacy_policy_image';
 
         $data = array(
             'title' => 'Privacy Policy | Administrator',
@@ -116,6 +129,8 @@ class InformationController extends Controller
                                 <li class="active"><i class="fa fa-edit"></i> Edit Privacy Policy</li>
                             ',
             'data_result' => EmConfig::getData(array('meta_key' => $meta_key)),
+            'data_image' => EmConfig::getData(array('meta_key' => $meta_image)),
+            'meta_image' => $meta_image,
             'menu_order' => $this->menu_order,
             'meta_key' => $meta_key,
             'masterInformation' => 'active',
@@ -178,6 +193,36 @@ class InformationController extends Controller
                 'meta_value' => isset($input['information']) ? $input['information'] : '',
             );
             EmConfig::updateData($dataUpdate);
+
+            if(isset($input['meta_image'])){
+                if(isset($input['up_image'])){
+                    if(!empty($input['up_image'])){
+            
+                        //upload image
+                        $newSize = array(
+                            'crop' => false,
+                            'width' => 1800,
+                            'height' => 0
+                        );
+                        $getImageName = Common_helper::upload_image('home/', 'home/thumb/', $newSize, $request->file('up_image'));
+
+                        if($getImageName != ''){
+
+                            //delete image
+                            $get_prev_img = EmConfig::getData(array('meta_key' => $input['meta_image']));
+                            if($get_prev_img){
+                                @unlink($_SERVER['DOCUMENT_ROOT'].'/'.env('URL_IMAGE').'/home/'.$get_prev_img);
+                                @unlink($_SERVER['DOCUMENT_ROOT'].'/'.env('URL_IMAGE').'/home/thumb/'.$get_prev_img);
+                            }
+                            $dataUpdate = array(
+                                'meta_key' => $input['meta_image'],
+                                'meta_value' => $getImageName,
+                            );
+                            EmConfig::updateData($dataUpdate);
+                        }
+                    }
+                }
+            }
 
             if($input['meta_key'] == 'contact_us'){
                 $dataUpdate = array(

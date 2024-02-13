@@ -309,7 +309,7 @@ body {
                                             </select>
                                             <small class="notif-country error none"><i>Please choose country!</i></small>
                                         </div>
-                                        <div class="form-group select-national {{$national}}">
+                                        <div class="form-group select-province select-national {{$national}}">
                                             <label for="province">Province</label>
                                             <select class="form-control select2" style="width: 100%;" name="province" id="province">
                                                 <option value="">Choose Province</option>
@@ -333,7 +333,7 @@ body {
                                             </select>
                                             <small class="notif-province error none"><i>Please choose province!</i></small>
                                         </div>
-                                        <div class="form-group select-national {{$national}}">
+                                        <div class="form-group select-city select-national {{$national}}">
                                             <label for="city">City</label>
                                             <select class="form-control select2" name="city" style="width: 100%;" id="city">
                                                 <option value="">Choose City</option>
@@ -357,7 +357,7 @@ body {
                                             </select>
                                             <small class="notif-city error none"><i>Please choose city!</i></small>
                                         </div>
-                                        <div class="form-group select-national {{$national}}">
+                                        <div class="form-group select-subdistrict select-national {{$national}}">
                                             <label for="subdistrict">Subdistrict</label>
                                             <select class="form-control select2" name="subdistrict" style="width: 100%;" id="subdistrict">
                                                 <option value="">Choose Subdistrict</option>
@@ -1104,22 +1104,22 @@ $(document).ready(function() {
         var triggerNational = true;
         if($('#country').val() != '')
         {
-            if($('#province').val() == '')
-            {
-                triggerNational = false;
-            }
-
-            if($('#city').val() == '')
-            {
-                triggerNational = false;
-            }
-
             if($('#country').val() == '236')
             {
-                if($('#subdistrict').val() == '')
+                if($('#province').val() == '')
                 {
                     triggerNational = false;
                 }
+
+                if($('#city').val() == '')
+                {
+                    triggerNational = false;
+                }
+
+                // if($('#subdistrict').val() == '')
+                // {
+                //     triggerNational = false;
+                // }
             }
         }
         else
@@ -1127,15 +1127,15 @@ $(document).ready(function() {
             triggerNational = false;
         }
 
-        if($('#address').val() == '')
-        {
-            triggerNational = false;
-        }
+        // if($('#address').val() == '')
+        // {
+        //     triggerNational = false;
+        // }
 
-        if($('#postalcode').val() == '')
-        {
-            triggerNational = false;
-        }
+        // if($('#postalcode').val() == '')
+        // {
+        //     triggerNational = false;
+        // }
 
         if(triggerNational == true)
         {
@@ -1226,15 +1226,54 @@ $(document).ready(function() {
                             { 
                                 if(trigger == 'country')
                                 {
-                                    $('#province').html(response.notif);
+                                    if(response.notif.length > 300){
+                                        $('.select-province').fadeIn(function(){
+                                            $('#province').html(response.notif);
+                                            $('.select-city').fadeIn();
+                                            $('.select-subdistrict').fadeIn();
+
+                                            $('#province').select2("val", "");
+                                            $('#city').select2("val", "");
+                                            $('#subdistrict').select2("val", "");
+                                        });
+                                    }else{
+
+                                        $('#province').select2("val", "");
+                                        $('#city').select2("val", "");
+                                        $('#subdistrict').select2("val", "");
+                                        $('.select-province').fadeOut();
+                                        $('.select-city').fadeOut();
+                                        $('.select-subdistrict').fadeOut();
+                                    }
                                 }
                                 else if(trigger == 'province')
                                 {
-                                    $('#city').html(response.notif);
+                                    if(response.notif.length > 300){
+                                        $('.select-city').fadeIn(function(){
+                                            $('#city').html(response.notif);
+                                            $('.select-subdistrict').fadeIn();
+
+                                            $('#city').select2("val", "");
+                                            $('#subdistrict').select2("val", "");
+                                        });
+                                    }else{
+                                        $('#city').select2("val", "");
+                                        $('#subdistrict').select2("val", "");
+                                        $('.select-city').fadeOut();
+                                        $('.select-subdistrict').fadeOut();
+                                    }
                                 }
-                                else
+                                else if(trigger == 'city')
                                 {
-                                    $('#subdistrict').html(response.notif);
+                                    if(response.notif.length > 300){
+                                        $('.select-subdistrict').fadeIn(function(){
+                                            $('#subdistrict').html(response.notif);
+                                            $('#subdistrict').select2("val", "");
+                                        });
+                                    }else{
+                                        $('#subdistrict').select2("val", "");
+                                        $('.select-subdistrict').fadeOut();
+                                    }
                                 }
                             }
                             else

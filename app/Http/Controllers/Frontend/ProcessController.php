@@ -1243,70 +1243,71 @@ class ProcessController extends Controller
                 $result['province'] = '';
                 $result['city'] = '';
                 $result['subdistrict'] = '';
-                $getCountry = MCountry::getWhere([['country_id', '=', $input['country']]], '', false);
-                $getProvince = MProvince::getWhere([['province_id', '=', $input['province']]], '', false);
-                $getCity = MCity::getWhere([['city_id', '=', $input['city']]], '', false);
-                $result['country'] = $getCountry[0]->country_name;
+
+                $getCountry = Common_helper::setLocation('country', isset($input['country']) ? $input['country'] : "");
+                $getProvince = Common_helper::setLocation('province', isset($input['province']) ? $input['province'] : "");
+                $getCity = Common_helper::setLocation('city', isset($input['city']) ? $input['city'] : "");
+                $getSubdistrict = Common_helper::setLocation('subdistrict', isset($input['subdistrict']) ? $input['subdistrict'] : "");
+
+                $result['country'] = $getCountry['name'];
                 if($input['country'] == '236')
                 {
-                    $getSubdistrict = MSubdistrict::getWhere([['subdistrict_id', '=', $input['subdistrict']]], '', false);
-
                     $dataUpdateShipping = [
-                        'country_id' => $input['country'],
-                        'country_name' => $getCountry[0]->country_name,
-                        'city_id' => $input['city'],
-                        'city_name' => $getCity[0]->city_name,
-                        'province_id' => $input['province'],
-                        'province_name' => $getProvince[0]->province_name,
-                        'subdistrict_id' => $input['subdistrict'],
-                        'subdistrict_name' => $getSubdistrict[0]->subdistrict_name,
+                        'country_id' => $getCountry['id'],
+                        'country_name' => $getCountry['name'],
+                        'city_id' => $getCity['id'],
+                        'city_name' => $getCity['name'],
+                        'province_id' => $getProvince['id'],
+                        'province_name' => $getProvince['name'],
+                        'subdistrict_id' => $getSubdistrict['id'],
+                        'subdistrict_name' => $getSubdistrict['name'],
                         'postal_code' => $input['postalcode'],
                         'detail_address' => $input['address'],
                         'shipping_estimate' => $shippingEstimate,
                         'rupiah_cost' => $rupiahCost
                     ];
 
-                    $result['province'] = $getProvince[0]->province_name;
-                    $result['city'] = $getCity[0]->city_name;
-                    $result['subdistrict'] = $getSubdistrict[0]->subdistrict_name;
+                    $result['province'] = $getProvince['name'];
+                    $result['city'] = $getCity['name'];
+                    $result['subdistrict'] = $getSubdistrict['name'];
 
-                    $arraySession['country_id'] = $input['country'];
-                    $arraySession['country_name'] = $getCountry[0]->country_name;
-                    $arraySession['city_id'] = $input['city'];
-                    $arraySession['city_name'] = $getCity[0]->city_name;
-                    $arraySession['province_id'] = $input['province'];
-                    $arraySession['province_name'] = $getProvince[0]->province_name;
-                    $arraySession['subdistrict_id'] = $input['subdistrict'];
-                    $arraySession['subdistrict_name'] = $getSubdistrict[0]->subdistrict_name;
+                    $arraySession['country_id'] = $getCountry['id'];
+                    $arraySession['country_name'] = $getCountry['name'];
+                    $arraySession['city_id'] = $getCity['id'];
+                    $arraySession['city_name'] = $getCity['name'];
+                    $arraySession['province_id'] = $getProvince['id'];
+                    $arraySession['province_name'] = $getProvince['id'];
+                    $arraySession['subdistrict_id'] = $getSubdistrict['id'];
+                    $arraySession['subdistrict_name'] = $getSubdistrict['name'];
                     $arraySession['postal_code'] = $input['postalcode'];
                     $arraySession['address'] = $input['address'];
                 }
                 else
                 {
                     $dataUpdateShipping = [
-                        'country_id' => $input['country'],
-                        'country_name' => $getCountry[0]->country_name,
-                        'city_id' => $input['city'],
-                        'city_name' => $getCity[0]->city_name,
-                        'province_id' => $input['province'],
-                        'province_name' => $getProvince[0]->province_name,
+                        'country_id' => $getCountry['id'],
+                        'country_name' => $getCountry['name'],
+                        'city_id' => $getCity['id'],
+                        'city_name' => $getCity['name'],
+                        'province_id' => $getProvince['id'],
+                        'province_name' => $getProvince['name'],
                         'postal_code' => $input['postalcode'],
                         'detail_address' => $input['address'],
                         'shipping_estimate' => $shippingEstimate,
                         'rupiah_cost' => $rupiahCost
                     ]; 
 
-                    $result['province'] = $getProvince[0]->province_name;
-                    $result['city'] = $getCity[0]->city_name; 
+                    $result['province'] = $getProvince['name'];
+                    $result['city'] = $getCity['name']; 
 
-                    $arraySession['country_id'] = $input['country'];
-                    $arraySession['country_name'] = $getCountry[0]->country_name;
-                    $arraySession['city_id'] = $input['city'];
-                    $arraySession['city_name'] = $getCity[0]->city_name;
-                    $arraySession['province_id'] = $input['province'];
-                    $arraySession['province_name'] = $getProvince[0]->province_name;
-                    $arraySession['subdistrict_id'] = "";
-                    $arraySession['subdistrict_name'] = "";
+                    $arraySession['country_id'] = $getCountry['id'];
+                    $arraySession['country_name'] = $getCountry['name'];
+                    $arraySession['city_id'] = $getCity['id'];
+                    $arraySession['city_name'] = $getCity['name'];
+                    $arraySession['province_id'] = $getProvince['id'];
+                    $arraySession['province_name'] = $getProvince['id'];
+                    $arraySession['subdistrict_id'] = $getSubdistrict['id'];
+                    $arraySession['subdistrict_name'] = $getSubdistrict['name'];
                     $arraySession['postal_code'] = $input['postalcode'];
                     $arraySession['address'] = $input['address'];
                 }

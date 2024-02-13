@@ -97,8 +97,8 @@ Route::group(['middleware' => ['backend']], function() {
 	if(is_null(Session::get(env('SES_BACKEND_CATEGORY')))){
 
 		//contact-us
-		Route::get('/home', [HomePageController::class, 'index'])->name('control_home_index');
-		Route::post('/home/save/process', [HomePageController::class, 'saveProcess'])->name('control_home_process');
+		Route::get('/'.env('URL_AFTER_LOGIN_BACKEND').'/home', [HomePageController::class, 'index'])->name('control_home_index');
+		Route::post('/'.env('URL_AFTER_LOGIN_BACKEND').'/home/save/process', [HomePageController::class, 'saveProcess'])->name('control_home_process');
 
 		//customer
 		Route::get('/'.env('URL_AFTER_LOGIN_BACKEND').'/customers/{search?}', [CustomerController::class, 'index'])->name('control_customers');

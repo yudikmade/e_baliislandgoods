@@ -8,7 +8,7 @@
 <div class="title-other-page">
   <div id="myCarousel" class="carousel slide" data-bs-ride="carousel">
     <div class="carousel-inner">
-      <div class="carousel-item active" style="background-image: url('{{asset(env('URL_IMAGE').'banner-other.webp')}}');opacity:0.9">
+      <div class="carousel-item active" style="background-image: url('{{asset(env('URL_IMAGE').'home/thumb/'.$data_image)}}');opacity:0.9">
         <div class="carousel-caption carousel-caption-left">
         <center>
           <h1>CONTACT US</h1>
@@ -24,11 +24,11 @@
     <div class="col-md-12">
     <div class="featurette-divider"></div>
     <center>
-      <p><b>BaliIslandGoods</b></p>
+      <p><b>{{env('AUTHOR_SITE')}}</b></p>
       <br/>
-      <p>Jalan By Pass Ngurah Rai</p>
-      <p>Phone: 0857</p>
-      <p>Email: info@gmail.com</p>
+      <p>{{$data_result_address}}</p>
+      <p>Phone: <a href="tel:{{str_replace(' ', '', str_replace('-', '', $data_result_telp))}}">{{$data_result_telp}}</a></p>
+      <p>Email: <a href="mailto:{{$data_result_email}}">{{$data_result_email}}</a></p>
       <div class="featurette-divider"></div>
     </center>
     </div>

@@ -113,6 +113,29 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    <div class="col-sm-4">
+                                        <div class="form-group">
+                                            <label for="contact_adress" class="col-sm-12 col-md-10 control-label mb-5">Image - Contact</label>
+                                            <div class="col-sm-12 col-md-10 mb-15">
+                                                <div class="form-group">
+                                                    <div class="col-sm-12">
+                                                        @if($home_image_contact == '')
+                                                            No Data Available
+                                                        @else 
+                                                            <img width="50%" src={{asset(env('URL_IMAGE').'home/thumb/'.$home_image_contact)}} alt="" class="img-responsive" />
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <div class="col-sm-12">
+                                                        <input class="filestyle" id="home_image_contact" type="file" name="home_image_contact" data-buttonName="btn-primary" data-buttonText=" Select image">
+                                                        <small class="text-primary">* Format jpg|.jpeg|.png (max. size 2MB).</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="form-group">
                                     <div class="col-sm-12">

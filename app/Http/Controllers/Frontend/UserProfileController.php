@@ -307,11 +307,14 @@ class UserProfileController extends Controller
                     if($notif == '')
                     {
 
-                        $getCountry = MCountry::getWHere([['country_id', '=', $input['country']]], '', false);
+                        $getCountry = Common_helper::setLocation('country', isset($input['country']) ? $input['country'] : "");
+                        $getProvince = Common_helper::setLocation('province', isset($input['province']) ? $input['province'] : "");
+                        $getCity = Common_helper::setLocation('city', isset($input['city']) ? $input['city'] : "");
+                        $getSubdistrict = Common_helper::setLocation('subdistrict', isset($input['subdistrict']) ? $input['subdistrict'] : "");
 
                         $dataUpdate = [
-                            'country_id' => $input['country'],
-                            'country_name' => @$getCountry[0]->country_name,
+                            'country_id' => $getCountry['id'],
+                            'country_name' => @$getCountry['name'],
 
                             'detail_address' => $input['address'],
                             'postal_code' => $input['postalcode'],
@@ -321,22 +324,18 @@ class UserProfileController extends Controller
 
                         if($input['country'] == '236')
                         {
-                            $getProvince = MProvince::getWHere([['province_id', '=', $input['province']]], '', false);
-                            $getCity = MCity::getWHere([['city_id', '=', $input['city']]], '', false);
-                            $getSubdistrict = MSubdistrict::getWHere([['subdistrict_id', '=', $input['subdistrict']]], '', false);
-
                             $dataUpdate = [
-                                'country_id' => $input['country'],
-                                'country_name' => @$getCountry[0]->country_name,
+                                'country_id' => $getCountry['id'],
+                                'country_name' => @$getCountry['name'],
 
-                                'province_id' => $input['province'],
-                                'province_name' => @$getProvince[0]->province_name,
+                                'province_id' => $getProvince['id'],
+                                'province_name' => @$getProvince['name'],
 
-                                'city_id' => $input['city'],
-                                'city_name' => @$getCity[0]->city_name,
+                                'city_id' => $getCity['id'],
+                                'city_name' => @$getCity['name'],
 
-                                'subdistrict_id' => $input['subdistrict'],
-                                'subdistrict_name' => @$getSubdistrict[0]->subdistrict_name,
+                                'subdistrict_id' => $getSubdistrict['id'],
+                                'subdistrict_name' => @$getSubdistrict['name'],
 
                                 'detail_address' => $input['address'],
                                 'postal_code' => $input['postalcode'],
