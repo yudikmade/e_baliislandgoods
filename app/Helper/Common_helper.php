@@ -318,7 +318,13 @@ class Common_helper
         }
 
 		$image = array();
-		$get_product = EmProductSku::where('status','1')->where('product_id', $key->product_id)->groupBy('color_hexa')->orderBy('order','ASC')->get();
+		// $get_product = EmProductSku::where('status','1')->where('product_id', $key->product_id)->groupBy('color_hexa')->orderBy('order','ASC')->get();
+		$get_product = \DB::table('em_product_sku')
+		->join('em_product_img','em_product_sku.sku_id', '=', 'em_product_img.sku_id')
+		->where('em_product_sku.product_id',$key->product_id)
+		->groupBy('em_product_sku.color_hexa')
+		->orderBy('em_product_sku.order','ASC')
+		->get();
 		// product image
 		foreach($get_product as $value){
 			array_push($image, array(
