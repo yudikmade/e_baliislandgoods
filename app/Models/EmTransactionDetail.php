@@ -72,7 +72,7 @@ class EmTransactionDetail extends Eloquent
 	    	->join('em_product', $this->table.'.product_id', '=', 'em_product.product_id')
 	    	->join('em_product_img', 'em_product.product_id', '=', 'em_product_img.product_id')
 	    	->join('em_product_sku', $this->table.'.sku_id', '=', 'em_product_sku.sku_id')
-			->where('em_product.admin_id',$admin_id)
+			// ->where('em_product.admin_id',$admin_id)
 	    	->whereNotIn('em_transaction.status', ['0', '6']);
 
     	if($status != 'all-status')

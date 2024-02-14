@@ -144,7 +144,7 @@ class EmTransaction extends Eloquent
     	$getData = \DB::table($this->table)
 				->join('em_transaction_detail', 'em_transaction_detail.transaction_id', '=', $this->table . '.transaction_id')
 				->join('em_product', 'em_product.product_id', '=', 'em_transaction_detail.product_id')
-				->where('em_product.admin_id',$admin_id)
+				// ->where('em_product.admin_id',$admin_id)
     			->where($where);
 		if($where_raw != '')
 		{

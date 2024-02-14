@@ -991,7 +991,9 @@ footer span{
 .product-image a.image{ display: block; }
 .product-image img{
     width: 100%;
-    height: auto;
+/*    height: auto;*/
+    height: 350px !important;
+    object-fit: cover;
 }
 
 .product-image .pic-1{
@@ -1596,6 +1598,9 @@ input, select:focus{
    .nav-pills{
      font-size: 0.9125rem;
    }
+   .product-image img{
+      height: 220px !important;
+    }
 
     .bg-transparent, .bg-white{
       height:80px;

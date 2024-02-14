@@ -180,7 +180,7 @@ class TransactionController extends Controller
         $getDetailTrans = array();
         if(sizeof($getTrans) >0)
         {
-            $getDetailTrans = EmTransactionDetail::transactionDetail([['em_transaction_detail.transaction_id', '=', $getTrans[0]->transaction_id],['em_product.admin_id', '=', Session::get(env('SES_BACKEND_ID'))]]);
+            $getDetailTrans = EmTransactionDetail::transactionDetail([['em_transaction_detail.transaction_id', '=', $getTrans[0]->transaction_id]]);
         }
 
         $getCustomerMeta = array();
@@ -462,7 +462,7 @@ class TransactionController extends Controller
                         }
                     }
 
-                    $getDetails = EmTransactionDetail::transactionDetail([['em_transaction_detail.transaction_id', '=', $getTransaction->transaction_id],['em_product.admin_id', '=', Session::get(env('SES_BACKEND_ID'))]]);
+                    $getDetails = EmTransactionDetail::transactionDetail([['em_transaction_detail.transaction_id', '=', $getTransaction->transaction_id]]);
                     $tmpData = array();
                     foreach ($getDetails as $key) 
                     {
