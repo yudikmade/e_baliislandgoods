@@ -30,8 +30,8 @@
 					<?php $statusHeader = '<span class="text-success">PAID</span>';?>
 				@else
 					<?php 
-						$statusHeader = '<span class="">NOT PAID</span>';
-						$processedPaymentTop = '<a class="btn btn-default btn-lg pull-right" href="'.route('cart_checkout').'/'.$header_transaction->unique_code.'">PAY NOW</a>';
+						$statusHeader = '<span class="" sty>NOT PAID</span>';
+						$processedPaymentTop = '<a class="btn btn-default btn-lg pull-right" style="margin-top: 20px;" href="'.route('cart_checkout').'/'.$header_transaction->unique_code.'">PAY NOW</a>';
 						// $processedPayment = '<a class="btn btn-default btn-lg" href="'.route('cart_checkout').'/'.$header_transaction->unique_code.'">PAY NOW</a>';
 					?>
 				@endif
@@ -41,9 +41,9 @@
 		</a>
     	<?=$processedPaymentTop?>
     	<div class="col-sm-12 no-pdg plc-invoice">
-    		<h2 class="mrg-btm30">INVOICE : {{$header_transaction->transaction_code}}</h2>
+    		<h2 class="mrg-btm30" style="margin-bottom: 20px;">INVOICE : {{$header_transaction->transaction_code}}</h2>
     		<div class="row">
-    			<div class="col-sm-6 text-left">
+    			<div class="col-sm-6 text-left" style="margin-bottom: 20px;">
     				<div class="header-text">Send To :</div>
     				@foreach($shipping_data as $key)
     					{{$key->country_name}}<br>
@@ -56,7 +56,7 @@
     					{{$key->postal_code}}
     				@endforeach
     			</div>
-    			<div class="col-sm-6">
+    			<div class="col-sm-6" style="margin-bottom: 20px;">
     				<div class="header-total text-center">
     					<?php
     						echo $statusHeader;
@@ -70,62 +70,64 @@
     		<div class="row mrg-tp40">
 				<div class="col-sm-12">
 					<div class="header-text">Details :</div>
-					<table class="table table-bordered table-striped">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Product</th>
-                                <th>SKU</th>
-                                <th>Qty</th>
-                                <th>Price</th>
-                                <th>Status</th>
-                                <th>Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            
-                            <?php
-                                $no = 1;
-                                foreach ($detail_transaction as $key) 
-                                {
-                                    $formatPrice = \App\Helper\Common_helper::currency_transaction($key->transaction_id, $key->price);
+					<div class="table-responsive">
+						<table class="table table-bordered table-striped">
+	                        <thead>
+	                            <tr>
+	                                <th>#</th>
+	                                <th>Product</th>
+	                                <th>SKU</th>
+	                                <th>Qty</th>
+	                                <th>Price</th>
+	                                <th>Status</th>
+	                                <th>Total</th>
+	                            </tr>
+	                        </thead>
+	                        <tbody>
+	                            
+	                            <?php
+	                                $no = 1;
+	                                foreach ($detail_transaction as $key) 
+	                                {
+	                                    $formatPrice = \App\Helper\Common_helper::currency_transaction($key->transaction_id, $key->price);
 
-                                    $priceDisc = \App\Helper\Common_helper::set_discount(($key->price * $key->qty), $key->discount);
-                                    $formatPriceTotal = \App\Helper\Common_helper::currency_transaction($key->transaction_id, $priceDisc[0]);
+	                                    $priceDisc = \App\Helper\Common_helper::set_discount(($key->price * $key->qty), $key->discount);
+	                                    $formatPriceTotal = \App\Helper\Common_helper::currency_transaction($key->transaction_id, $priceDisc[0]);
 
-                                    $imgProduct = \App\Models\EmProductImg::getWhereLimitOne([['product_id', '=', $key->product_id],['sku_id', '=', $key->sku_id]]);
+	                                    $imgProduct = \App\Models\EmProductImg::getWhereLimitOne([['product_id', '=', $key->product_id],['sku_id', '=', $key->sku_id]]);
 
-                                    echo '
-                                        <tr>
-                                            <td>'.$no.'</td>
-                                            <td>
-                                                <a target="_blank" href="'.route('shop_detail_page').'/'.str_replace(' ', '-', $key->product_name).'-'.$key->product_id.'">
-                                                    '.$key->product_name.'<br>
-                                                    <img width="50px" src="'.asset(env('URL_IMAGE').'product/thumb/'.$imgProduct->image).'">
-                                                </a>
-                                            </td>
-                                            <td>';
+	                                    echo '
+	                                        <tr>
+	                                            <td>'.$no.'</td>
+	                                            <td>
+	                                                <a target="_blank" href="'.route('shop_detail_page').'/'.str_replace(' ', '-', $key->product_name).'-'.$key->product_id.'">
+	                                                    '.$key->product_name.'<br>
+	                                                    <img width="50px" src="'.asset(env('URL_IMAGE').'product/thumb/'.$imgProduct->image).'">
+	                                                </a>
+	                                            </td>
+	                                            <td>';
 
-                                                if($key->size != '') 
-                                                    echo'<b>Size : </b> '.$key->size.'<br>';
-                                                    
-                                                if($key->color_name != '' && $key->color_hexa != '') 
-                                                    echo'<b>Color : </b> '.$key->color_name.' <div style="width: 25px; height: 25px; background: '.$key->color_hexa.'"></div><br>';
-                                    echo '
-                                            </td>
-                                            <td>'.$key->qty.'</td>';
+	                                                if($key->size != '') 
+	                                                    echo'<b>Size : </b> '.$key->size.'<br>';
+	                                                    
+	                                                if($key->color_name != '' && $key->color_hexa != '') 
+	                                                    echo'<b>Color : </b> '.$key->color_name.' <div style="width: 25px; height: 25px; background: '.$key->color_hexa.'"></div><br>';
+	                                    echo '
+	                                            </td>
+	                                            <td>'.$key->qty.'</td>';
 
-                                    echo '<td>'.$formatPrice[2].$formatPrice[1].' '.$formatPrice[3].'</td>';
-                                    echo '<td>'.\App\Helper\Common_helper::trans_detail_status($key->status).'</td>';
-                                    echo '<td class="text-right">'.$formatPriceTotal[2].$formatPriceTotal[1].' '.$formatPriceTotal[3].'</td>
-                                        </tr>
-                                    ';
-                                    $no++;
-                                }    
-                            ?>
-                            
-                        </tbody>
-                    </table>
+	                                    echo '<td>'.$formatPrice[2].$formatPrice[1].' '.$formatPrice[3].'</td>';
+	                                    echo '<td>'.\App\Helper\Common_helper::trans_detail_status($key->status).'</td>';
+	                                    echo '<td class="text-right">'.$formatPriceTotal[2].$formatPriceTotal[1].' '.$formatPriceTotal[3].'</td>
+	                                        </tr>
+	                                    ';
+	                                    $no++;
+	                                }    
+	                            ?>
+	                            
+	                        </tbody>
+	                    </table>
+                    </div>
 				</div>
 				<?php
 					$subTotal = \App\Helper\Common_helper::currency_transaction($header_transaction->transaction_id, $header_transaction->total_price);
