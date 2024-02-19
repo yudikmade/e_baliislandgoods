@@ -392,7 +392,7 @@ class ProcessController extends Controller
                 $dataArray = array(
                     'product_id' => $productSKU->product_id,
                     'product_name' => $getProduct->product_name,
-                    'product_img' => $getProductImage ? $getProductImage->image : null,
+                    'product_img' => (isset($getProductImage->image) ? $getProductImage->image : null),
                     'sku_id' => $productSKU->sku_id,
                     'size' => $productSKU->size,
                     'color_name' => $productSKU->color_name,
