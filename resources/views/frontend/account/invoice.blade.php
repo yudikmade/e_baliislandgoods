@@ -98,11 +98,11 @@
 
 	                                    echo '
 	                                        <tr>
-	                                            <td>'.$no.'</td>
+	                                            <td>'.$no.$key->product_id.'</td>
 	                                            <td>
 	                                                <a target="_blank" href="'.route('shop_detail_page').'/'.str_replace(' ', '-', $key->product_name).'-'.$key->product_id.'">
 	                                                    '.$key->product_name.'<br>
-	                                                    <img width="50px" src="'.asset(env('URL_IMAGE').'product/thumb/'.$imgProduct->image).'">
+	                                                    <img width="50px" src="'.asset(env('URL_IMAGE').'product/thumb/'.(isset($imgProduct->image) ? $imgProduct->image : "")).'">
 	                                                </a>
 	                                            </td>
 	                                            <td>';

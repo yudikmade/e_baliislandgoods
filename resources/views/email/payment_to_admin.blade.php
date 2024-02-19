@@ -68,7 +68,6 @@
 			{{$key->subdistrict_name}}<br>
 		@endif
 		{{$key->detail_address}}<br>
-		{{$key->apt_suite}}<br>
 		{{$key->postal_code}}
 	@endforeach
 </div>

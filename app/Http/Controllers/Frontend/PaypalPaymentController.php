@@ -12,6 +12,7 @@ use App\Models\EmTransactionDetail;
 use App\Models\EmTransactionMeta;
 use App\Models\EmCustomer;
 use App\Models\MCurrency;
+use App\Models\EmTransactionShipping;
 
 class PaypalPaymentController extends Controller{
     public function __construct(){
@@ -353,22 +354,37 @@ class PaypalPaymentController extends Controller{
 
             $first_name = '';
             $customer_email = '';
+            $getCustomer = EmCustomer::getWhere([['customer_id', '=', $getTransaction->customer_id]], '', false);
             if($getTransaction->customer_id == '' || $getTransaction->customer_id == null){
                 $getFirstName = EmTransactionMeta::getMeta(array('transaction_id' => $getTransaction->transaction_id, 'meta_key' => 'first_name'));
                 $first_name = $getFirstName->meta_description;
                 $getEmailCustomer = EmTransactionMeta::getMeta(array('transaction_id' => $getTransaction->transaction_id, 'meta_key' => 'email'));
                 $customer_email = $getEmailCustomer->meta_description;
             }else{
-                $getCustomer = EmCustomer::getWhere([['customer_id', '=', $getTransaction->customer_id]], '', false);
                 foreach ($getCustomer as $value) {
                     $first_name = $value->first_name;
                     $customer_email = $value->email;
                 }
             }
 
+            $getCustomerMeta = [];
+            if(sizeof($getCustomer) == 0){
+                $getCustomerMeta = EmTransactionMeta::getWhere([['transaction_id', '=', $trans_id]]);
+            }
+            $message['data_customer_meta'] = $getCustomerMeta;
+            $message['data_customer'] = $getCustomer;
+
             $message['first_name'] = $first_name;
             $message['transaction_code'] = $trans_code;
             $message['unique_code'] = $unique_code;
+
+            $shipping_data = EmTransactionShipping::getWhere([['transaction_id', '=', $trans_id]], '', false);
+            $message['shipping_data'] = $shipping_data;
+
+            $getDetailTransaction = EmTransactionDetail::transactionDetailPerAdmin([
+                ['em_transaction_detail.transaction_id', '=', $trans_id]
+            ]);
+            $message['transaction_detail'] = $getDetailTransaction;
 
             // send email to customer
             if($customer_email != ''){
