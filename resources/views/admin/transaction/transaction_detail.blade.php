@@ -251,6 +251,14 @@
                                                             {{$shippings->country_name}}
                                                         </div>
                                                     </div>
+                                                    @if($shippings->province_name)
+                                                        <div class="form-group">
+                                                            <label for="product_name" class="col-sm-3 control-label">City : </label>
+                                                            <div class="col-sm-9" style="padding-top: 7px;">
+                                                                {{$shippings->province_name}}
+                                                            </div>
+                                                        </div>
+                                                    @endif
                                                     <div class="form-group">
                                                         <label for="product_name" class="col-sm-3 control-label">City : </label>
                                                         <div class="col-sm-9" style="padding-top: 7px;">

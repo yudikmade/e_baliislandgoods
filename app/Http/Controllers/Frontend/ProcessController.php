@@ -932,9 +932,8 @@ class ProcessController extends Controller
             $input = $request->all();
 
             if($input['trigger'] == 'city_tgi'){
-                $getData = TgiCity::getWhere([['country_id', '=', $input['data_id']]], "(city_name like '%".$input['search']."%')", false);
                 $city_data = array();
-
+                $getData = TgiCity::getWhere([['country_id', '=', $input['data_id']]], "(city_name like '%".$input['search']."%')", false);
                 foreach ($getData as $key) {
                     array_push($city_data, ['id' => $key->id, 'text' => $key->city_name]);
                 }
@@ -944,41 +943,27 @@ class ProcessController extends Controller
                 return $result;
             }
 
-            if($input['trigger'] == 'country')
-            {
-                $getData = MProvince::getWhere([['country_id', '=', $input['data_id']], ['status', '=', '1']], '', false);
-                $htmlBuilder = '<option value="">Choose Province</option>';
-                foreach ($getData as $key) 
-                {
-                    $htmlBuilder .= '<option value="'.$key->province_id.'">'.$key->province_name.'</option>';
+            if($input['trigger'] == 'province'){
+                $province_data = array();
+                $getData = MProvince::getWhere([['country_id', '=', '236'], ['status', '=', '1']], "(province_name like '%".$input['search']."%')", false);
+                foreach ($getData as $key) {
+                    array_push($province_data, ['id' => $key->province_id, 'text' => $key->province_name]);
                 }
                 $result['trigger'] = 'yes';
-                $result['notif'] = $htmlBuilder;
+                $result['notif'] = $province_data;
+                return $result;
             }
 
-            // if($input['trigger'] == 'province')
-            // {
-            //     $getData = MCity::getWhere([['province_id', '=', $input['data_id']], ['status', '=', '1']], '', false);
-            //     $htmlBuilder = '<option value="">Choose City</option>';
-            //     foreach ($getData as $key) 
-            //     {
-            //         $htmlBuilder .= '<option value="'.$key->city_id.'">'.$key->city_name.'</option>';
-            //     }
-            //     $result['trigger'] = 'yes';
-            //     $result['notif'] = $htmlBuilder;
-            // }
-
-            // if($input['trigger'] == 'city')
-            // {
-            //     $getData = MSubdistrict::getWhere([['city_id', '=', $input['data_id']], ['status', '=', '1']], '', false);
-            //     $htmlBuilder = '<option value="">Choose Subdistrict</option>';
-            //     foreach ($getData as $key) 
-            //     {
-            //         $htmlBuilder .= '<option value="'.$key->subdistrict_id.'">'.$key->subdistrict_name.'</option>';
-            //     }
-            //     $result['trigger'] = 'yes';
-            //     $result['notif'] = $htmlBuilder;
-            // }
+            if($input['trigger'] == 'city'){
+                $city_data = array();
+                $getData = MCity::getWhere([['province_id', '=', $input['data_id']], ['status', '=', '1']], "(city_name like '%".$input['search']."%')", false);
+                foreach ($getData as $key) {
+                    array_push($city_data, ['id' => $key->city_id, 'text' => $key->city_name]);
+                }
+                $result['trigger'] = 'yes';
+                $result['notif'] = $city_data;
+                return $result;
+            }
         }
         echo json_encode($result);
     }
@@ -1237,18 +1222,11 @@ class ProcessController extends Controller
             $result['city'] = '';
             $result['subdistrict'] = $input['subdistrict'];
 
-            $getCountry = Common_helper::setLocation('country', isset($input['country']) ? $input['country'] : "");
-            // $getProvince = Common_helper::setLocation('province', isset($input['province']) ? $input['province'] : "");
-            $getCity = Common_helper::setLocation('city', isset($input['city']) ? $input['city'] : "");
-            // $getSubdistrict = Common_helper::setLocation('subdistrict', isset($input['subdistrict']) ? $input['subdistrict'] : "");
-
-            
+            $getCountry = Common_helper::setLocationTgi('country', isset($input['country']) ? $input['country'] : "");
             $dataUpdateShipping = [
                 'country_id' => $getCountry['id'],
                 'country_name' => $getCountry['name'],
-                'city_id' => $getCity['id'],
-                'city_name' => $getCity['name'],
-                
+
                 'subdistrict_name' => $input['subdistrict'],
                 'postal_code' => $input['postalcode'],
                 'detail_address' => $input['address'],
@@ -1256,17 +1234,38 @@ class ProcessController extends Controller
                 'rupiah_cost' => $rupiahCost
             ];
 
+            if($input['country'] == "105"){ // Indonesia
+                $getProvince = Common_helper::setLocation('province', isset($input['province']) ? $input['province'] : "");
+                $dataUpdateShipping['province_id'] = $getProvince['id'];
+                $dataUpdateShipping['province_name'] = $getProvince['name'];
+
+                $getCity = Common_helper::setLocation('city', isset($input['city']) ? $input['city'] : "");
+                $dataUpdateShipping['city_id'] = $getCity['id'];
+                $dataUpdateShipping['city_name'] = $getCity['name'];
+
+                $result['province'] = $getProvince['name'];
+                $result['city'] = $getCity['name'];
+
+                $arraySession['province_id'] = $getProvince['id'];
+                $arraySession['province_name'] = $getProvince['id'];
+                $arraySession['city_id'] = $getCity['id'];
+                $arraySession['city_name'] = $getCity['name'];
+            }else{
+                $getCity = Common_helper::setLocationTgi('city', isset($input['city']) ? $input['city'] : "");
+                $dataUpdateShipping['city_id'] = $getCity['id'];
+                $dataUpdateShipping['city_name'] = $getCity['name'];
+                
+                $result['city'] = $getCity['name'];
+
+                $arraySession['city_id'] = $getCity['id'];
+                $arraySession['city_name'] = $getCity['name'];
+            }
+
             $result['country'] = $getCountry['name'];
-            // $result['province'] = $getProvince['name'];
-            $result['city'] = $getCity['name'];
             $result['subdistrict'] = $input['subdistrict'];
 
             $arraySession['country_id'] = $getCountry['id'];
             $arraySession['country_name'] = $getCountry['name'];
-            $arraySession['city_id'] = $getCity['id'];
-            $arraySession['city_name'] = $getCity['name'];
-            // $arraySession['province_id'] = $getProvince['id'];
-            // $arraySession['province_name'] = $getProvince['id'];
             // $arraySession['subdistrict_id'] = $getSubdistrict['id'];
             $arraySession['subdistrict_name'] = $input['subdistrict'];
             $arraySession['postal_code'] = $input['postalcode'];

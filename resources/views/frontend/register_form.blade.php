@@ -80,6 +80,12 @@
 										@endforeach
 						    	</select>
 						  	</div>
+						  	<div class="form-group none province-options">
+						  		<label for="city" class="form-label">Province <span>*</span></label>
+									<select class="form-control select2" style="width: 100%;" name="province_reg" id="province_reg">
+										<option value="">Choose Province</option>
+									</select>
+								</div>
 						  	<div class="form-group">
 						  		<label for="city" class="form-label">City <span>*</span></label>
 									<select class="form-control select2" style="width: 100%;" name="city_reg" id="city_reg">

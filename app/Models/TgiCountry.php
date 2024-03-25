@@ -25,6 +25,7 @@ class TgiCountry extends Eloquent
 			$getData = $getData->whereRaw($where_raw);
 		}
 
+		$getData = $getData->where('status', '1');
 		$getData = $getData->orderBy('branch_name', 'ASC');
 
 		if($paging)

@@ -62,6 +62,7 @@
 	<b>Send To :</b><br/>
 	@foreach($shipping_data as $key)
 		{{$key->country_name}}<br>
+		{{$key->province_name ? $key->province_name.'<br>' : ''}}
 		{{$key->city_name}}<br>
 		{{$key->subdistrict_name}}<br>
 		{{$key->detail_address}}<br>

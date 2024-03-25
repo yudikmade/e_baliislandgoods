@@ -47,11 +47,9 @@
     				<div class="header-text">Send To :</div>
     				@foreach($shipping_data as $key)
     					{{$key->country_name}}<br>
-    					{{$key->province_name}}<br>
+    					{{$key->province_name ? $key->province_name.'<br>' : ''}}
 						{{$key->city_name}}<br>
-    					@if($key->country_id == '236')
-    						{{$key->subdistrict_name}}<br>
-    					@endif
+						{{$key->subdistrict_name}}<br>
     					{{$key->detail_address}}<br>
     					{{$key->postal_code}}
     				@endforeach

@@ -134,6 +134,8 @@ body {
                     $country_name = $value->country_name;
                     $city_id = $value->city_id;
                     $city_name = $value->city_name;
+                    $province_id = $value->province_id;
+                    $province_name = $value->province_name;
                     $subdistrict_name = $value->subdistrict_name;
 
                     $address = $value->detail_address;
@@ -301,7 +303,18 @@ body {
                                             </select>
                                             <small class="notif-country error none"><i>Please choose country!</i></small>
                                         </div>
-
+                                        <div class="form-group province-options {{($country_id != '105' ? 'none' : '')}}">
+                                            <label for="city">Province</label>
+                                            <select class="form-control select2" name="province" style="width: 100%;" id="province_reg">
+                                                <option value="">Choose Province</option>
+                                                <?php
+                                                    if($province_id != ''){
+                                                        echo '<option value="'.$province_id.'" selected>'.$province_name.'</option>';
+                                                    }
+                                                ?>
+                                            </select>
+                                            <small class="notif-province error none"><i>Please choose province!</i></small>
+                                        </div>
                                         <div class="form-group select-city">
                                             <label for="city">City</label>
                                             <select class="form-control select2" name="city" style="width: 100%;" id="city_reg">
@@ -916,6 +929,42 @@ $(document).ready(function() {
         // }
     ?>
 
+    $('#country_reg').on("change", function(e) { 
+       if($(this).val() == "105"){ // Indonesia
+            $('.province-options').fadeIn();
+       }else{
+            $('.province-options').fadeOut();
+       }
+    });
+
+    $('#province_reg').select2({
+        placeholder: "Searching location",
+        minimumInputLength: 3,
+        ajax: {
+            type: 'post',
+            delay: 300,
+            data: function (params) {
+                return {
+                    search: params.term, // search term,
+                    'data_id': $('#country_reg').val(),
+                    'trigger': 'province',
+                    '_token': $('input[name=_token]').val()
+                };
+            },
+            url: $('#actionLocation').val(),
+            processResults: function (data) {
+                return {
+                    results: $.map(data.notif, function (obj) {
+                        return {
+                            id: obj.id,
+                            text: obj.text,
+                        };
+                    })
+                };
+            }
+        }
+    });
+
     $('#city_reg').select2({
         placeholder: "Searching location",
         minimumInputLength: 3,
@@ -925,8 +974,8 @@ $(document).ready(function() {
             data: function (params) {
                 return {
                     search: params.term, // search term,
-                    'data_id': $('#country').val(),
-                    'trigger': 'city_tgi',
+                    'data_id': ($('#country_reg').val() != "105" ? $('#country_reg').val() : $('#province_reg').val()),
+                    'trigger': ($('#country_reg').val() != "105" ? 'city_tgi' : 'city'),
                     '_token': $('input[name=_token]').val()
                 };
             },
@@ -1028,6 +1077,7 @@ $(document).ready(function() {
                             '<a class="cursor edit-shipping pull-right" href="javascript:void(0);">Change Shipping</a>'+
                             addInfo+
                             '<div class="after-submit mt-3">'+response.country+'</div>'+
+                            ''+(response.province ? '<div class="after-submit">'+response.province+'</div>' : '')+
                             '<div class="after-submit">'+response.city+'</div>'+
                             '<div class="after-submit">'+(response.subdistrict?response.subdistrict:'')+'</div>'+
                             '<div class="after-submit">'+$('#address').val()+'</div>'+
@@ -1074,6 +1124,7 @@ $(document).ready(function() {
             data: {
                 'trans_id': $('#form-shipping').find('input[name=trans_id]').val(), 
                 'country': $('#country_reg').val(), 
+                'province': ($('#country_reg').val() == '105' ? $('#province_reg').val() : '-'),
                 'city': $('#city_reg').val(),
                 'subdistrict': $('#subdistrict').val(),
                 'postalcode': $('#postalcode').val(),
@@ -1101,10 +1152,10 @@ $(document).ready(function() {
         });
     }
 
-    $('#city_reg').change(function(e){
+    $('#city_reg, #province_reg').change(function(e){
         get_shipping_cost();
     });
-    $('#address, #postalcode', '#subdistrict').blur(function(){
+    $('#address, #postalcode, #subdistrict').blur(function(){
         get_shipping_cost();
     });
 

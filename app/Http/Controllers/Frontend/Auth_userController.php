@@ -264,26 +264,19 @@ class Auth_userController extends Controller
                     }
                     else
                     {
-                        $input = $request->all();
                         $notif = '';
-                        if($input['country_reg'] == '236')
-                        {
-                            if($input['province'] == null || $input['province'] == '')
-                            {
-                                $notif .= 'Please choose province.<br>';
-                            }
-                            if($input['city'] == null || $input['city'] == '')
-                            {
-                                $notif .= 'Please choose city.<br>';
-                            }
-                            if($input['subdistrict'] == null || $input['subdistrict'] == '')
-                            {
-                                $notif .= 'Please choose subdistrict.<br>';
+                        $input = $request->all();
+                        if($input['country_reg'] == '105'){ // Indonesia
+                            if(!isset($input['province_reg'])){
+                                $notif .= 'Please select province.';
+                            }else{
+                                if($input['province_reg'] == ""){
+                                    $notif .= 'Please select province.';
+                                }
                             }
                         }
 
-                        if($notif == '')
-                        {
+                        if($notif == ''){
                             if($input['password'] == $input['password_r'])
                             {
                                 //check email
@@ -315,17 +308,11 @@ class Auth_userController extends Controller
                                     EmCustomer::insertData($dataInsert);
 
                                     $getCountry = Common_helper::setLocation('country', isset($input['country_reg']) ? $input['country_reg'] : "");
-                                    // $getProvince = Common_helper::setLocation('province', isset($input['province']) ? $input['province'] : "");
-                                    $getCity = Common_helper::setLocation('city', isset($input['city_reg']) ? $input['city_reg'] : "");
-                                    // $getSubdistrict = Common_helper::setLocation('subdistrict', isset($input['subdistrict']) ? $input['subdistrict'] : "");
 
                                     $dataInsert = [
                                         'customer_id' => $customerID,
                                         'country_id' => $getCountry['id'],
                                         'country_name' => @$getCountry['name'],
-
-                                        'city_id' => $getCity['id'],
-                                        'city_name' => @$getCity['name'],
 
                                         'subdistrict_name' => $input['district_reg'],
 
@@ -335,28 +322,20 @@ class Auth_userController extends Controller
                                         'status' => '1',
                                     ];
 
-                                    // if($input['country_reg'] == '236')
-                                    // {
-                                    //     $dataInsert = [
-                                    //         'customer_id' => $customerID,
-                                    //         'country_id' => $getCountry['id'],
-                                    //         'country_name' => @$getCountry['name'],
+                                    if($input['country_reg'] == '105'){ // Indonesia
+                                        $getProvince = Common_helper::setLocation('province', isset($input['province_reg']) ? $input['province_reg'] : "");
+                                        $dataInsert['province_id'] = $getProvince['id'];
+                                        $dataInsert['province_name'] = @$getProvince['name'];
 
-                                    //         'province_id' => $getProvince['id'],
-                                    //         'province_name' => @$getProvince['name'],
 
-                                    //         'city_id' => $getCity['id'],
-                                    //         'city_name' => @$getCity['name'],
-
-                                    //         'subdistrict_id' => $getSubdistrict['id'],
-                                    //         'subdistrict_name' => @$getSubdistrict['name'],
-
-                                    //         'detail_address' => $input['address_reg'],
-                                    //         'postal_code' => $input['postalcode_reg'],
-                                    //         'order' => 1,
-                                    //         'status' => '1',
-                                    //     ];
-                                    // }
+                                        $getCity = Common_helper::setLocation('city', isset($input['city_reg']) ? $input['city_reg'] : "");
+                                        $dataInsert['city_id'] = $getCity['id'];
+                                        $dataInsert['city_name'] = @$getCity['name'];
+                                    }else{
+                                        $getCity = Common_helper::setLocationTgi('city', isset($input['city_reg']) ? $input['city_reg'] : "");
+                                        $dataInsert['city_id'] = $getCity['id'];
+                                        $dataInsert['city_name'] = @$getCity['name'];
+                                    }
 
                                     $dataUser = array(
                                         'customer_id' => $customerID,

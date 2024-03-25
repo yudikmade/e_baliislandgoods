@@ -265,14 +265,14 @@ class UserProfileController extends Controller
             if($input['form_action'] == 'update-shipping')
             {
                 $validator = Validator::make(request()->all(), [
-                    'country' => 'required',
-                    'city' => 'required',
+                    'country_reg' => 'required',
+                    'city_reg' => 'required',
                     'address' => 'required',
                     'postalcode' => 'required',
                 ],
                 [
-                    'country.required' => 'Please choose region.',
-                    'city.required' => 'Please choose city.',
+                    'country_reg.required' => 'Please choose region.',
+                    'city_reg.required' => 'Please choose city.',
                     'address.required' => 'Please inut address.',
                     'postalcode.required' => 'Please input postal code.',
 
@@ -292,17 +292,10 @@ class UserProfileController extends Controller
                     $input = $request->all();
                     $notif = '';
 
-                    $getCountry = Common_helper::setLocation('country', isset($input['country']) ? $input['country'] : "");
-                    // $getProvince = Common_helper::setLocation('province', isset($input['province']) ? $input['province'] : "");
-                    $getCity = Common_helper::setLocation('city', isset($input['city']) ? $input['city'] : "");
-                    // $getSubdistrict = Common_helper::setLocation('subdistrict', isset($input['subdistrict']) ? $input['subdistrict'] : "");
-
+                    $getCountry = Common_helper::setLocation('country', isset($input['country_reg']) ? $input['country_reg'] : "");
                     $dataUpdate = [
                         'country_id' => $getCountry['id'],
                         'country_name' => @$getCountry['name'],
-
-                        'city_id' => $getCity['id'],
-                        'city_name' => @$getCity['name'],
 
                         'subdistrict_name' => $input['subdistrict'],
 
@@ -312,27 +305,19 @@ class UserProfileController extends Controller
                         'status' => '1',
                     ];
 
-                    // if($input['country'] == '236')
-                    // {
-                    //     $dataUpdate = [
-                    //         'country_id' => $getCountry['id'],
-                    //         'country_name' => @$getCountry['name'],
+                    if($input['country_reg'] == '105'){
+                        $getProvince = Common_helper::setLocation('province', isset($input['province_reg']) ? $input['province_reg'] : "");
+                        $dataUpdate['province_id'] = $getProvince['id'];
+                        $dataUpdate['province_name'] = @$getProvince['name'];
 
-                    //         'province_id' => $getProvince['id'],
-                    //         'province_name' => @$getProvince['name'],
-
-                    //         'city_id' => $getCity['id'],
-                    //         'city_name' => @$getCity['name'],
-
-                    //         'subdistrict_id' => $getSubdistrict['id'],
-                    //         'subdistrict_name' => @$getSubdistrict['name'],
-
-                    //         'detail_address' => $input['address'],
-                    //         'postal_code' => $input['postalcode'],
-                    //         'order' => 1,
-                    //         'status' => '1',
-                    //     ];
-                    // }
+                        $getCity = Common_helper::setLocation('city', isset($input['city_reg']) ? $input['city_reg'] : "");
+                        $dataUpdate['city_id'] = $getCity['id'];
+                        $dataUpdate['city_name'] = @$getCity['name'];
+                    }else{
+                        $getCity = Common_helper::setLocationTgi('city', isset($input['city_reg']) ? $input['city_reg'] : "");
+                        $dataUpdate['city_id'] = $getCity['id'];
+                        $dataUpdate['city_name'] = @$getCity['name'];
+                    }
 
                     EmCustomerShipping::updateDataByCustomer(Session::get(env('SES_FRONTEND_ID')), $dataUpdate);
 

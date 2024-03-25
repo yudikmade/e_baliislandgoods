@@ -1227,7 +1227,7 @@ class Common_helper
 			//destination
 			$originDestination = array(
 				'city' => $destination['city'],
-				'subdistrict' => $destination['subdistrict']
+				// 'subdistrict' => $destination['subdistrict']
 			);
 			$originTypeDestination = $destination['origin_type']; //city or subdistrict
 
@@ -1504,6 +1504,44 @@ class Common_helper
 		);
 		if($id != "" && $id != null){
 			if($type == "country"){
+				$get_data = MCountry::getWhere([['country_id', '=', $id]], '', false);
+				$result = array(
+					'id' => $id,
+					'name' => $get_data[0]->country_name
+				);
+			}
+			if($type == "province"){
+				$get_data = MProvince::getWhere([['province_id', '=', $id]], '', false);
+				$result = array(
+					'id' => $id,
+					'name' => $get_data[0]->province_name
+				);
+			}
+			if($type == "city"){
+				$get_data = MCity::getWhere([['city_id', '=', $id]], '', false);
+				$result = array(
+					'id' => $id,
+					'name' => $get_data[0]->city_name
+				);
+			}
+			if($type == "subdistrict"){
+				$get_data = MSubdistrict::getWhere([['subdistrict_id', '=', $id]], '', false);
+				$result = array(
+					'id' => $id,
+					'name' => $get_data[0]->subdistrict_name
+				);
+			}
+		}
+		return $result;
+	}
+
+	public static function setLocationTgi($type, $id = ""){
+		$result = array(
+			'id' => "",
+			'name' => ""
+		);
+		if($id != "" && $id != null){
+			if($type == "country"){
 				$get_data = TgiCountry::getWhere([['id', '=', $id]], '', false);
 				$result = array(
 					'id' => $id,
@@ -1519,34 +1557,6 @@ class Common_helper
 					'code' => $get_data[0]->city_code,
 				);
 			}
-			// if($type == "country"){
-			// 	$get_data = MCountry::getWhere([['country_id', '=', $id]], '', false);
-			// 	$result = array(
-			// 		'id' => $id,
-			// 		'name' => $get_data[0]->country_name
-			// 	);
-			// }
-			// if($type == "province"){
-			// 	$get_data = MProvince::getWhere([['province_id', '=', $id]], '', false);
-			// 	$result = array(
-			// 		'id' => $id,
-			// 		'name' => $get_data[0]->province_name
-			// 	);
-			// }
-			// if($type == "city"){
-			// 	$get_data = MCity::getWhere([['city_id', '=', $id]], '', false);
-			// 	$result = array(
-			// 		'id' => $id,
-			// 		'name' => $get_data[0]->city_name
-			// 	);
-			// }
-			// if($type == "subdistrict"){
-			// 	$get_data = MSubdistrict::getWhere([['subdistrict_id', '=', $id]], '', false);
-			// 	$result = array(
-			// 		'id' => $id,
-			// 		'name' => $get_data[0]->subdistrict_name
-			// 	);
-			// }
 		}
 		return $result;
 	}

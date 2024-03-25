@@ -12,8 +12,15 @@
             setTimeout(function(){  $('#section-login').fadeIn() }, 500);
         })
 
-        var countrySelected = "";
-        $('#city_reg').select2({
+        $('#country_reg').on("change", function(e) { 
+           if($(this).val() == "105"){ // Indonesia
+                $('.province-options').fadeIn();
+           }else{
+                $('.province-options').fadeOut();
+           }
+        });
+
+        $('#province_reg').select2({
             placeholder: "Searching location",
             minimumInputLength: 3,
             ajax: {
@@ -23,7 +30,35 @@
                     return {
                         search: params.term, // search term,
                         'data_id': $('#country_reg').val(),
-                        'trigger': 'city_tgi',
+                        'trigger': 'province',
+                        '_token': $('input[name=_token]').val()
+                    };
+                },
+                url: $('#actionLocation').val(),
+                processResults: function (data) {
+                    return {
+                        results: $.map(data.notif, function (obj) {
+                            return {
+                                id: obj.id,
+                                text: obj.text,
+                            };
+                        })
+                    };
+                }
+            }
+        });
+
+        $('#city_reg').select2({
+            placeholder: "Searching location",
+            minimumInputLength: 3,
+            ajax: {
+                type: 'post',
+                delay: 300,
+                data: function (params) {
+                    return {
+                        search: params.term, // search term,
+                        'data_id': ($('#country_reg').val() != "105" ? $('#country_reg').val() : $('#province_reg').val()),
+                        'trigger': ($('#country_reg').val() != "105" ? 'city_tgi' : 'city'),
                         '_token': $('input[name=_token]').val()
                     };
                 },
@@ -298,15 +333,11 @@
                         $('#district_reg').val('');
 
                         // $('#phone_prefix').select2('val', '');
-                        // $('#country_reg').select2('val', '');
-                        // $('#province_reg').select2('val', '');
-                        // $('#city_reg').select2('val', '');
-                        // $('#subdistrict_reg').select2('val', '');
 
                         $('#phone_prefix').val('val', '');
-                        $('#country_reg').val('val', '');
-                        // $('#province_reg').val('val', '');
-                        $('#city_reg').val('val', '');
+                        $('#country_reg').select2('val', '');
+                        $('#city_reg').select2('val', '');
+                        $('#province_reg').select2('val', '');
 
                         toastr.success(response.notif, '', {timeOut: 3000});
 

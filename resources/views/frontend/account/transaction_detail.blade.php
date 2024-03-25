@@ -119,6 +119,14 @@ body {
                                         {{$shippings->country_name}}
                                     </div>
                                 </div>
+                                @if($shippings->province_name)
+                                    <div class="row mrg-btm">
+                                        <div class="col-lg-3 col-md-3">Province : </div>
+                                        <div class="col-lg-9 col-md-9">
+                                            {{$shippings->province_name}}
+                                        </div>
+                                    </div>
+                                @endif
                                 <div class="row mrg-btm">
                                     <div class="col-lg-3 col-md-3">City : </div>
                                     <div class="col-lg-9 col-md-9">

@@ -45,7 +45,7 @@
                                 <div class="form-group">
                                     <label class="control-label col-sm-2" for="country">Region</label>
                                     <div class="col-sm-10">
-                                        <select style="width: 100%;" class="select2 form-control" name="country" id="country">
+                                        <select style="width: 100%;" class="select2 form-control" name="country_reg" id="country_reg">
                                             @foreach($country as $countries)
                                                 @if($key->country_id == $countries->id)
                                                     <option value="{{$countries->id}}" selected>{{$countries->branch_name}}</option>
@@ -57,17 +57,25 @@
                                         <small class="notif-country error none"><i>Please choose region!</i></small>
                                     </div>
                                 </div>
-
-                                <div class="form-group select-national">
+                                <div class="form-group province-options {{$key->country_id != '105' ? 'none' : ''}}">
+                                    <label class="control-label col-sm-2" for="city">Province</label>
+                                    <div class="col-sm-10">
+                                        <select style="width: 100%;" class="select2 form-control" name="province_reg" id="province_reg">
+                                            <option value="{{$key->province_id}}">{{$key->province_name}}</option>
+                                        </select> 
+                                        <small class="notif-province error none"><i>Please choose city!</i></small>
+                                    </div>
+                                </div>
+                                <div class="form-group">
                                     <label class="control-label col-sm-2" for="city">City</label>
                                     <div class="col-sm-10">
-                                        <select style="width: 100%;" class="select2 form-control" name="city" id="city">
+                                        <select style="width: 100%;" class="select2 form-control" name="city_reg" id="city_reg">
                                             <option value="{{$key->city_id}}">{{$key->city_name}}</option>
                                         </select> 
                                         <small class="notif-city error none"><i>Please choose city!</i></small>
                                     </div>
                                 </div>
-                                <div class="form-group select-national">
+                                <div class="form-group">
                                     <label class="control-label col-sm-2" for="subdistrict">(Sub) District</label>
                                     <div class="col-sm-10">
                                         <input type="text" class="form-control no-radius" value="{{$key->subdistrict_name}}" name="subdistrict" id="subdistrict" />
@@ -146,7 +154,16 @@
     $(document).ready(function() {
         $('.select2').select2();
 
-        $('#city').select2({
+        $('#country_reg').on("change", function(e) { 
+            console.log($(this).val());
+           if($(this).val() == "105"){ // Indonesia
+                $('.province-options').fadeIn();
+           }else{
+                $('.province-options').fadeOut();
+           }
+        });
+
+        $('#province_reg').select2({
             placeholder: "Searching location",
             minimumInputLength: 3,
             ajax: {
@@ -155,8 +172,36 @@
                 data: function (params) {
                     return {
                         search: params.term, // search term,
-                        'data_id': $('#country').val(),
-                        'trigger': 'city_tgi',
+                        'data_id': $('#country_reg').val(),
+                        'trigger': 'province',
+                        '_token': $('input[name=_token]').val()
+                    };
+                },
+                url: $('#actionLocation').val(),
+                processResults: function (data) {
+                    return {
+                        results: $.map(data.notif, function (obj) {
+                            return {
+                                id: obj.id,
+                                text: obj.text,
+                            };
+                        })
+                    };
+                }
+            }
+        });
+
+        $('#city_reg').select2({
+            placeholder: "Searching location",
+            minimumInputLength: 3,
+            ajax: {
+                type: 'post',
+                delay: 300,
+                data: function (params) {
+                    return {
+                        search: params.term, // search term,
+                        'data_id': ($('#country_reg').val() != "105" ? $('#country_reg').val() : $('#province_reg').val()),
+                        'trigger': ($('#country_reg').val() != "105" ? 'city_tgi' : 'city'),
                         '_token': $('input[name=_token]').val()
                     };
                 },
@@ -180,11 +225,11 @@
             var country = $('#country');
             var elementBtn = $("#btn-shipping");
 
-            if(country.val() != '')
-            {
+            if(country.val() != ''){
                 var triggerSubmit = true;
 
-                var city = $('#city');
+                var province = $('#province_reg');
+                var city = $('#city_reg');
                 var subdistrict = $('#subdistrict');
 
                 if(subdistrict.val() == ''){
@@ -201,6 +246,16 @@
                     city.focus();
                 }else{
                     $('.notif-city').fadeOut();
+                }
+
+                if(country.val() == '105'){
+                    if(province.val() == ''){
+                        triggerSubmit = false;
+                        $('.province-city').fadeIn();
+                        city.focus();
+                    }else{
+                        $('.province-city').fadeOut();
+                    }
                 }
 
                 
