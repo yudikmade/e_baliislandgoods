@@ -1,5 +1,6 @@
 <script>
     $(document).ready(function() {
+        $('.select2').select2();
 
         $('#show-forgot-password').click(function(){
             $('#section-login').fadeOut();
@@ -11,71 +12,101 @@
             setTimeout(function(){  $('#section-login').fadeIn() }, 500);
         })
 
-        $('#country_reg, #province_reg, #city_reg').change(function(e){
-	    	var data_id = $(this).val();
-	    	var trigger = $(this).attr('id');
+        var countrySelected = "";
+        $('#city_reg').select2({
+            placeholder: "Searching location",
+            minimumInputLength: 3,
+            ajax: {
+                type: 'post',
+                delay: 300,
+                data: function (params) {
+                    return {
+                        search: params.term, // search term,
+                        'data_id': $('#country_reg').val(),
+                        'trigger': 'city_tgi',
+                        '_token': $('input[name=_token]').val()
+                    };
+                },
+                url: $('#actionLocation').val(),
+                processResults: function (data) {
+                    return {
+                        results: $.map(data.notif, function (obj) {
+                            return {
+                                id: obj.id,
+                                text: obj.text,
+                            };
+                        })
+                    };
+                }
+            }
+        });
 
-	    	// if($('#country_reg').val() == '236')
-	    	// {
-    		// 	$('.select-national').fadeIn();
-	    	// }
-	    	// else
-	    	// {
-	    	// 	if($('#country_reg').val() != '')
-	    	// 	{
-	    	// 		$('.select-national').fadeOut();
-	    	// 	}
-	    	// }
+        // $('#country_reg').change(function(e){
+	    // 	var data_id = $(this).val();
+	    // 	var trigger = $(this).attr('id');
 
-            $('.select-national').fadeIn();
+	    // 	// if($('#country_reg').val() == '236')
+	    // 	// {
+    	// 	// 	$('.select-national').fadeIn();
+	    // 	// }
+	    // 	// else
+	    // 	// {
+	    // 	// 	if($('#country_reg').val() != '')
+	    // 	// 	{
+	    // 	// 		$('.select-national').fadeOut();
+	    // 	// 	}
+	    // 	// }
 
-	    	// if($('#country_reg').val() == '236')
-	    	// {
-	    		var urlAction = $('#actionLocation').val();
-	    		var new_trigger = trigger.split('_reg');
-		        $.ajax({
-		            url: urlAction,
-		            dataType: 'json',
-		            type: 'POST',
-		            data: {
-		            	'data_id': data_id, 
-		            	'trigger': new_trigger[0],
-		            	'_token': $('input[name=_token]').val()
-		            },
-		            success: function(response, textStatus, XMLHttpRequest)
-		            {
-		                if(response.trigger=="yes")
-	                	{
-	                		if(trigger == 'country_reg')
-	                		{
-                                if(response.notif.length > 50){
-                                    $('#province_reg').html(response.notif);
-                                } else {
-                                    $('.select-national').fadeOut();
-                                }
-	                		}
-	                		else if(trigger == 'province_reg')
-	                		{
-	                			$('#city_reg').html(response.notif);
-	                		}
-	                		else
-	                		{
-	                			$('#subdistrict_reg').html(response.notif);
-	                		}
-		                }
-		                else
-		                {
-		                     toastr.warning(response.notif)
-		                }
-		            },
-		            error: function(XMLHttpRequest, textStatus, errorThrown)
-		            {
-		            	toastr.remove();
-		                toastr.error('There is something wrong, please refresh page and try again.');
-		            }
-		        });
-	    	// }
-	    });
+        //     // $('.select-national').fadeIn();
+
+	    // 	// if($('#country_reg').val() == '236')
+	    // 	// {
+	    // 		var urlAction = $('#actionLocation').val();
+	    // 		var new_trigger = trigger.split('_reg');
+		//         $.ajax({
+		//             url: urlAction,
+		//             dataType: 'json',
+		//             type: 'POST',
+		//             data: {
+		//             	'data_id': data_id, 
+		//             	'trigger': new_trigger[0],
+		//             	'_token': $('input[name=_token]').val()
+		//             },
+		//             success: function(response, textStatus, XMLHttpRequest)
+		//             {
+		//                 if(response.trigger=="yes")
+	    //             	{
+	    //             		if(trigger == 'country_reg')
+	    //             		{
+        //                         $('#city_reg').html(response.notif);
+        //                         // if(response.notif.length > 50){
+                                    
+        //                         // } else {
+        //                         //     $('.select-national').fadeOut();
+        //                         // }
+	    //             		}
+	    //             		// else if(trigger == 'province_reg')
+	    //             		// {
+	    //             		// 	$('#city_reg').html(response.notif);
+	    //             		// }
+	    //             		// else
+	    //             		// {
+	    //             		// 	$('#subdistrict_reg').html(response.notif);
+	    //             		// }
+		//                 }
+		//                 else
+		//                 {
+		//                      toastr.warning(response.notif)
+		//                 }
+		//             },
+		//             error: function(XMLHttpRequest, textStatus, errorThrown)
+		//             {
+		//             	toastr.remove();
+		//                 toastr.error('There is something wrong, please refresh page and try again.');
+		//             }
+		//         });
+	    // 	// }
+	    // });
 
         $("#login-form").validate({
           rules :{
@@ -195,6 +226,9 @@
             country_reg :{
                 required : true,
             },
+            city_reg :{
+                required : true,
+            },
             address_reg :{
                 required : true,
             },
@@ -225,7 +259,10 @@
                 required: 'Please retype password!',
             },
             country_reg: {
-                required: 'Please choose country!',
+                required: 'Please choose region!',
+            },
+            city_reg: {
+                required: 'Please choose city!',
             },
             address_reg: {
                 required: 'Please input address!',
@@ -255,8 +292,10 @@
                         $('#phone_number').val('');
                         $('#password').val('');
                         $('#password_r').val('');
+
                         $('#address_reg').val('');
                         $('#postalcode_reg').val('');
+                        $('#district_reg').val('');
 
                         // $('#phone_prefix').select2('val', '');
                         // $('#country_reg').select2('val', '');
@@ -266,9 +305,8 @@
 
                         $('#phone_prefix').val('val', '');
                         $('#country_reg').val('val', '');
-                        $('#province_reg').val('val', '');
+                        // $('#province_reg').val('val', '');
                         $('#city_reg').val('val', '');
-                        $('#subdistrict_reg').val('val', '');
 
                         toastr.success(response.notif, '', {timeOut: 3000});
 

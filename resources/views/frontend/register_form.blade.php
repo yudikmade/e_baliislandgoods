@@ -1,4 +1,4 @@
-<div id="myModalRegister" class="modal fade" role="dialog" tabindex="-1">
+<div id="myModalRegister" class="modal fade" role="dialog">
   	<div class="modal-dialog modal-lg">
     	<div class="modal-content">
     		<input type="hidden" name="actionLocation" id="actionLocation" value="{{route('process_shipping_location')}}">
@@ -72,52 +72,35 @@
 					  	</div>
 					  	<div class="col-sm-6">
 				  			<div class="form-group">
-						    	<label for="country" class="form-label">Country <span>*</span></label>
-						    	<!-- <select class="form-control select2" id="country_reg" style="width: 100%;" name="country_reg"> -->
-								<select class="form-control" id="country_reg" style="width: 100%;" name="country_reg">
-						    		<option value="">Choose Country</option>
+						    	<label for="country" class="form-label">Region <span>*</span></label>
+						    	<select class="form-control select2" id="country_reg" style="width: 100%;" name="country_reg">
+						    		<option value="">Choose region</option>
 										@foreach($country  as $countries)
-											<option value="{{$countries->country_id}}">{{$countries->country_name}}</option>
+											<option value="{{$countries->id}}">{{$countries->branch_name}}</option>
 										@endforeach
 						    	</select>
-						    	<!-- <small class="notif-country_reg error none"><i>Please choose country!</i></small> -->
 						  	</div>
-						  	<div class="form-group select-national">
-						  		<label for="province" class="form-label">Province</label>
-								<!-- <select class="form-control select2" style="width: 100%;" name="province" id="province_reg"> -->
-								<select class="form-control" style="width: 100%;" name="province" id="province_reg">
-									<option value="">Choose Province</option>
-								</select>
-								<!-- <small class="notif-province_reg error none"><i>Please choose province!</i></small> -->
+						  	<div class="form-group">
+						  		<label for="city" class="form-label">City <span>*</span></label>
+									<select class="form-control select2" style="width: 100%;" name="city_reg" id="city_reg">
+										<option value="">Choose City</option>
+									</select>
+								</div>
+
+								<div class="form-group">
+									<label for="district_reg" class="form-label">(Sub) District</label>
+									<input type="text" class="form-control" id="district_reg" name="district_reg" value="" />
+								</div>
 							</div>
-							<div class="form-group select-national">
-								<label for="city" class="form-label">City</label>
-								<!-- <select class="form-control select2" name="city" style="width: 100%;" id="city_reg"> -->
-								<select class="form-control" name="city" style="width: 100%;" id="city_reg">
-									<option value="">Choose City</option>
-								</select>
-								<!-- <small class="notif-city_reg error none"><i>Please choose city!</i></small> -->
-							</div>
-							<div class="form-group select-national">
-								<label for="subdistrict" class="form-label">Subdistrict</label>
-								<!-- <select class="form-control select2" name="subdistrict" style="width: 100%;" id="subdistrict_reg"> -->
-								<select class="form-control" name="subdistrict" style="width: 100%;" id="subdistrict_reg">
-									<option value="">Choose Subdistrict</option>
-								</select>
-								<!-- <small class="notif-subdistrict_reg error none"><i>Please choose subdistrict!</i></small> -->
-							</div>
-						</div>
 						<div class="col-sm-6">
 							<div class="form-group">
 								<label for="address" class="form-label">Address <span>*</span></label>
-								<textarea class="form-control no-radius" rows="4" name="address_reg" id="address_reg"></textarea>
-								<!-- <small class="notif-address error none"><i>Please input address!</i></small> -->
+								<textarea class="form-control no-radius" rows="2" name="address_reg" id="address_reg"></textarea>
 							</div>
 
 							<div class="form-group">
 								<label for="postalcode" class="form-label">Postal Code <span>*</span></label>
 								<input type="text" class="form-control" id="postalcode_reg" name="postalcode_reg" value="" />
-								<!-- <small class="notif-postalcode error none"><i>Please input zip/post code!</i></small> -->
 							</div>
 					  	</div>
 				  	</div>

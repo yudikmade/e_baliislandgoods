@@ -15,6 +15,7 @@ use App\Models\EmProduct;
 use App\Models\EmProductImg;
 use App\Models\EmProductSku;
 use App\Models\MCountry;
+use App\Models\TgiCity;
 use App\Models\MProvince;
 use App\Models\MCity;
 use App\Models\MSubdistrict;
@@ -930,6 +931,19 @@ class ProcessController extends Controller
         {
             $input = $request->all();
 
+            if($input['trigger'] == 'city_tgi'){
+                $getData = TgiCity::getWhere([['country_id', '=', $input['data_id']]], "(city_name like '%".$input['search']."%')", false);
+                $city_data = array();
+
+                foreach ($getData as $key) {
+                    array_push($city_data, ['id' => $key->id, 'text' => $key->city_name]);
+                }
+                $result['trigger'] = 'yes';
+                $result['notif'] = $city_data;
+
+                return $result;
+            }
+
             if($input['trigger'] == 'country')
             {
                 $getData = MProvince::getWhere([['country_id', '=', $input['data_id']], ['status', '=', '1']], '', false);
@@ -942,31 +956,30 @@ class ProcessController extends Controller
                 $result['notif'] = $htmlBuilder;
             }
 
-            if($input['trigger'] == 'province')
-            {
-                $getData = MCity::getWhere([['province_id', '=', $input['data_id']], ['status', '=', '1']], '', false);
-                $htmlBuilder = '<option value="">Choose City</option>';
-                foreach ($getData as $key) 
-                {
-                    $htmlBuilder .= '<option value="'.$key->city_id.'">'.$key->city_name.'</option>';
-                }
-                $result['trigger'] = 'yes';
-                $result['notif'] = $htmlBuilder;
-            }
+            // if($input['trigger'] == 'province')
+            // {
+            //     $getData = MCity::getWhere([['province_id', '=', $input['data_id']], ['status', '=', '1']], '', false);
+            //     $htmlBuilder = '<option value="">Choose City</option>';
+            //     foreach ($getData as $key) 
+            //     {
+            //         $htmlBuilder .= '<option value="'.$key->city_id.'">'.$key->city_name.'</option>';
+            //     }
+            //     $result['trigger'] = 'yes';
+            //     $result['notif'] = $htmlBuilder;
+            // }
 
-            if($input['trigger'] == 'city')
-            {
-                $getData = MSubdistrict::getWhere([['city_id', '=', $input['data_id']], ['status', '=', '1']], '', false);
-                $htmlBuilder = '<option value="">Choose Subdistrict</option>';
-                foreach ($getData as $key) 
-                {
-                    $htmlBuilder .= '<option value="'.$key->subdistrict_id.'">'.$key->subdistrict_name.'</option>';
-                }
-                $result['trigger'] = 'yes';
-                $result['notif'] = $htmlBuilder;
-            }
+            // if($input['trigger'] == 'city')
+            // {
+            //     $getData = MSubdistrict::getWhere([['city_id', '=', $input['data_id']], ['status', '=', '1']], '', false);
+            //     $htmlBuilder = '<option value="">Choose Subdistrict</option>';
+            //     foreach ($getData as $key) 
+            //     {
+            //         $htmlBuilder .= '<option value="'.$key->subdistrict_id.'">'.$key->subdistrict_name.'</option>';
+            //     }
+            //     $result['trigger'] = 'yes';
+            //     $result['notif'] = $htmlBuilder;
+            // }
         }
-
         echo json_encode($result);
     }
 
@@ -1122,6 +1135,7 @@ class ProcessController extends Controller
         $result['notif'] = 'Sorry, the server was unable to process your request.';
         $notif = '';
         $triggerValidation = true;
+        $input = $request->all();
 
         //validation user
         if(Session::get(env('SES_FRONTEND_ID')) == null)
@@ -1152,15 +1166,17 @@ class ProcessController extends Controller
 
         $validator = Validator::make(request()->all(), [
             'country' => 'required',
+            'city' => 'required',
             'address' => 'required',
             'postalcode' => 'required',
             'shipping_choose' => 'required',
         ],
         [
-            'country.required' => 'Please choose country.',
+            'country.required' => 'Please choose region.',
+            'city.required' => 'Please choose city.',
             'address.required' => 'Please input address.',
             'postalcode.required' => 'Please input postal code.',
-            'shipping_choose.required' => 'Please select delivery. Change the shipping address if no shipping method options are available.',
+            'shipping_choose.required' => 'Please select delivery or change the shipping address if no shipping method options are available.',
         ]);
         
         if($validator->fails()) 
@@ -1175,273 +1191,215 @@ class ProcessController extends Controller
 
         if($triggerValidation)
         {
-            $validator = Validator::make(request()->all(), [
-                'province' => 'required',
-                'city' => 'required',
-            ],
-            [
-                'province.required' => 'Please choose province.',
-                'city.required' => 'Please choose city.',
-            ]);
+            $amount = 0;
 
-            if($validator->fails()) 
+            $trans_id = $input['trans_id'];
+
+            $arraySession = array();
+            if(Session::get(env('SES_FRONTEND_ID')) == null)
             {
-                foreach ($validator->errors()->all() as $messages) 
-                {
-                    $notif .= $messages.'<br>';
-                }
+                $first_name = $input['first_name'];
+                $last_name = $input['last_name'];
+                $phone_prefix = $input['phone_prefix'];
+                $phone_number = $input['phone_number'];
 
-                $triggerValidation = false;
+                $result['profile_cus'] = '';
+                EmTransactionMeta::updateMeta(array('transaction_id' => $trans_id, 'meta_key' => 'name', 'meta_description' => $first_name.', '.$last_name));
+                EmTransactionMeta::updateMeta(array('transaction_id' => $trans_id, 'meta_key' => 'first_name', 'meta_description' => $first_name));
+                EmTransactionMeta::updateMeta(array('transaction_id' => $trans_id, 'meta_key' => 'last_name', 'meta_description' => $last_name));
+                EmTransactionMeta::updateMeta(array('transaction_id' => $trans_id, 'meta_key' => 'phone_number', 'meta_description' => $phone_prefix.$phone_number));
+                EmTransactionMeta::updateMeta(array('transaction_id' => $trans_id, 'meta_key' => 'phone_prefix', 'meta_description' => $phone_prefix));
+
+                $arraySession['first_name'] = $first_name;
+                $arraySession['last_name'] = $last_name;
+                $arraySession['phone_prefix'] = $phone_prefix;
+                $arraySession['phone_number'] = $phone_number;
             }
 
-            $input = $request->all();
-            if($triggerValidation)
+            //update shipping address
+            $shipping_choose = $input['shipping_choose'];
+            $tmpData = explode('_', $shipping_choose);
+            $tmpShippingPacket = explode(':', $tmpData[0]);
+            $shippingPacket = $tmpData[0];
+            $shippingPacketDescription = '';
+            if(sizeof($tmpShippingPacket) == 2)
             {
-                $amount = 0;
+                $shippingPacket = $tmpShippingPacket[0];
+                $shippingPacketDescription = $tmpShippingPacket[1];
+            }
 
-                $trans_id = $input['trans_id'];
+            $shippingCost = $tmpData[1];
+            $shippingEstimate = $tmpData[3];
+            $rupiahCost = $tmpData[2];
 
-                $arraySession = array();
+            $dataUpdateShipping = [];
+
+            $result['city'] = '';
+            $result['subdistrict'] = $input['subdistrict'];
+
+            $getCountry = Common_helper::setLocation('country', isset($input['country']) ? $input['country'] : "");
+            // $getProvince = Common_helper::setLocation('province', isset($input['province']) ? $input['province'] : "");
+            $getCity = Common_helper::setLocation('city', isset($input['city']) ? $input['city'] : "");
+            // $getSubdistrict = Common_helper::setLocation('subdistrict', isset($input['subdistrict']) ? $input['subdistrict'] : "");
+
+            
+            $dataUpdateShipping = [
+                'country_id' => $getCountry['id'],
+                'country_name' => $getCountry['name'],
+                'city_id' => $getCity['id'],
+                'city_name' => $getCity['name'],
+                
+                'subdistrict_name' => $input['subdistrict'],
+                'postal_code' => $input['postalcode'],
+                'detail_address' => $input['address'],
+                'shipping_estimate' => $shippingEstimate,
+                'rupiah_cost' => $rupiahCost
+            ];
+
+            $result['country'] = $getCountry['name'];
+            // $result['province'] = $getProvince['name'];
+            $result['city'] = $getCity['name'];
+            $result['subdistrict'] = $input['subdistrict'];
+
+            $arraySession['country_id'] = $getCountry['id'];
+            $arraySession['country_name'] = $getCountry['name'];
+            $arraySession['city_id'] = $getCity['id'];
+            $arraySession['city_name'] = $getCity['name'];
+            // $arraySession['province_id'] = $getProvince['id'];
+            // $arraySession['province_name'] = $getProvince['id'];
+            // $arraySession['subdistrict_id'] = $getSubdistrict['id'];
+            $arraySession['subdistrict_name'] = $input['subdistrict'];
+            $arraySession['postal_code'] = $input['postalcode'];
+            $arraySession['address'] = $input['address'];
+
+            $getShipping = EmTransactionShipping::getWhere([['transaction_id', '=', $trans_id]], '', false);
+            $dataUpdateShipping['shipping_packet'] = $shippingPacket;
+            $dataUpdateShipping['shipping_description'] = $shippingPacketDescription;
+            $dataUpdateShipping['shipping_estimate'] = $shippingEstimate;
+            $dataUpdateShipping['rupiah_cost'] = $rupiahCost;
+            if(sizeof($getShipping) > 0){
+                EmTransactionShipping::updateDataByTransaction($trans_id, $dataUpdateShipping);
+            }
+            else
+            {
+                $dataUpdateShipping['transaction_id'] = $trans_id;
+                EmTransactionShipping::insertData($dataUpdateShipping);   
+            }
+            $result['shipping_cost'] = Common_helper::convert_to_format_currency(Common_helper::set_two_nominal_after_point($shippingCost));
+
+
+            //update shipping cost
+            $getTransaction = EmTransaction::getWhere([['transaction_id', '=', $trans_id]], '', false);
+            $totalPayment = 0;
+            $_coupon = 0;
+            foreach ($getTransaction as $key) 
+            {
+                if(!is_null($key->coupon)){
+                    $_coupon = $key->coupon;
+                }
+                $totalPayment = ($key->total_payment + $shippingCost - $key->shipping_cost) - $_coupon;
+            }
+
+            if($totalPayment < 0){
+                $totalPayment = 0;
+            } else {
+                $totalPayment = Common_helper::check_decimal($totalPayment);
+            }
+
+            $amount = $totalPayment;
+            // convert to IDR
+            // if(Session::get(env('SES_GLOBAL_CURRENCY')) == '2'){
+            //     $get_convertion = MCurrency::where('currency_id', Session::get(env('SES_GLOBAL_CURRENCY')))->first();
+            //     $amount = round($amount * $get_convertion->covertion);
+            // }
+            EmTransactionMeta::updateMeta(array('transaction_id' => $trans_id, 'meta_key' => 'amount_idr', 'meta_description' => $amount));
+
+            // echo $shippingCost;
+            EmTransaction::updateData($trans_id, array('shipping_cost' => $shippingCost, 'total_payment' => $totalPayment));
+            $result['total_payment'] = Common_helper::convert_to_format_currency(Common_helper::set_two_nominal_after_point($totalPayment));
+
+            Session::put(sha1(env('AUTHOR_SITE').'_checkout_shipping'), $arraySession);
+
+            // send invoice
+            $getTransaction = EmTransaction::getWhereLastOne([['transaction_id', '=', $trans_id]]);
+            $pajak = 0;
+            $additional_price = 0;
+            if(isset($getTransaction->transaction_id))
+            {
+                $pajak = $getTransaction->tax;
+                $additional_price = $getTransaction->additional_price;
+
+                $message['unique_code'] = $getTransaction->unique_code;
+                $message['invoice_number'] = $getTransaction->transaction_code;
+                $message['first_name'] = '';
+                $message['last_name'] = '';
+                $message['phone_number'] = '';
+                $tmpEmailCustomer = '';
                 if(Session::get(env('SES_FRONTEND_ID')) == null)
                 {
-                    $first_name = $input['first_name'];
-                    $last_name = $input['last_name'];
-                    $phone_prefix = $input['phone_prefix'];
-                    $phone_number = $input['phone_number'];
-
-                    $result['profile_cus'] = '';
-                    EmTransactionMeta::updateMeta(array('transaction_id' => $trans_id, 'meta_key' => 'name', 'meta_description' => $first_name.', '.$last_name));
-                    EmTransactionMeta::updateMeta(array('transaction_id' => $trans_id, 'meta_key' => 'first_name', 'meta_description' => $first_name));
-                    EmTransactionMeta::updateMeta(array('transaction_id' => $trans_id, 'meta_key' => 'last_name', 'meta_description' => $last_name));
-                    EmTransactionMeta::updateMeta(array('transaction_id' => $trans_id, 'meta_key' => 'phone_number', 'meta_description' => $phone_prefix.$phone_number));
-                    EmTransactionMeta::updateMeta(array('transaction_id' => $trans_id, 'meta_key' => 'phone_prefix', 'meta_description' => $phone_prefix));
-
-                    $arraySession['first_name'] = $first_name;
-                    $arraySession['last_name'] = $last_name;
-                    $arraySession['phone_prefix'] = $phone_prefix;
-                    $arraySession['phone_number'] = $phone_number;
-                }
-
-                //update shipping address
-                $shipping_choose = $input['shipping_choose'];
-                $tmpData = explode('_', $shipping_choose);
-                $tmpShippingPacket = explode(':', $tmpData[0]);
-                $shippingPacket = $tmpData[0];
-                $shippingPacketDescription = '';
-                if(sizeof($tmpShippingPacket) == 2)
-                {
-                    $shippingPacket = $tmpShippingPacket[0];
-                    $shippingPacketDescription = $tmpShippingPacket[1];
-                }
-
-                $shippingCost = $tmpData[1];
-                $shippingEstimate = $tmpData[3];
-                $rupiahCost = $tmpData[2];
-
-                $dataUpdateShipping = [];
-
-                $result['province'] = '';
-                $result['city'] = '';
-                $result['subdistrict'] = '';
-
-                $getCountry = Common_helper::setLocation('country', isset($input['country']) ? $input['country'] : "");
-                $getProvince = Common_helper::setLocation('province', isset($input['province']) ? $input['province'] : "");
-                $getCity = Common_helper::setLocation('city', isset($input['city']) ? $input['city'] : "");
-                $getSubdistrict = Common_helper::setLocation('subdistrict', isset($input['subdistrict']) ? $input['subdistrict'] : "");
-
-                $result['country'] = $getCountry['name'];
-                if($input['country'] == '236')
-                {
-                    $dataUpdateShipping = [
-                        'country_id' => $getCountry['id'],
-                        'country_name' => $getCountry['name'],
-                        'city_id' => $getCity['id'],
-                        'city_name' => $getCity['name'],
-                        'province_id' => $getProvince['id'],
-                        'province_name' => $getProvince['name'],
-                        'subdistrict_id' => $getSubdistrict['id'],
-                        'subdistrict_name' => $getSubdistrict['name'],
-                        'postal_code' => $input['postalcode'],
-                        'detail_address' => $input['address'],
-                        'shipping_estimate' => $shippingEstimate,
-                        'rupiah_cost' => $rupiahCost
-                    ];
-
-                    $result['province'] = $getProvince['name'];
-                    $result['city'] = $getCity['name'];
-                    $result['subdistrict'] = $getSubdistrict['name'];
-
-                    $arraySession['country_id'] = $getCountry['id'];
-                    $arraySession['country_name'] = $getCountry['name'];
-                    $arraySession['city_id'] = $getCity['id'];
-                    $arraySession['city_name'] = $getCity['name'];
-                    $arraySession['province_id'] = $getProvince['id'];
-                    $arraySession['province_name'] = $getProvince['id'];
-                    $arraySession['subdistrict_id'] = $getSubdistrict['id'];
-                    $arraySession['subdistrict_name'] = $getSubdistrict['name'];
-                    $arraySession['postal_code'] = $input['postalcode'];
-                    $arraySession['address'] = $input['address'];
+                    $message['first_name'] = $input['first_name'];
+                    $message['last_name'] = $input['last_name'];
+                    $message['phone_number'] = $input['phone_prefix'].$input['phone_number'];
                 }
                 else
                 {
-                    $dataUpdateShipping = [
-                        'country_id' => $getCountry['id'],
-                        'country_name' => $getCountry['name'],
-                        'city_id' => $getCity['id'],
-                        'city_name' => $getCity['name'],
-                        'province_id' => $getProvince['id'],
-                        'province_name' => $getProvince['name'],
-                        'postal_code' => $input['postalcode'],
-                        'detail_address' => $input['address'],
-                        'shipping_estimate' => $shippingEstimate,
-                        'rupiah_cost' => $rupiahCost
-                    ]; 
-
-                    $result['province'] = $getProvince['name'];
-                    $result['city'] = $getCity['name']; 
-
-                    $arraySession['country_id'] = $getCountry['id'];
-                    $arraySession['country_name'] = $getCountry['name'];
-                    $arraySession['city_id'] = $getCity['id'];
-                    $arraySession['city_name'] = $getCity['name'];
-                    $arraySession['province_id'] = $getProvince['id'];
-                    $arraySession['province_name'] = $getProvince['id'];
-                    $arraySession['subdistrict_id'] = $getSubdistrict['id'];
-                    $arraySession['subdistrict_name'] = $getSubdistrict['name'];
-                    $arraySession['postal_code'] = $input['postalcode'];
-                    $arraySession['address'] = $input['address'];
+                    $getCustomer = EmCustomer::getWhere([['customer_id', '=', $getTransaction->customer_id]], '', false);
+                    foreach ($getCustomer as $key) 
+                    {
+                        $message['first_name'] = $key->first_name;
+                        $message['last_name'] = $key->last_name;
+                        $tmpEmailCustomer = $key->email;
+                        $message['phone_number'] = $key->phone_number;
+                    }
                 }
 
-                $getShipping = EmTransactionShipping::getWhere([['transaction_id', '=', $trans_id]], '', false);
-                $dataUpdateShipping['shipping_packet'] = $shippingPacket;
-                $dataUpdateShipping['shipping_description'] = $shippingPacketDescription;
-                $dataUpdateShipping['shipping_estimate'] = $shippingEstimate;
-                $dataUpdateShipping['rupiah_cost'] = $rupiahCost;
-                if(sizeof($getShipping) > 0)
+                $getDetails = EmTransactionDetail::transactionDetail([['em_transaction_detail.transaction_id', '=', $getTransaction->transaction_id]]);
+                $tmpData = array();
+                foreach ($getDetails as $key) 
                 {
-                    EmTransactionShipping::updateDataByTransaction($trans_id, $dataUpdateShipping);
+                    $tmp = array(
+                        'product_id' => $key->product_id,
+                        'product_name' => $key->product_name,
+                        'size' => $key->size,
+                        'color_name' => $key->color_name,
+                        'price' => $key->price,
+                        'discount' => $key->discount,
+                        'qty' => $key->qty,
+                    );
+
+                    array_push($tmpData, $tmp);
                 }
-                else
+
+                $message['details'] = $tmpData;
+
+                $emailCustomer = '';
+
+                $getMeta = EmTransactionMeta::getMeTa(array('transaction_id' => $getTransaction->transaction_id, 'meta_key' => 'email'));
+                if(isset($getMeta->meta_description))
                 {
-                    $dataUpdateShipping['transaction_id'] = $trans_id;
-                    EmTransactionShipping::insertData($dataUpdateShipping);   
+                    $emailCustomer = $getMeta->meta_description;
                 }
-                $result['shipping_cost'] = Common_helper::convert_to_format_currency(Common_helper::set_two_nominal_after_point($shippingCost));
-
-
-                //update shipping cost
-                $getTransaction = EmTransaction::getWhere([['transaction_id', '=', $trans_id]], '', false);
-                $totalPayment = 0;
-                $_coupon = 0;
-                foreach ($getTransaction as $key) 
+                if($emailCustomer == '' || $emailCustomer == null)
                 {
-                    if(!is_null($key->coupon)){
-                        $_coupon = $key->coupon;
-                    }
-                    $totalPayment = ($key->total_payment + $shippingCost - $key->shipping_cost) - $_coupon;
+                    $emailCustomer = $tmpEmailCustomer;
                 }
 
-                if($totalPayment < 0){
-                    $totalPayment = 0;
-                } else {
-                    $totalPayment = Common_helper::check_decimal($totalPayment);
-                }
-
-                $amount = $totalPayment;
-                // convert to IDR
-                // if(Session::get(env('SES_GLOBAL_CURRENCY')) == '2'){
-                //     $get_convertion = MCurrency::where('currency_id', Session::get(env('SES_GLOBAL_CURRENCY')))->first();
-                //     $amount = round($amount * $get_convertion->covertion);
-                // }
-                EmTransactionMeta::updateMeta(array('transaction_id' => $trans_id, 'meta_key' => 'amount_idr', 'meta_description' => $amount));
-
-                // echo $shippingCost;
-                EmTransaction::updateData($trans_id, array('shipping_cost' => $shippingCost, 'total_payment' => $totalPayment));
-                $result['total_payment'] = Common_helper::convert_to_format_currency(Common_helper::set_two_nominal_after_point($totalPayment));
-
-                Session::put(sha1(env('AUTHOR_SITE').'_checkout_shipping'), $arraySession);
-
-                // send invoice
-                $getTransaction = EmTransaction::getWhereLastOne([['transaction_id', '=', $trans_id]]);
-                $pajak = 0;
-                $additional_price = 0;
-                if(isset($getTransaction->transaction_id))
+                if($getTransaction->status == '1')
                 {
-                    $pajak = $getTransaction->tax;
-                    $additional_price = $getTransaction->additional_price;
-
-                    $message['unique_code'] = $getTransaction->unique_code;
-                    $message['invoice_number'] = $getTransaction->transaction_code;
-                    $message['first_name'] = '';
-                    $message['last_name'] = '';
-                    $message['phone_number'] = '';
-                    $tmpEmailCustomer = '';
-                    if(Session::get(env('SES_FRONTEND_ID')) == null)
+                    if($emailCustomer != '' && sizeof($message) > 0)
                     {
-                        $message['first_name'] = $input['first_name'];
-                        $message['last_name'] = $input['last_name'];
-                        $message['phone_number'] = $input['phone_prefix'].$input['phone_number'];
-                    }
-                    else
-                    {
-                        $getCustomer = EmCustomer::getWhere([['customer_id', '=', $getTransaction->customer_id]], '', false);
-                        foreach ($getCustomer as $key) 
-                        {
-                            $message['first_name'] = $key->first_name;
-                            $message['last_name'] = $key->last_name;
-                            $tmpEmailCustomer = $key->email;
-                            $message['phone_number'] = $key->phone_number;
-                        }
-                    }
-
-                    $getDetails = EmTransactionDetail::transactionDetail([['em_transaction_detail.transaction_id', '=', $getTransaction->transaction_id]]);
-                    $tmpData = array();
-                    foreach ($getDetails as $key) 
-                    {
-                        $tmp = array(
-                            'product_id' => $key->product_id,
-                            'product_name' => $key->product_name,
-                            'size' => $key->size,
-                            'color_name' => $key->color_name,
-                            'price' => $key->price,
-                            'discount' => $key->discount,
-                            'qty' => $key->qty,
-                        );
-
-                        array_push($tmpData, $tmp);
-                    }
-
-                    $message['details'] = $tmpData;
-
-                    $emailCustomer = '';
-
-                    $getMeta = EmTransactionMeta::getMeTa(array('transaction_id' => $getTransaction->transaction_id, 'meta_key' => 'email'));
-                    if(isset($getMeta->meta_description))
-                    {
-                        $emailCustomer = $getMeta->meta_description;
-                    }
-                    if($emailCustomer == '' || $emailCustomer == null)
-                    {
-                        $emailCustomer = $tmpEmailCustomer;
-                    }
-
-                    if($getTransaction->status == '1')
-                    {
-                        if($emailCustomer != '' && sizeof($message) > 0)
-                        {
-                            // Common_helper::send_email($emailCustomer, $message, 'Selesaikan pesanan anda dengan nomor pesanan '.env('AUTHOR_SITE'), 'invoice');
-                            // Common_helper::send_email(env('MAIL_REPLAY_TO'), $message, 'ORDER BARU DARI '.$message['first_name'].' '.$message['last_name'], 'invoice_to_admin');
-                        }
+                        // Common_helper::send_email($emailCustomer, $message, 'Selesaikan pesanan anda dengan nomor pesanan '.env('AUTHOR_SITE'), 'invoice');
+                        // Common_helper::send_email(env('MAIL_REPLAY_TO'), $message, 'ORDER BARU DARI '.$message['first_name'].' '.$message['last_name'], 'invoice_to_admin');
                     }
                 }
-
-
-                $result['amount'] = $amount;
-
-
-                $result['snap_token'] = '';
-                $result['trigger'] = 'yes';
             }
+
+
+            $result['amount'] = $amount;
+
+
+            $result['snap_token'] = '';
+            $result['trigger'] = 'yes';
         }
 
         $result['notif'] = $notif;

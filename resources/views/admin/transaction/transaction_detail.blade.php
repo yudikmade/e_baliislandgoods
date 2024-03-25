@@ -246,15 +246,9 @@
                                                 </div>
                                                 <div class="col-sm-7">
                                                     <div class="form-group">
-                                                        <label for="product_name" class="col-sm-3 control-label">Country : </label>
+                                                        <label for="product_name" class="col-sm-3 control-label">Region : </label>
                                                         <div class="col-sm-9" style="padding-top: 7px;">
                                                             {{$shippings->country_name}}
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label for="product_name" class="col-sm-3 control-label">State : </label>
-                                                        <div class="col-sm-9" style="padding-top: 7px;">
-                                                            {{$shippings->province_name}}
                                                         </div>
                                                     </div>
                                                     <div class="form-group">
@@ -263,14 +257,12 @@
                                                             {{$shippings->city_name}}
                                                         </div>
                                                     </div>
-                                                    @if($shippings->country_id == '236')
-                                                        <div class="form-group">
-                                                            <label for="product_name" class="col-sm-3 control-label">Subdistrict : </label>
-                                                            <div class="col-sm-9" style="padding-top: 7px;">
-                                                                {{$shippings->subdistrict_name}}
-                                                            </div>
+                                                    <div class="form-group">
+                                                        <label for="product_name" class="col-sm-3 control-label">Subdistrict : </label>
+                                                        <div class="col-sm-9" style="padding-top: 7px;">
+                                                            {{$shippings->subdistrict_name}}
                                                         </div>
-                                                    @endif
+                                                    </div>
                                                     <div class="form-group">
                                                         <label for="product_name" class="col-sm-3 control-label">Address : </label>
                                                         <div class="col-sm-9" style="padding-top: 7px;">

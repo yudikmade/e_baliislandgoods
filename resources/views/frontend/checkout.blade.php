@@ -18,6 +18,10 @@ body {
     width: -webkit-fill-available !important;  /* Mozilla-based browsers will ignore this. */
     width: fill-available !important;
 }
+.select2-container--default .select2-search--dropdown .select2-search__field:focus-visible,
+    .select2-container .select2-selection:focus-visible{
+        outline: none !important;
+    }
 #showBtnStripeFree {
     display: none;
 }
@@ -128,22 +132,12 @@ body {
                 foreach ($shipping_data as $key => $value) {
                     $country_id = $value->country_id;
                     $country_name = $value->country_name;
-                    if($value->country_id == '236')
-                    {
-                        $national = '';
-                        $province_id = $value->province_id;;
-                        $province_name = $value->province_name;
-                        $city_id = $value->city_id;
-                        $city_name = $value->city_name;
-                        $subdistrict_id = $value->subdistrict_id;
-                        $subdistrict_name = $value->subdistrict_name;
-                        $address = $value->detail_address;
-                        $postalcode = $value->postal_code;
-                    }
-                    else
-                    {	
-                        $national = ' none ';
-                    }
+                    $city_id = $value->city_id;
+                    $city_name = $value->city_name;
+                    $subdistrict_name = $value->subdistrict_name;
+
+                    $address = $value->detail_address;
+                    $postalcode = $value->postal_code;
                 }
             }
 
@@ -164,8 +158,6 @@ body {
                     $national = ' none ';
                 }
                 $country_name = $tmpData['country_name'];
-                $province_id = $tmpData['province_id'];
-                $province_name = $tmpData['province_name'];
                 $city_name = $tmpData['city_name'];
                 $address = $tmpData['address'];
 
@@ -296,90 +288,36 @@ body {
                                     @endif
                                     <div class="col-sm-6 no-pdg-lt">
                                         <div class="form-group">
-                                            <label for="country">Country</label>
-                                            <select class="form-control select2" id="country" style="width: 100%;" name="country">
-                                                <option value="">Choose Country</option>
-                                                    @foreach($country_data  as $countries)
-                                                        @if($country_id == $countries->country_id)
-                                                            <option value="{{$countries->country_id}}" selected>{{$countries->country_name}}</option>
+                                            <label for="country">Region</label>
+                                            <select class="form-control select2" id="country_reg" style="width: 100%;" name="country">
+                                                <option value="">Choose Region</option>
+                                                    @foreach($country  as $countries)
+                                                        @if($country_id == $countries->id)
+                                                            <option value="{{$countries->id}}" selected>{{$countries->branch_name}}</option>
                                                         @else
-                                                            <option value="{{$countries->country_id}}">{{$countries->country_name}}</option>
+                                                            <option value="{{$countries->id}}">{{$countries->branch_name}}</option>
                                                         @endif
                                                     @endforeach
                                             </select>
                                             <small class="notif-country error none"><i>Please choose country!</i></small>
                                         </div>
-                                        <div class="form-group select-province select-national {{$national}}">
-                                            <label for="province">Province</label>
-                                            <select class="form-control select2" style="width: 100%;" name="province" id="province">
-                                                <option value="">Choose Province</option>
-                                                <?php
-                                                    if($province_id != '')
-                                                    {
-                                                        echo '<option value="'.$province_id.'" selected>'.$province_name.'</option>';
-                                                    }
-                                                    // foreach($province_data  as $countries)
-                                                    // {
-                                                    // 	if($province_id == $countries->province_id)
-                                                    // 	{
-                                                    // 		echo '<option value="'.$countries->province_id.'" selected>'.$countries->province_name.'</option>';
-                                                    // 	}
-                                                    // 	else
-                                                    // 	{
-                                                    // 		echo '<option value="'.$countries->province_id.'">'.$countries->province_name.'</option>';
-                                                    // 	}
-                                                    // }
-                                                ?>
-                                            </select>
-                                            <small class="notif-province error none"><i>Please choose province!</i></small>
-                                        </div>
-                                        <div class="form-group select-city select-national {{$national}}">
+
+                                        <div class="form-group select-city">
                                             <label for="city">City</label>
-                                            <select class="form-control select2" name="city" style="width: 100%;" id="city">
+                                            <select class="form-control select2" name="city" style="width: 100%;" id="city_reg">
                                                 <option value="">Choose City</option>
                                                 <?php
-                                                    if($city_id != '')
-                                                    {
+                                                    if($city_id != ''){
                                                         echo '<option value="'.$city_id.'" selected>'.$city_name.'</option>';
                                                     }
-                                                    // foreach($city_data  as $countries)
-                                                    // {
-                                                    // 	if($city_id == $countries->city_id)
-                                                    // 	{
-                                                    // 		echo '<option value="'.$countries->city_id.'" selected>'.$countries->city_name.'</option>';
-                                                    // 	}
-                                                    // 	else
-                                                    // 	{
-                                                    // 		echo '<option value="'.$countries->city_id.'">'.$countries->city_name.'</option>';
-                                                    // 	}
-                                                    // }
                                                 ?>
                                             </select>
                                             <small class="notif-city error none"><i>Please choose city!</i></small>
                                         </div>
-                                        <div class="form-group select-subdistrict select-national {{$national}}">
-                                            <label for="subdistrict">Subdistrict</label>
-                                            <select class="form-control select2" name="subdistrict" style="width: 100%;" id="subdistrict">
-                                                <option value="">Choose Subdistrict</option>
-                                                <?php
-                                                    if($subdistrict_id != '')
-                                                    {
-                                                        echo '<option value="'.$subdistrict_id.'" selected>'.$subdistrict_name.'</option>';
-                                                    }
-                                                    // foreach($subdistrict_data  as $countries)
-                                                    // {
-                                                    // 	if($subdistrict_id == $countries->subdistrict_id)
-                                                    // 	{
-                                                    // 		echo '<option value="'.$countries->city_id.'" selected>'.$countries->subdistrict_name.'</option>';
-                                                    // 	}
-                                                    // 	else
-                                                    // 	{
-                                                    // 		echo '<option value="'.$countries->city_id.'">'.$countries->subdistrict_name.'</option>';
-                                                    // 	}
-                                                    // }
-                                                ?>
-                                            </select>
-                                            <small class="notif-subdistrict error none"><i>Please choose subdistrict!</i></small>
+                                        <div class="form-group select-subdistrict select-national">
+                                            <label for="subdistrict">(Sub) District</label>
+                                            <input type="text" class="form-control" name="subdistrict" id="subdistrict" value="{{$subdistrict_name}}" />
+                                            <small class="notif-subdistrict error none"><i>Please input subdistrict!</i></small>
                                         </div>
                                     </div>
                                     <div class="col-sm-6 no-pdg-rg">
@@ -962,21 +900,49 @@ $(document).ready(function() {
     $('.select2').select2();
 
     <?php
-        if(sizeof($getTimerTrans) > 0)
-        {
+        // if(sizeof($getTimerTrans) > 0)
+        // {
     ?>
-    $(function(){
-        $("#future_date").countdowntimer({
-            startDate : "<?=$getTimerTrans['timeStart']?>",
-            dateAndTime : "<?=$getTimerTrans['timeEnd']?>",
-            size : "lg",
-            regexpMatchFormat : "([0-9]{1,2}):([0-9]{1,2}):([0-9]{1,2}):([0-9]{1,2}):([0-9]{1,2}):([0-9]{1,2})",
-            regexpReplaceWith : "$1<sup>years</sup> / $2<sup>months</sup> / $3<sup>days</sup> / $4<sup>hours</sup> / $5<sup>minutes</sup> / $6<sup>seconds</sup>"
-        });
-    });
+    // $(function(){
+    //     $("#future_date").countdowntimer({
+    //         startDate : "<?=$getTimerTrans['timeStart']?>",
+    //         dateAndTime : "<?=$getTimerTrans['timeEnd']?>",
+    //         size : "lg",
+    //         regexpMatchFormat : "([0-9]{1,2}):([0-9]{1,2}):([0-9]{1,2}):([0-9]{1,2}):([0-9]{1,2}):([0-9]{1,2})",
+    //         regexpReplaceWith : "$1<sup>years</sup> / $2<sup>months</sup> / $3<sup>days</sup> / $4<sup>hours</sup> / $5<sup>minutes</sup> / $6<sup>seconds</sup>"
+    //     });
+    // });
     <?php
-        }
+        // }
     ?>
+
+    $('#city_reg').select2({
+        placeholder: "Searching location",
+        minimumInputLength: 3,
+        ajax: {
+            type: 'post',
+            delay: 300,
+            data: function (params) {
+                return {
+                    search: params.term, // search term,
+                    'data_id': $('#country').val(),
+                    'trigger': 'city_tgi',
+                    '_token': $('input[name=_token]').val()
+                };
+            },
+            url: $('#actionLocation').val(),
+            processResults: function (data) {
+                return {
+                    results: $.map(data.notif, function (obj) {
+                        return {
+                            id: obj.id,
+                            text: obj.text,
+                        };
+                    })
+                };
+            }
+        }
+    });
 
     $('.edit-cart').click(function(e){
         e.preventDefault();
@@ -1062,9 +1028,8 @@ $(document).ready(function() {
                             '<a class="cursor edit-shipping pull-right" href="javascript:void(0);">Change Shipping</a>'+
                             addInfo+
                             '<div class="after-submit mt-3">'+response.country+'</div>'+
-                            '<div class="after-submit">'+response.province+'</div>'+
                             '<div class="after-submit">'+response.city+'</div>'+
-                            '<div class="after-submit">'+response.subdistrict+'</div>'+
+                            '<div class="after-submit">'+(response.subdistrict?response.subdistrict:'')+'</div>'+
                             '<div class="after-submit">'+$('#address').val()+'</div>'+
                             '<div class="after-submit">'+$('#postalcode').val()+'</div>'+
                         '');
@@ -1099,198 +1064,160 @@ $(document).ready(function() {
         });
     });
 
-    function get_shipping_cost()
-    {
-        var triggerNational = true;
-        if($('#country').val() != '')
-        {
-            if($('#country').val() == '236')
+    function get_shipping_cost(){
+        NProgress.start();
+        var urlAction = $('#actionEstimate').val();
+        $.ajax({
+            url: urlAction,
+            dataType: 'json',
+            type: 'POST',
+            data: {
+                'trans_id': $('#form-shipping').find('input[name=trans_id]').val(), 
+                'country': $('#country_reg').val(), 
+                'city': $('#city_reg').val(),
+                'subdistrict': $('#subdistrict').val(),
+                'postalcode': $('#postalcode').val(),
+                'address': $('#address').val(),
+                '_token': $('input[name=_token]').val()
+
+            },success: function(response, textStatus, XMLHttpRequest){
+
+                NProgress.done();
+                if(response.trigger=="yes"){ 
+                    $("#btn-shipping").removeAttr('disabled');
+                    $('.result-shipping-cost').html(response.notif);
+                }
+                else
+                {
+                        toastr.warning(response.notif)
+                }
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown)
             {
-                if($('#province').val() == '')
-                {
-                    triggerNational = false;
-                }
-
-                if($('#city').val() == '')
-                {
-                    triggerNational = false;
-                }
-
-                // if($('#subdistrict').val() == '')
-                // {
-                //     triggerNational = false;
-                // }
+                NProgress.done();
+                toastr.remove();
+                toastr.error('There is something wrong, please refresh page and try again.');
             }
-        }
-        else
-        {
-            triggerNational = false;
-        }
-
-        // if($('#address').val() == '')
-        // {
-        //     triggerNational = false;
-        // }
-
-        // if($('#postalcode').val() == '')
-        // {
-        //     triggerNational = false;
-        // }
-
-        if(triggerNational == true)
-        {
-            NProgress.start();
-            var urlAction = $('#actionEstimate').val();
-            $.ajax({
-                url: urlAction,
-                dataType: 'json',
-                type: 'POST',
-                data: {
-                    'trans_id': $('#form-shipping').find('input[name=trans_id]').val(), 
-                    'country': $('#country').val(), 
-                    'province': $('#province').val(),
-                    'city': $('#city').val(),
-                    'subdistrict': $('#subdistrict').val(),
-                    'postalcode': $('#postalcode').val(),
-                    'address': $('#address').val(),
-                    '_token': $('input[name=_token]').val()
-                },
-                success: function(response, textStatus, XMLHttpRequest)
-                {
-                    NProgress.done();
-                    if(response.trigger=="yes")
-                    { 
-                        $("#btn-shipping").removeAttr('disabled');
-                        $('.result-shipping-cost').html(response.notif);
-                    }
-                    else
-                    {
-                            toastr.warning(response.notif)
-                    }
-                },
-                error: function(XMLHttpRequest, textStatus, errorThrown)
-                {
-                    NProgress.done();
-                    toastr.remove();
-                    toastr.error('There is something wrong, please refresh page and try again.');
-                }
-            });
-        }
+        });
     }
 
-    $('#address, #postalcode').blur(function(){
+    $('#city_reg').change(function(e){
+        get_shipping_cost();
+    });
+    $('#address, #postalcode', '#subdistrict').blur(function(){
         get_shipping_cost();
     });
 
-    $('#country, #province, #city, #subdistrict').change(function(e){
-        $("#btn-shipping").attr('disabled', 'disabled');
-        var data_id = $(this).val();
-        var trigger = $(this).attr('id');
+    
+    // $('#country, #province, #city, #subdistrict').change(function(e){
+    //     $("#btn-shipping").attr('disabled', 'disabled');
+    //     var data_id = $(this).val();
+    //     var trigger = $(this).attr('id');
 
-        $('.result-shipping-cost').html('');
-        get_shipping_cost();
-        // $('#province').select2('val', '');
-        // $('#city').select2('val', '');
-        // $('#subdistrict').select2('val', '');
+    //     $('.result-shipping-cost').html('');
+    //     get_shipping_cost();
+    //     // $('#province').select2('val', '');
+    //     // $('#city').select2('val', '');
+    //     // $('#subdistrict').select2('val', '');
 
-        // if($('#country').val() == '236')
-        // {
-        //     $('.select-national').fadeIn();
-        // }
-        // else
-        // {
-        //     $('.select-national').fadeOut();
-        // }
+    //     // if($('#country').val() == '236')
+    //     // {
+    //     //     $('.select-national').fadeIn();
+    //     // }
+    //     // else
+    //     // {
+    //     //     $('.select-national').fadeOut();
+    //     // }
 
-        $('.select-national').fadeIn();
+    //     $('.select-national').fadeIn();
 
-        if(trigger != 'subdistrict')
-        {
-            // if($('#country').val() == '236')
-            // {
-                if($(this).val() != '')
-                {
-                    var urlAction = $('#actionLocation').val();
-                    $.ajax({
-                        url: urlAction,
-                        dataType: 'json',
-                        type: 'POST',
-                        data: {
-                            'data_id': data_id, 
-                            'trigger': trigger,
-                            '_token': $('input[name=_token]').val()
-                        },
-                        success: function(response, textStatus, XMLHttpRequest)
-                        {
-                            if(response.trigger=="yes")
-                            { 
-                                if(trigger == 'country')
-                                {
-                                    if(response.notif.length > 300){
-                                        $('.select-province').fadeIn(function(){
-                                            $('#province').html(response.notif);
-                                            $('.select-city').fadeIn();
-                                            $('.select-subdistrict').fadeIn();
+    //     if(trigger != 'subdistrict')
+    //     {
+    //         // if($('#country').val() == '236')
+    //         // {
+    //             if($(this).val() != '')
+    //             {
+    //                 var urlAction = $('#actionLocation').val();
+    //                 $.ajax({
+    //                     url: urlAction,
+    //                     dataType: 'json',
+    //                     type: 'POST',
+    //                     data: {
+    //                         'data_id': data_id, 
+    //                         'trigger': trigger,
+    //                         '_token': $('input[name=_token]').val()
+    //                     },
+    //                     success: function(response, textStatus, XMLHttpRequest)
+    //                     {
+    //                         if(response.trigger=="yes")
+    //                         { 
+    //                             if(trigger == 'country')
+    //                             {
+    //                                 if(response.notif.length > 300){
+    //                                     $('.select-province').fadeIn(function(){
+    //                                         $('#province').html(response.notif);
+    //                                         $('.select-city').fadeIn();
+    //                                         $('.select-subdistrict').fadeIn();
 
-                                            $('#province').select2("val", "");
-                                            $('#city').select2("val", "");
-                                            $('#subdistrict').select2("val", "");
-                                        });
-                                    }else{
+    //                                         $('#province').select2("val", "");
+    //                                         $('#city').select2("val", "");
+    //                                         $('#subdistrict').select2("val", "");
+    //                                     });
+    //                                 }else{
 
-                                        $('#province').select2("val", "");
-                                        $('#city').select2("val", "");
-                                        $('#subdistrict').select2("val", "");
-                                        $('.select-province').fadeOut();
-                                        $('.select-city').fadeOut();
-                                        $('.select-subdistrict').fadeOut();
-                                    }
-                                }
-                                else if(trigger == 'province')
-                                {
-                                    if(response.notif.length > 300){
-                                        $('.select-city').fadeIn(function(){
-                                            $('#city').html(response.notif);
-                                            $('.select-subdistrict').fadeIn();
+    //                                     $('#province').select2("val", "");
+    //                                     $('#city').select2("val", "");
+    //                                     $('#subdistrict').select2("val", "");
+    //                                     $('.select-province').fadeOut();
+    //                                     $('.select-city').fadeOut();
+    //                                     $('.select-subdistrict').fadeOut();
+    //                                 }
+    //                             }
+    //                             else if(trigger == 'province')
+    //                             {
+    //                                 if(response.notif.length > 300){
+    //                                     $('.select-city').fadeIn(function(){
+    //                                         $('#city').html(response.notif);
+    //                                         $('.select-subdistrict').fadeIn();
 
-                                            $('#city').select2("val", "");
-                                            $('#subdistrict').select2("val", "");
-                                        });
-                                    }else{
-                                        $('#city').select2("val", "");
-                                        $('#subdistrict').select2("val", "");
-                                        $('.select-city').fadeOut();
-                                        $('.select-subdistrict').fadeOut();
-                                    }
-                                }
-                                else if(trigger == 'city')
-                                {
-                                    if(response.notif.length > 300){
-                                        $('.select-subdistrict').fadeIn(function(){
-                                            $('#subdistrict').html(response.notif);
-                                            $('#subdistrict').select2("val", "");
-                                        });
-                                    }else{
-                                        $('#subdistrict').select2("val", "");
-                                        $('.select-subdistrict').fadeOut();
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                    toastr.warning(response.notif)
-                            }
-                        },
-                        error: function(XMLHttpRequest, textStatus, errorThrown)
-                        {
-                            toastr.remove();
-                            toastr.error('There is something wrong, please refresh page and try again.');
-                        }
-                    });
-                }
-            // }
-        }
-    });
+    //                                         $('#city').select2("val", "");
+    //                                         $('#subdistrict').select2("val", "");
+    //                                     });
+    //                                 }else{
+    //                                     $('#city').select2("val", "");
+    //                                     $('#subdistrict').select2("val", "");
+    //                                     $('.select-city').fadeOut();
+    //                                     $('.select-subdistrict').fadeOut();
+    //                                 }
+    //                             }
+    //                             else if(trigger == 'city')
+    //                             {
+    //                                 if(response.notif.length > 300){
+    //                                     $('.select-subdistrict').fadeIn(function(){
+    //                                         $('#subdistrict').html(response.notif);
+    //                                         $('#subdistrict').select2("val", "");
+    //                                     });
+    //                                 }else{
+    //                                     $('#subdistrict').select2("val", "");
+    //                                     $('.select-subdistrict').fadeOut();
+    //                                 }
+    //                             }
+    //                         }
+    //                         else
+    //                         {
+    //                                 toastr.warning(response.notif)
+    //                         }
+    //                     },
+    //                     error: function(XMLHttpRequest, textStatus, errorThrown)
+    //                     {
+    //                         toastr.remove();
+    //                         toastr.error('There is something wrong, please refresh page and try again.');
+    //                     }
+    //                 });
+    //             }
+    //         // }
+    //     }
+    // });
 
     // coupon
     $('.btn-coupon').click(function(e){

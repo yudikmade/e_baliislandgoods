@@ -91,7 +91,8 @@ body {
                             <div class="row mrg-btm">
                                 <div class="col-lg-3 col-md-3">Total : </div>
                                 <div class="col-lg-9 col-md-9">
-                                    {{$formatTotal[2].$formatTotal[1].' '.$formatTotal[3]}} <span class="text-primary">(PAID)</span>
+                                    {{$formatTotal[2].$formatTotal[1].' '.$formatTotal[3]}} 
+                                    <!-- <span class="text-primary">(PAID)</span> -->
                                 </div>
                             </div>
                             <!-- <div class="row mrg-btm">
@@ -118,26 +119,18 @@ body {
                                         {{$shippings->country_name}}
                                     </div>
                                 </div>
-                                @if($shippings->country_id == '236')
-                                    <div class="row mrg-btm">
-                                        <div class="col-lg-3 col-md-3">Province : </div>
-                                        <div class="col-lg-9 col-md-9">
-                                            {{$shippings->province_name}}
-                                        </div>
+                                <div class="row mrg-btm">
+                                    <div class="col-lg-3 col-md-3">City : </div>
+                                    <div class="col-lg-9 col-md-9">
+                                        {{$shippings->city_name}}
                                     </div>
-                                    <div class="row mrg-btm">
-                                        <div class="col-lg-3 col-md-3">City : </div>
-                                        <div class="col-lg-9 col-md-9">
-                                            {{$shippings->city_name}}
-                                        </div>
+                                </div>
+                                <div class="row mrg-btm">
+                                    <div class="col-lg-3 col-md-3">Subdistrict : </div>
+                                    <div class="col-lg-9 col-md-9">
+                                        {{$shippings->subdistrict_name}}
                                     </div>
-                                    <div class="row mrg-btm">
-                                        <div class="col-lg-3 col-md-3">Subdistrict : </div>
-                                        <div class="col-lg-9 col-md-9">
-                                            {{$shippings->subdistrict_name}}
-                                        </div>
-                                    </div>
-                                @endif
+                                </div>
                                 <div class="row mrg-btm">
                                     <div class="col-lg-3 col-md-3">Address : </div>
                                     <div class="col-lg-9 col-md-9">

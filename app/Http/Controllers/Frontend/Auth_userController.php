@@ -11,6 +11,7 @@ use Lang;
 
 use App\Models\EmCustomer;
 use App\Models\MCountry;
+use App\Models\TgiCountry;
 use App\Models\MProvince;
 use App\Models\MCity;
 use App\Models\MSubdistrict;
@@ -36,7 +37,7 @@ class Auth_userController extends Controller
             'description' => env('META_DESCRIPTION'),
             'alt_image' => 'Login | '.env('AUTHOR_SITE'),
             'from' => 'login',
-            'country' => MCountry::getWhere([['status', '=', '1']], '', false),
+            'country' => TgiCountry::getWhere([], '', false),
             'phone_prefix' => MCountryPhone::getWhere([['status', '=', '1']], '', false),
         );
         return view('frontend.login', $data);
@@ -232,6 +233,7 @@ class Auth_userController extends Controller
                         'password' => 'required',
                         'password_r' => 'required',
                         'country_reg' => 'required',
+                        'city_reg' => 'required',
                         'address_reg' => 'required',
                         'postalcode_reg' => 'required',
                     ],
@@ -239,12 +241,13 @@ class Auth_userController extends Controller
                         'form_action.required' => 'Server failed to process action.',
                         'first_name.required' => 'Please input first name.',
                         'last_name.required' => 'Please input last name.',
-                        'phone_prefix.required' => 'Please input prefix.',
+                        'phone_prefix.reqsuired' => 'Please input prefix.',
                         'phone_number.required' => 'Please input phone number.',
                         'email.required' => 'Please input email.',
                         'password.required' => 'Please input password.',
                         'password_r.required' => 'Please input repeat password.',
-                        'country_reg.required' => 'Please input country.',
+                        'country_reg.required' => 'Please choose region.',
+                        'city_reg.required' => 'Please choose city.',
                         'address_reg.required' => 'Please input address.',
                         'postalcode_reg.required' => 'Please input postal code.',
 
@@ -312,14 +315,19 @@ class Auth_userController extends Controller
                                     EmCustomer::insertData($dataInsert);
 
                                     $getCountry = Common_helper::setLocation('country', isset($input['country_reg']) ? $input['country_reg'] : "");
-                                    $getProvince = Common_helper::setLocation('province', isset($input['province']) ? $input['province'] : "");
-                                    $getCity = Common_helper::setLocation('city', isset($input['city']) ? $input['city'] : "");
-                                    $getSubdistrict = Common_helper::setLocation('subdistrict', isset($input['subdistrict']) ? $input['subdistrict'] : "");
+                                    // $getProvince = Common_helper::setLocation('province', isset($input['province']) ? $input['province'] : "");
+                                    $getCity = Common_helper::setLocation('city', isset($input['city_reg']) ? $input['city_reg'] : "");
+                                    // $getSubdistrict = Common_helper::setLocation('subdistrict', isset($input['subdistrict']) ? $input['subdistrict'] : "");
 
                                     $dataInsert = [
                                         'customer_id' => $customerID,
                                         'country_id' => $getCountry['id'],
                                         'country_name' => @$getCountry['name'],
+
+                                        'city_id' => $getCity['id'],
+                                        'city_name' => @$getCity['name'],
+
+                                        'subdistrict_name' => $input['district_reg'],
 
                                         'detail_address' => $input['address_reg'],
                                         'postal_code' => $input['postalcode_reg'],
@@ -327,28 +335,28 @@ class Auth_userController extends Controller
                                         'status' => '1',
                                     ];
 
-                                    if($input['country_reg'] == '236')
-                                    {
-                                        $dataInsert = [
-                                            'customer_id' => $customerID,
-                                            'country_id' => $getCountry['id'],
-                                            'country_name' => @$getCountry['name'],
+                                    // if($input['country_reg'] == '236')
+                                    // {
+                                    //     $dataInsert = [
+                                    //         'customer_id' => $customerID,
+                                    //         'country_id' => $getCountry['id'],
+                                    //         'country_name' => @$getCountry['name'],
 
-                                            'province_id' => $getProvince['id'],
-                                            'province_name' => @$getProvince['name'],
+                                    //         'province_id' => $getProvince['id'],
+                                    //         'province_name' => @$getProvince['name'],
 
-                                            'city_id' => $getCity['id'],
-                                            'city_name' => @$getCity['name'],
+                                    //         'city_id' => $getCity['id'],
+                                    //         'city_name' => @$getCity['name'],
 
-                                            'subdistrict_id' => $getSubdistrict['id'],
-                                            'subdistrict_name' => @$getSubdistrict['name'],
+                                    //         'subdistrict_id' => $getSubdistrict['id'],
+                                    //         'subdistrict_name' => @$getSubdistrict['name'],
 
-                                            'detail_address' => $input['address_reg'],
-                                            'postal_code' => $input['postalcode_reg'],
-                                            'order' => 1,
-                                            'status' => '1',
-                                        ];
-                                    }
+                                    //         'detail_address' => $input['address_reg'],
+                                    //         'postal_code' => $input['postalcode_reg'],
+                                    //         'order' => 1,
+                                    //         'status' => '1',
+                                    //     ];
+                                    // }
 
                                     $dataUser = array(
                                         'customer_id' => $customerID,

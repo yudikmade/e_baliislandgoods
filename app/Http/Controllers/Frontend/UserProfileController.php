@@ -13,6 +13,7 @@ use App\Models\MCountryPhone;
 use App\Models\EmCustomerShipping;
 use App\Models\EmTransaction;
 use App\Models\MCountry;
+use App\Models\TgiCountry;
 use App\Models\MProvince;
 use App\Models\MCity;
 use App\Models\MSubdistrict;
@@ -58,7 +59,7 @@ class UserProfileController extends Controller
             'description' => env('META_DESCRIPTION'),
             'alt_image' => 'Shipping Address | '.env('AUTHOR_SITE'),
             'shipping_address' => EmCustomerShipping::getWhere([['customer_id', '=', Session::get(env('SES_FRONTEND_ID'))]], '', false),
-            'country' => MCountry::getWhere([['status', '=', '1']], '', false),
+            'country' => TgiCountry::getWhere([], '', false),
             'nav_order' => 5,
             'shipping_nav_page' => 'active',
             'is_page' => 'member',
@@ -265,12 +266,14 @@ class UserProfileController extends Controller
             {
                 $validator = Validator::make(request()->all(), [
                     'country' => 'required',
+                    'city' => 'required',
                     'address' => 'required',
                     'postalcode' => 'required',
                 ],
                 [
-                    'country.required' => 'Please choose country.',
-                    'address.required' => 'Please choose address.',
+                    'country.required' => 'Please choose region.',
+                    'city.required' => 'Please choose city.',
+                    'address.required' => 'Please inut address.',
                     'postalcode.required' => 'Please input postal code.',
 
                 ]);
@@ -288,71 +291,53 @@ class UserProfileController extends Controller
                 {
                     $input = $request->all();
                     $notif = '';
-                    if($input['country'] == '236')
-                    {
-                        if($input['province'] == null || $input['province'] == '')
-                        {
-                            $notif .= 'Please choose province.<br>';
-                        }
-                        if($input['city'] == null || $input['city'] == '')
-                        {
-                            $notif .= 'Please choose city.<br>';
-                        }
-                        if($input['subdistrict'] == null || $input['subdistrict'] == '')
-                        {
-                            $notif .= 'Please choose subdistrict.<br>';
-                        }
-                    }
 
-                    if($notif == '')
-                    {
+                    $getCountry = Common_helper::setLocation('country', isset($input['country']) ? $input['country'] : "");
+                    // $getProvince = Common_helper::setLocation('province', isset($input['province']) ? $input['province'] : "");
+                    $getCity = Common_helper::setLocation('city', isset($input['city']) ? $input['city'] : "");
+                    // $getSubdistrict = Common_helper::setLocation('subdistrict', isset($input['subdistrict']) ? $input['subdistrict'] : "");
 
-                        $getCountry = Common_helper::setLocation('country', isset($input['country']) ? $input['country'] : "");
-                        $getProvince = Common_helper::setLocation('province', isset($input['province']) ? $input['province'] : "");
-                        $getCity = Common_helper::setLocation('city', isset($input['city']) ? $input['city'] : "");
-                        $getSubdistrict = Common_helper::setLocation('subdistrict', isset($input['subdistrict']) ? $input['subdistrict'] : "");
+                    $dataUpdate = [
+                        'country_id' => $getCountry['id'],
+                        'country_name' => @$getCountry['name'],
 
-                        $dataUpdate = [
-                            'country_id' => $getCountry['id'],
-                            'country_name' => @$getCountry['name'],
+                        'city_id' => $getCity['id'],
+                        'city_name' => @$getCity['name'],
 
-                            'detail_address' => $input['address'],
-                            'postal_code' => $input['postalcode'],
-                            'order' => 1,
-                            'status' => '1',
-                        ];
+                        'subdistrict_name' => $input['subdistrict'],
 
-                        if($input['country'] == '236')
-                        {
-                            $dataUpdate = [
-                                'country_id' => $getCountry['id'],
-                                'country_name' => @$getCountry['name'],
+                        'detail_address' => $input['address'],
+                        'postal_code' => $input['postalcode'],
+                        'order' => 1,
+                        'status' => '1',
+                    ];
 
-                                'province_id' => $getProvince['id'],
-                                'province_name' => @$getProvince['name'],
+                    // if($input['country'] == '236')
+                    // {
+                    //     $dataUpdate = [
+                    //         'country_id' => $getCountry['id'],
+                    //         'country_name' => @$getCountry['name'],
 
-                                'city_id' => $getCity['id'],
-                                'city_name' => @$getCity['name'],
+                    //         'province_id' => $getProvince['id'],
+                    //         'province_name' => @$getProvince['name'],
 
-                                'subdistrict_id' => $getSubdistrict['id'],
-                                'subdistrict_name' => @$getSubdistrict['name'],
+                    //         'city_id' => $getCity['id'],
+                    //         'city_name' => @$getCity['name'],
 
-                                'detail_address' => $input['address'],
-                                'postal_code' => $input['postalcode'],
-                                'order' => 1,
-                                'status' => '1',
-                            ];
-                        }
+                    //         'subdistrict_id' => $getSubdistrict['id'],
+                    //         'subdistrict_name' => @$getSubdistrict['name'],
 
-                        EmCustomerShipping::updateDataByCustomer(Session::get(env('SES_FRONTEND_ID')), $dataUpdate);
+                    //         'detail_address' => $input['address'],
+                    //         'postal_code' => $input['postalcode'],
+                    //         'order' => 1,
+                    //         'status' => '1',
+                    //     ];
+                    // }
 
-                        $result['trigger'] = 'yes';
-                        $result['notif'] = 'Shipping address has been updated.';
-                    }
-                    else
-                    {
-                        $result['notif'] = $notif;
-                    }
+                    EmCustomerShipping::updateDataByCustomer(Session::get(env('SES_FRONTEND_ID')), $dataUpdate);
+
+                    $result['trigger'] = 'yes';
+                    $result['notif'] = 'Shipping address has been updated.';
                 }
             }
         }

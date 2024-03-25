@@ -40,6 +40,8 @@ use App\Http\Controllers\Frontend\PaypalPaymentController;
 |
 */
 
+// Route::get('/generateCountry', [TestController::class, 'generateCountry'])->name('generateCountry');
+// Route::get('/generateCity/{limit?}/{offset?}', [TestController::class, 'generateCity'])->name('generateCity');
 // Route::get('/test-shipping', [TestController::class, 'index'])->name('control_dashboard');
 // Route::get('/test-email', [TestemailController::class, 'index'])->name('index');
 

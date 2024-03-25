@@ -30,7 +30,7 @@
         margin-bottom: 20px;
     }
     .modal-body textarea {
-        height: 128px;
+        height: 121px;
     }
     .visible-xs {
         display: none;

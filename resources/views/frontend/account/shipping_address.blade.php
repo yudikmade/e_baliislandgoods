@@ -7,6 +7,10 @@
     [class^='select2'] {
         border-radius: 0px !important;
     }
+    .select2-container--default .select2-search--dropdown .select2-search__field:focus-visible,
+    .select2-container .select2-selection:focus-visible{
+        outline: none !important;
+    }
     .select2-container .select2-selection{
         padding-bottom: 33px;
         padding-top: 3px;
@@ -39,31 +43,21 @@
                         <div class="row">
                             <div class="col-sm-12">
                                 <div class="form-group">
-                                    <label class="control-label col-sm-2" for="country">Country</label>
+                                    <label class="control-label col-sm-2" for="country">Region</label>
                                     <div class="col-sm-10">
                                         <select style="width: 100%;" class="select2 form-control" name="country" id="country">
                                             @foreach($country as $countries)
-                                                @if($key->country_id == $countries->country_id)
-                                                    <option value="{{$countries->country_id}}" selected>{{$countries->country_name}}</option>
+                                                @if($key->country_id == $countries->id)
+                                                    <option value="{{$countries->id}}" selected>{{$countries->branch_name}}</option>
                                                 @else
-                                                    <option value="{{$countries->country_id}}">{{$countries->country_name}}</option>
+                                                    <option value="{{$countries->id}}">{{$countries->branch_name}}</option>
                                                 @endif
                                             @endforeach
                                         </select> 
-                                        <small class="notif-country error none"><i>Please choose country!</i></small>
+                                        <small class="notif-country error none"><i>Please choose region!</i></small>
                                     </div>
                                 </div>
 
-                                @if($key->country_id == '236')
-                                <div class="form-group select-national">
-                                    <label class="control-label col-sm-2" for="province">Province</label>
-                                    <div class="col-sm-10">
-                                        <select style="width: 100%;" class="select2 form-control" name="province" id="province">
-                                            <option value="{{$key->province_id}}">{{$key->province_name}}</option>
-                                        </select> 
-                                        <small class="notif-province error none"><i>Please choose province!</i></small>
-                                    </div>
-                                </div>
                                 <div class="form-group select-national">
                                     <label class="control-label col-sm-2" for="city">City</label>
                                     <div class="col-sm-10">
@@ -74,43 +68,12 @@
                                     </div>
                                 </div>
                                 <div class="form-group select-national">
-                                    <label class="control-label col-sm-2" for="subdistrict">Subdistrict</label>
+                                    <label class="control-label col-sm-2" for="subdistrict">(Sub) District</label>
                                     <div class="col-sm-10">
-                                        <select style="width: 100%;" class="select2 form-control" name="subdistrict" id="subdistrict">
-                                            <option value="{{$key->subdistrict_id}}">{{$key->subdistrict_name}}</option>
-                                        </select> 
+                                        <input type="text" class="form-control no-radius" value="{{$key->subdistrict_name}}" name="subdistrict" id="subdistrict" />
                                         <small class="notif-subdistrict error none"><i>Please choose subdistrict!</i></small>
                                     </div>
                                 </div>
-                                @else
-                                <div class="form-group select-national none">
-                                    <label class="control-label col-sm-2" for="province">State</label>
-                                    <div class="col-sm-10">
-                                        <select style="width: 100%;" class="select2 form-control" name="province" id="province">
-                                            <option value="">Choose provinsi</option>
-                                        </select> 
-                                        <small class="notif-province error none"><i>Please choose state!</i></small>
-                                    </div>
-                                </div>
-                                <div class="form-group select-national none">
-                                    <label class="control-label col-sm-2" for="city">City</label>
-                                    <div class="col-sm-10">
-                                        <select style="width: 100%;" class="select2 form-control" name="city" id="city">
-                                            <option value="">Choose city</option>
-                                        </select> 
-                                        <small class="notif-city error none"><i>Please choose city!</i></small>
-                                    </div>
-                                </div>
-                                <div class="form-group select-national none">
-                                    <label class="control-label col-sm-2" for="subdistrict">Subdistrict</label>
-                                    <div class="col-sm-10">
-                                        <select style="width: 100%;" class="select2 form-control" name="subdistrict" id="subdistrict">
-                                            <option value="">Choose subdistrict</option>
-                                        </select> 
-                                        <small class="notif-subdistrict error none"><i>Please select subdistrict!</i></small>
-                                    </div>
-                                </div>
-                                @endif
                                 <div class="form-group">
                                     <div class="col-sm-12">
                                         <hr>
@@ -183,6 +146,34 @@
     $(document).ready(function() {
         $('.select2').select2();
 
+        $('#city').select2({
+            placeholder: "Searching location",
+            minimumInputLength: 3,
+            ajax: {
+                type: 'post',
+                delay: 300,
+                data: function (params) {
+                    return {
+                        search: params.term, // search term,
+                        'data_id': $('#country').val(),
+                        'trigger': 'city_tgi',
+                        '_token': $('input[name=_token]').val()
+                    };
+                },
+                url: $('#actionLocation').val(),
+                processResults: function (data) {
+                    return {
+                        results: $.map(data.notif, function (obj) {
+                            return {
+                                id: obj.id,
+                                text: obj.text,
+                            };
+                        })
+                    };
+                }
+            }
+        });
+
         $("#btn-shipping").click(function(e){
             e.preventDefault();
 
@@ -193,36 +184,25 @@
             {
                 var triggerSubmit = true;
 
-                if(country.val() == '236')
-                {
-                    var province = $('#province');
-                    var city = $('#city');
-                    var subdistrict = $('#subdistrict');
+                var city = $('#city');
+                var subdistrict = $('#subdistrict');
 
-                    if(subdistrict.val() == ''){
-                        triggerSubmit = false;
-                        $('.notif-subdistrict').fadeIn();
-                        subdistrict.focus();
-                    }else{
-                        $('.notif-subdistrict').fadeOut();
-                    }
-
-                    if(city.val() == ''){
-                        triggerSubmit = false;
-                        $('.notif-city').fadeIn();
-                        city.focus();
-                    }else{
-                        $('.notif-city').fadeOut();
-                    }
-
-                    if(province.val() == ''){
-                        triggerSubmit = false;
-                        $('.notif-province').fadeIn();
-                        province.focus();
-                    }else{
-                        $('.notif-province').fadeOut();
-                    }
+                if(subdistrict.val() == ''){
+                    triggerSubmit = false;
+                    $('.notif-subdistrict').fadeIn();
+                    subdistrict.focus();
+                }else{
+                    $('.notif-subdistrict').fadeOut();
                 }
+
+                if(city.val() == ''){
+                    triggerSubmit = false;
+                    $('.notif-city').fadeIn();
+                    city.focus();
+                }else{
+                    $('.notif-city').fadeOut();
+                }
+
                 
                 var address = $('#address');
                 var postalcode = $('#postalcode');
@@ -244,8 +224,7 @@
                 }
                 
 
-                if(triggerSubmit)
-                {
+                if(triggerSubmit){
                     $('.loader-process').removeClass('hidden');
                     elementBtn.attr('disabled', 'disabled');
                     var emelentForm = $('#form-shipping')
@@ -256,8 +235,7 @@
                         dataType: 'json',
                         success: function(response) {
                             elementBtn.removeAttr('disabled');
-                            if(response.trigger == "yes")
-                            {
+                            if(response.trigger == "yes"){
                                 toastr.success(response.notif, '', {timeOut: 3000});
                             }
                             else
@@ -281,70 +259,70 @@
             }
         });
 
-        $('#country, #province, #city').change(function(e){
-            var data_id = $(this).val();
-            var trigger = $(this).attr('id');
+        // $('#country, #province, #city').change(function(e){
+        //     var data_id = $(this).val();
+        //     var trigger = $(this).attr('id');
 
-            // if($('#country').val() == '236')
-            // {
-            //     $('.select-national').fadeIn();
-            // }
-            // else
-            // {
-            //     if($('#country').val() != '')
-            //     {
-            //         $('.select-national').fadeOut();
-            //     }
-            // }
+        //     // if($('#country').val() == '236')
+        //     // {
+        //     //     $('.select-national').fadeIn();
+        //     // }
+        //     // else
+        //     // {
+        //     //     if($('#country').val() != '')
+        //     //     {
+        //     //         $('.select-national').fadeOut();
+        //     //     }
+        //     // }
 
-            $('.select-national').fadeIn();
+        //     $('.select-national').fadeIn();
 
-            // if($('#country').val() == '236')
-            // {
-                var urlAction = $('#actionLocation').val();
-                $.ajax({
-                    url: urlAction,
-                    dataType: 'json',
-                    type: 'POST',
-                    data: {
-                        'data_id': data_id, 
-                        'trigger': trigger,
-                        '_token': $('input[name=_token]').val()
-                    },
-                    success: function(response, textStatus, XMLHttpRequest)
-                    {
-                        if(response.trigger=="yes")
-                        {
-                            if(trigger == 'country')
-                            {
-                                if(response.notif.length > 50){
-                                    $('#province').html(response.notif);
-                                } else {
-                                    $('.select-national').fadeOut();   
-                                }
-                            }
-                            else if(trigger == 'province')
-                            {
-                                $('#city').html(response.notif);
-                            }
-                            else
-                            {
-                                $('#subdistrict').html(response.notif);
-                            }
-                        }
-                        else
-                        {
-                             toastr.warning(response.notif)
-                        }
-                    },
-                    error: function(XMLHttpRequest, textStatus, errorThrown)
-                    {
-                        toastr.remove();
-                        toastr.error('There is something wrong, please refresh page and try again.');
-                    }
-                });
-            // }
-        });
+        //     // if($('#country').val() == '236')
+        //     // {
+        //         var urlAction = $('#actionLocation').val();
+        //         $.ajax({
+        //             url: urlAction,
+        //             dataType: 'json',
+        //             type: 'POST',
+        //             data: {
+        //                 'data_id': data_id, 
+        //                 'trigger': trigger,
+        //                 '_token': $('input[name=_token]').val()
+        //             },
+        //             success: function(response, textStatus, XMLHttpRequest)
+        //             {
+        //                 if(response.trigger=="yes")
+        //                 {
+        //                     if(trigger == 'country')
+        //                     {
+        //                         if(response.notif.length > 50){
+        //                             $('#province').html(response.notif);
+        //                         } else {
+        //                             $('.select-national').fadeOut();   
+        //                         }
+        //                     }
+        //                     else if(trigger == 'province')
+        //                     {
+        //                         $('#city').html(response.notif);
+        //                     }
+        //                     else
+        //                     {
+        //                         $('#subdistrict').html(response.notif);
+        //                     }
+        //                 }
+        //                 else
+        //                 {
+        //                      toastr.warning(response.notif)
+        //                 }
+        //             },
+        //             error: function(XMLHttpRequest, textStatus, errorThrown)
+        //             {
+        //                 toastr.remove();
+        //                 toastr.error('There is something wrong, please refresh page and try again.');
+        //             }
+        //         });
+        //     // }
+        // });
     });
 </script>
 @stop

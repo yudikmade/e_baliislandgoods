@@ -14,6 +14,9 @@ use App\Models\MCountry;
 use App\Models\MProvince;
 use App\Models\MCity;
 use App\Models\MSubdistrict;
+use App\Models\TgiCountry;
+use App\Models\TgiCity;
+
 use View;
 use Session;
 use Cookie;
@@ -1285,6 +1288,43 @@ class Common_helper
 		}
 	}
 
+	public function check_shipping_tgiexpress($weight, $codeDestination){
+
+		$from = 'JKT';
+		$curl = curl_init();
+
+		$newWeight = ($weight / 1000) < 1 ? 1 : ceil($weight / 1000);
+
+		curl_setopt_array($curl, array(
+			CURLOPT_URL => 'https://tgi.omile.id/tgi/restapi/basic/price/list_all_ltime_customer',
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_ENCODING => '',
+			CURLOPT_MAXREDIRS => 10,
+			CURLOPT_TIMEOUT => 0,
+			CURLOPT_FOLLOWLOCATION => true,
+			CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+			CURLOPT_CUSTOMREQUEST => 'POST',
+			CURLOPT_POSTFIELDS => array('from' => $from,'thru' => $codeDestination,'weight' => $newWeight,'cust' => env('TGI_COSTUMER_ID')),
+			CURLOPT_HTTPHEADER => array(
+				'api-key: '.env('TGI_EXPRESS_KEY'),
+				'Connection: keep-alive',
+				'Accept: */*',
+				'Accept-Encoding: gzip, deflate, br',
+				'Cookie: uplinkv3kk3Dc2pl=t8kin85ntsf2mhkjsm225tnid6lcssvh'
+			),
+		));
+
+		$response = curl_exec($curl);
+		$err = curl_error($curl);
+
+		curl_close($curl);
+		if ($err) {
+			return array(false, "cURL Error #:" . $err);
+		} else {
+			return array(true, $response);
+		}
+	}
+
 	public static function phone_no_prefix($prefix, $phone_number)
 	{
 		$prefixLength = strlen($prefix);
@@ -1464,33 +1504,49 @@ class Common_helper
 		);
 		if($id != "" && $id != null){
 			if($type == "country"){
-				$get_data = MCountry::getWhere([['country_id', '=', $id]], '', false);
+				$get_data = TgiCountry::getWhere([['id', '=', $id]], '', false);
 				$result = array(
 					'id' => $id,
-					'name' => $get_data[0]->country_name
-				);
-			}
-			if($type == "province"){
-				$get_data = MProvince::getWhere([['province_id', '=', $id]], '', false);
-				$result = array(
-					'id' => $id,
-					'name' => $get_data[0]->province_name
+					'name' => $get_data[0]->branch_name,
+					'standard' => $get_data[0]->standard
 				);
 			}
 			if($type == "city"){
-				$get_data = MCity::getWhere([['city_id', '=', $id]], '', false);
+				$get_data = TgiCity::getWhere([['id', '=', $id]], '', false);
 				$result = array(
 					'id' => $id,
-					'name' => $get_data[0]->city_name
+					'name' => $get_data[0]->city_name,
+					'code' => $get_data[0]->city_code,
 				);
 			}
-			if($type == "subdistrict"){
-				$get_data = MSubdistrict::getWhere([['subdistrict_id', '=', $id]], '', false);
-				$result = array(
-					'id' => $id,
-					'name' => $get_data[0]->subdistrict_name
-				);
-			}
+			// if($type == "country"){
+			// 	$get_data = MCountry::getWhere([['country_id', '=', $id]], '', false);
+			// 	$result = array(
+			// 		'id' => $id,
+			// 		'name' => $get_data[0]->country_name
+			// 	);
+			// }
+			// if($type == "province"){
+			// 	$get_data = MProvince::getWhere([['province_id', '=', $id]], '', false);
+			// 	$result = array(
+			// 		'id' => $id,
+			// 		'name' => $get_data[0]->province_name
+			// 	);
+			// }
+			// if($type == "city"){
+			// 	$get_data = MCity::getWhere([['city_id', '=', $id]], '', false);
+			// 	$result = array(
+			// 		'id' => $id,
+			// 		'name' => $get_data[0]->city_name
+			// 	);
+			// }
+			// if($type == "subdistrict"){
+			// 	$get_data = MSubdistrict::getWhere([['subdistrict_id', '=', $id]], '', false);
+			// 	$result = array(
+			// 		'id' => $id,
+			// 		'name' => $get_data[0]->subdistrict_name
+			// 	);
+			// }
 		}
 		return $result;
 	}
