@@ -646,41 +646,45 @@ class ShopController extends Controller
         $getShippingCost = false;
         if($getShipping[0]){
             $getAdditinalShiipingCost = Common_helper::getAdditionalShippingCost();
-            if($isStandard){
-                $dataShipping = isset($dataShipping['STANDARD']) ? $dataShipping['STANDARD'] : [];
-            }else{
-                $dataShipping = isset($dataShipping['GLOBAL']) ? $dataShipping['GLOBAL'] : [];
-            }
+            // if($isStandard){
+            //     $dataShipping = isset($dataShipping['STANDARD']) ? $dataShipping['STANDARD'] : [];
+            // }else{
+            //     $dataShipping = isset($dataShipping['GLOBAL']) ? $dataShipping['GLOBAL'] : [];
+            // }
 
             $tmpEtd = 0;
             $htmlBuilder = '';
             $counter = 1;
-            foreach ($dataShipping as $key => $value) {
-                // print_r($value);
-                if($value['commodity_code'] == 'SHTCO' && $value['commodity_name'] == 'Commercial' && $value['price'] > 0){
-                    $getShippingCost = true;
+            foreach ($dataShipping as $data_key => $data_value) {
+                if($data_key != "STANDARD"){
+                    foreach ($data_value as $key => $value) {
+                        // print_r($value);
+                        if($value['commodity_code'] == 'SHTCO' && $value['commodity_name'] == 'Commercial' && $value['price'] > 0){
+                            $getShippingCost = true;
 
-                    $shippingCostInCurrencyFormat = Common_helper::convert_to_current_currency($value['price']);
-                    $showShippingCost = $current_currency[1].$shippingCostInCurrencyFormat[1].' '.$current_currency[2];
+                            $shippingCostInCurrencyFormat = Common_helper::convert_to_current_currency($value['price']);
+                            $showShippingCost = $current_currency[1].$shippingCostInCurrencyFormat[1].' '.$current_currency[2];
 
-                    $htmlBuilder .= '
-                        <tr>
-                            <td width="35px">
-                                <div class="pretty p-default p-round p-thick p-bigger">
-                                    <input type="radio" name="shipping_choose" id="shipping_choose'.$counter.'" value="'.$value['commodity_code'].':'.$value['commodity_name'].'_'.$shippingCostInCurrencyFormat[0].'_'.($value['price']+ $getAdditinalShiipingCost).'_"/>
-                                    <div class="state p-primary-o">
-                                        
-                                        <label></label>
-                                    </div>
-                                </div>
-                            </td>
-                            <td for="shipping_choose'.$counter.'">
-                                <div><b>'.$value['commodity_code'].'-'.$value['commodity_name'].'</b></div>
-                                <div>'.$showShippingCost.'</div>
-                            </td>
-                        </tr>';
+                            $htmlBuilder .= '
+                                <tr>
+                                    <td width="35px">
+                                        <div class="pretty p-default p-round p-thick p-bigger">
+                                            <input type="radio" name="shipping_choose" id="shipping_choose'.$counter.'" value="'.$value['commodity_code'].':'.$value['commodity_name'].'_'.$shippingCostInCurrencyFormat[0].'_'.($value['price']+ $getAdditinalShiipingCost).'_"/>
+                                            <div class="state p-primary-o">
+                                                
+                                                <label></label>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td for="shipping_choose'.$counter.'">
+                                        <div><b>'.$value['commodity_code'].'-'.$value['commodity_name'].'</b></div>
+                                        <div>'.$showShippingCost.'</div>
+                                    </td>
+                                </tr>';
+                        }
+                        $counter++;
+                    }
                 }
-                $counter++;
             }
 
             $htmlBuilder .= $btnUpdateShippingCost;
