@@ -442,7 +442,7 @@ class ShopController extends Controller
                         );
 
                         $getShipping = Common_helper::check_shipping_tgiexpress($getWeight->meta_description, $getCity['code']);
-                        $result = $this->get_shipping_cost_tgi($getShipping, $getCountry['standard'], $getWeight->meta_description, true);
+                        $result = $this->get_shipping_cost_tgi($getShipping, $getCountry['standard'], $getWeight->meta_description, $getCountry['id'], true);
                     }
                 }
             }
@@ -619,7 +619,7 @@ class ShopController extends Controller
     //     return $result;
     // }
 
-    private function get_shipping_cost_tgi($getShipping, $isStandard, $weight, $showButtonUpdate = true){
+    private function get_shipping_cost_tgi($getShipping, $isStandard, $weight, $country_id, $showButtonUpdate = true){
         $current_currency = \App\Helper\Common_helper::get_current_currency();
 
         $result['trigger'] = 'no';
@@ -656,7 +656,10 @@ class ShopController extends Controller
             $htmlBuilder = '';
             $counter = 1;
             foreach ($dataShipping as $data_key => $data_value) {
-                if($data_key != "STANDARD"){
+                if(
+                    ((in_array($country_id."", ["224", "200", "66", "252"])) && $data_key == "STANDARD") || 
+                    ((!in_array($country_id."", ["224", "200", "66", "252"])) && $data_key != "STANDARD")
+                ){
                     foreach ($data_value as $key => $value) {
                         // print_r($value);
                         if($value['commodity_code'] == 'SHTCO' && $value['commodity_name'] == 'Commercial' && $value['price'] > 0){

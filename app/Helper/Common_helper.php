@@ -1288,9 +1288,9 @@ class Common_helper
 		}
 	}
 
-	public function check_shipping_tgiexpress($weight, $codeDestination){
+	public static function check_shipping_tgiexpress($weight, $codeDestination){
 
-		$from = 'JKT';
+		$from = 'BLI';
 		$curl = curl_init();
 
 		$newWeight = ($weight / 1000) < 1 ? 1 : ceil($weight / 1000);
